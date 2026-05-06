@@ -13,9 +13,8 @@ const CLUB = {
 };
 
 // Supabase — Supabase → Settings → API
-// TODO: fill in after creating the Hi-Line Supabase project
-const SUPABASE_URL  = 'https://NEWPROJECT.supabase.co';
-const SUPABASE_ANON = 'sb_publishable_XXXX';
+const SUPABASE_URL  = 'https://igaiscktzmhoeqtvhbdu.supabase.co';
+const SUPABASE_ANON = 'sb_publishable_n30XuhMLcbWM2eVODLNx5A_pi8jYmL4';
 
 // Convenience shim — primary aircraft tail (used in queries throughout the app)
 const AIRPLANE_TAIL = CLUB.aircraft[0].tail;
