@@ -96,13 +96,13 @@ export default async () => {
                         <h2 style="color:#2c3e50">Flight Reminder — ${safeTail}</h2>
                         <p>Hi ${safeName},</p>
                         <p>Just a friendly reminder that you have <strong>${safeTail}</strong> reserved tomorrow:</p>
-                        <div style="background:#f4f8f5;border-left:4px solid #2A7A52;padding:14px 18px;border-radius:4px;margin:16px 0">
+                        <div style="background:#FFF8EE;border-left:4px solid #E8A030;padding:14px 18px;border-radius:4px;margin:16px 0">
                             <p style="margin:0"><strong>${dateStr}</strong></p>
                             <p style="margin:4px 0 0;color:#555">${startTime} – ${endTime} PT</p>
                         </div>
                         <p>Check the squawk board before departure and confirm the aircraft is available.</p>
                         <a href="https://n2134y.com/schedule"
-                           style="background:#2A7A52;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:8px">
+                           style="background:#E8A030;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:8px">
                             View Schedule →
                         </a>
                         <p style="margin-top:20px;font-size:0.85em;color:#888">Safe skies — Hi-Line Flying Club</p>

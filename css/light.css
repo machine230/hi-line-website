@@ -1,0 +1,475 @@
+/* ================================================================
+   Hi-Line Flying Club — Light theme overrides
+   Load AFTER theme.css on all pages except index.html (homepage).
+   Overrides dark CSS variables + hardcoded dark colours.
+   ================================================================ */
+
+/* ── 1. CSS Variable overrides ──────────────────────────────── */
+:root {
+  --body-bg:      #F1F4F8;
+  --nav-bg:       rgba(255, 255, 255, 0.98);
+  --surface:      #FFFFFF;
+  --surface-mid:  rgba(0, 0, 0, 0.04);
+  --surface-hi:   rgba(0, 0, 0, 0.07);
+  --modal-bg:     #FFFFFF;
+
+  --border:       rgba(0, 0, 0, 0.10);
+  --border-c:     rgba(0, 0, 0, 0.10);
+  --border-dim:   rgba(0, 0, 0, 0.06);
+  --border-sub:   rgba(0, 0, 0, 0.06);
+
+  --text:         #1E293B;
+  --text-dim:     #475569;
+  --text-muted:   #64748B;
+  --text-faint:   #94A3B8;
+
+  --input-bg:     #FFFFFF;
+  --input-border: rgba(0, 0, 0, 0.16);
+  --input-text:   #1E293B;
+  --placeholder:  #94A3B8;
+
+  --hover-bg:     rgba(0, 0, 0, 0.04);
+
+  /* Calendar */
+  --cal-header:   #EEF1F6;
+  --cal-past:     rgba(0, 0, 0, 0.04);
+  --slot-hover:   rgba(74, 158, 204, 0.10);
+  --slot-select:  rgba(232, 160, 48, 0.20);
+
+  --sky-text:     #2A7AAA;
+  --sky-border:   rgba(74, 158, 204, 0.28);
+  --amber-text:   #B8780A;
+  --amber-border: rgba(232, 160, 48, 0.28);
+
+  /* Status chips */
+  --ok-bg:     rgba(61, 153, 112, 0.10); --ok-border:   rgba(61, 153, 112, 0.30); --ok-text:   #1A7A52;
+  --err-bg:    rgba(192, 57,  43, 0.10); --err-border:  rgba(192, 57,  43, 0.30); --err-text:  #C0392B;
+  --warn-bg:   rgba(232, 160, 48, 0.12); --warn-border: rgba(232, 160, 48, 0.30); --warn-text: #B8780A;
+  --info-bg:   rgba(74,  158, 204, 0.10); --info-border: rgba(74, 158, 204, 0.28); --info-text: #2A7AAA;
+}
+
+/* ── 2. Body ─────────────────────────────────────────────────── */
+body {
+  background: #F1F4F8 !important;
+  background-image: none !important;
+}
+
+/* ── 3. Nav ──────────────────────────────────────────────────── */
+nav,
+.club-nav {
+  background: rgba(255, 255, 255, 0.98) !important;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.08), 0 2px 12px rgba(0,0,0,0.05) !important;
+}
+
+/* Logo text */
+.club-nav-logo,
+.nav-logo,
+.logo { color: #1E293B !important; }
+
+.club-nav-logo span,
+.nav-logo span,
+.logo span { color: var(--amber) !important; }
+
+/* Nav links */
+.club-nav-links a,
+.nav-links a { color: #475569 !important; }
+
+.club-nav-links a:hover, .nav-links a:hover,
+.club-nav-links a.active, .nav-links a.active {
+  color: #1E293B !important;
+  background: rgba(0,0,0,0.05) !important;
+}
+
+/* Member portal button stays amber */
+.nav-links .portal,
+.club-nav-links a.portal {
+  background: var(--amber) !important;
+  color: #fff !important;
+}
+.nav-links .portal:hover,
+.club-nav-links a.portal:hover {
+  background: var(--amber-lt) !important;
+}
+
+/* User name pill in nav */
+#navUser { color: #94A3B8 !important; }
+
+/* Hamburger icon */
+.hamburger-btn span { background: #1E293B !important; }
+
+/* Mobile dropdown */
+.club-nav-links {
+  background: #FFFFFF !important;
+  border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+}
+.club-nav-links a {
+  border-bottom-color: rgba(0,0,0,0.05) !important;
+}
+
+/* ── 4. Global form inputs ───────────────────────────────────── */
+input, select, textarea {
+  background: #FFFFFF !important;
+  color: #1E293B !important;
+  border-color: rgba(0,0,0,0.15) !important;
+}
+input::placeholder, textarea::placeholder { color: #94A3B8 !important; }
+select option { background: #FFFFFF; color: #1E293B; }
+
+/* ── 5. Dashboard ────────────────────────────────────────────── */
+.dash-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Doc tiles */
+.doc-tile {
+  background: linear-gradient(135deg, #F0F6FF, #EBF4FF) !important;
+  border-left-color: rgba(74,158,204,0.45) !important;
+  border-color: rgba(74,158,204,0.18) !important;
+  color: #1E293B !important;
+}
+.doc-tile:hover {
+  background: linear-gradient(135deg,rgba(74,158,204,0.12),rgba(74,158,204,0.06)) !important;
+  color: #1E293B !important;
+}
+
+/* Mini week calendar slots */
+.wc-slot.free  { background: rgba(232,160,48,0.20) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.40) !important; }
+.wc-slot.mine  { background: rgba(212,67,154,0.15) !important; color: #A03070 !important; border-color: rgba(212,67,154,0.35) !important; }
+.wc-slot.taken { background: rgba(74,158,204,0.15) !important; color: #2A7AAA !important; border-color: rgba(74,158,204,0.35) !important; }
+
+/* Airworthy banner */
+.aw-banner.airworthy     { background: rgba(61,153,112,0.12) !important; color: #1A7A52 !important; border-color: rgba(61,153,112,0.30) !important; }
+.aw-banner.not-airworthy { background: rgba(192,57,43,0.10)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.28) !important; }
+.aw-banner.unknown       { background: rgba(232,160,48,0.12) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.28) !important; }
+.aw-banner.airworthy .aw-dot     { background: #1A7A52 !important; }
+.aw-banner.not-airworthy .aw-dot { background: #C0392B !important; }
+.aw-banner.unknown .aw-dot       { background: #B8780A !important; }
+
+/* Inspection badges */
+.insp-badge.current  { background: rgba(61,153,112,0.12) !important; color: #1A7A52 !important; border-color: rgba(61,153,112,0.30) !important; }
+.insp-badge.due-soon { background: rgba(232,160,48,0.12) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.28) !important; }
+.insp-badge.overdue  { background: rgba(192,57,43,0.10)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.28) !important; }
+
+/* Squawk alert on dashboard */
+.squawk-alert-title   { color: #C0392B !important; }
+.squawk-alert-link    { color: #2A7AAA !important; }
+.squawk-alert-link:hover { color: var(--amber) !important; }
+
+/* Squawk go/caution/no-go cards */
+.sq-alert-badge.no_go   { background: rgba(192,57,43,0.12)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.28) !important; }
+.sq-alert-badge.caution { background: rgba(232,160,48,0.12) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.28) !important; }
+.sq-alert-badge.go      { background: rgba(61,153,112,0.12) !important; color: #1A7A52 !important; border-color: rgba(61,153,112,0.28) !important; }
+
+/* Reservation list */
+.res-date-box { background: rgba(212,67,154,0.12) !important; color: #A03070 !important; border-color: rgba(212,67,154,0.30) !important; }
+.res-cancel-btn { color: #C0392B !important; border-color: rgba(192,57,43,0.30) !important; }
+.res-cancel-btn:hover { background: rgba(192,57,43,0.08) !important; }
+
+/* Week nav button */
+.wk-btn:hover { background: rgba(74,158,204,0.10) !important; border-color: rgba(74,158,204,0.35) !important; color: #1E293B !important; }
+
+/* Modal */
+.modal-overlay { background: rgba(0,0,0,0.35) !important; }
+.modal-box { background: #FFFFFF !important; box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important; }
+.modal-box h2 { color: #1E293B !important; }
+
+/* Profile / save button already amber — no change needed */
+
+/* ── 6. Schedule (Calendar) ──────────────────────────────────── */
+.cal-outer  { background: #FFFFFF !important; border-color: rgba(0,0,0,0.10) !important; }
+.book-panel { background: #FFFFFF !important; border-color: rgba(0,0,0,0.10) !important; }
+.book-summary {
+  background: #F4F7FB !important;
+  border-color: rgba(0,0,0,0.06) !important;
+  color: #1E293B !important;
+}
+
+/* Mobile nav dropdown in schedule */
+.club-nav-links[style] { background: #FFFFFF !important; }
+
+/* ── 7. Directory ────────────────────────────────────────────── */
+/* Table wrapper */
+.dir-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+}
+
+/* Search box */
+.search-input {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #1E293B !important;
+}
+.search-input::placeholder { color: #94A3B8 !important; }
+
+/* Count badge */
+.dir-count {
+  color: #94A3B8 !important;
+  background: rgba(0,0,0,0.05) !important;
+}
+
+/* Table header row */
+.dir-table thead td {
+  color: #94A3B8 !important;
+  background: #F8FAFC !important;
+  border-bottom-color: rgba(0,0,0,0.08) !important;
+}
+
+/* Table rows */
+.dir-table tbody tr { border-bottom-color: rgba(0,0,0,0.05) !important; }
+.dir-table tbody tr:hover { background: rgba(0,0,0,0.025) !important; }
+.dir-table tbody tr.me { background: rgba(74,158,204,0.07) !important; }
+
+/* Cell text */
+.member-name { color: #1E293B !important; }
+.dim         { color: #94A3B8 !important; }
+.redacted    { color: #CBD5E1 !important; }
+
+/* Avatar */
+.avatar-member { background: #E2E8F0 !important; color: #475569 !important; }
+
+/* Role badge */
+.badge-admin  { background: rgba(232,160,48,0.15) !important; color: #B8780A !important; }
+.badge-ap     { background: rgba(74,158,204,0.12) !important; color: #2A7AAA !important; }
+.badge-member { background: rgba(0,0,0,0.07)      !important; color: #475569 !important; }
+
+/* Contact links */
+.dir-table tbody td a { color: #2A7AAA !important; }
+.dir-table tbody td a:hover { color: var(--amber) !important; }
+
+/* Empty state */
+.dir-empty { background: rgba(74,158,204,0.06) !important; color: #64748B !important; }
+
+/* ── 8. Squawks page ─────────────────────────────────────────── */
+.sq-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+.filter-tab {
+  background: #FFFFFF !important;
+  color: #475569 !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+.filter-tab:hover { background: rgba(0,0,0,0.04) !important; color: #1E293B !important; }
+.filter-tab.active { background: var(--amber) !important; color: #fff !important; border-color: transparent !important; }
+
+/* ── 9. Post-flight ──────────────────────────────────────────── */
+.pf-card, .pf-section {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+.tach-conflict-note {
+  background: rgba(232,160,48,0.10) !important;
+  color: #B8780A !important;
+  border-color: rgba(232,160,48,0.28) !important;
+}
+
+/* ── 10. Admin ───────────────────────────────────────────────── */
+.admin-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+.admin-card-header {
+  border-bottom-color: rgba(0,0,0,0.07) !important;
+}
+.admin-card-header h3 { color: #1E293B !important; }
+
+.admin-sidebar, .admin-nav {
+  background: #F8FAFC !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+.admin-sidebar-item, .admin-nav-item {
+  color: #475569 !important;
+}
+.admin-sidebar-item:hover, .admin-nav-item:hover,
+.admin-sidebar-item.active, .admin-nav-item.active {
+  background: rgba(232,160,48,0.10) !important;
+  color: #B8780A !important;
+}
+
+.tbl-btn-primary { background: var(--amber) !important; color: #fff !important; }
+.tbl-btn-primary:hover { background: var(--amber-lt) !important; }
+
+.form-submit { background: var(--amber) !important; color: #fff !important; }
+.form-submit:hover { background: var(--amber-lt) !important; }
+
+.modal-save { background: var(--amber) !important; color: #fff !important; }
+.modal-save:hover { background: var(--amber-lt) !important; }
+
+.filter-btn-apply { background: var(--amber) !important; color: #fff !important; }
+.filter-btn-apply:hover { background: var(--amber-lt) !important; }
+
+/* Admin table */
+.admin-table thead tr { background: #F8FAFC !important; }
+.admin-table thead th { color: #94A3B8 !important; border-bottom-color: rgba(0,0,0,0.08) !important; }
+.admin-table tbody tr { border-bottom-color: rgba(0,0,0,0.05) !important; }
+.admin-table tbody tr:hover { background: rgba(0,0,0,0.025) !important; }
+.admin-table td { color: #1E293B !important; }
+
+/* ── 11. Login / Auth ────────────────────────────────────────── */
+.login-card, .auth-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.10) !important;
+}
+.login-card h1, .auth-card h1 { color: #1E293B !important; }
+.login-card p,  .auth-card p  { color: #64748B !important; }
+.login-btn { background: var(--amber) !important; color: #fff !important; }
+.login-btn:hover { background: var(--amber-lt) !important; }
+
+/* ── 12. 404 page ────────────────────────────────────────────── */
+.btn-primary { background: var(--amber) !important; box-shadow: 0 0 14px rgba(232,160,48,0.35) !important; }
+.btn-primary:hover { background: var(--amber-lt) !important; }
+
+/* ── 13. Weather page ────────────────────────────────────────── */
+.page-sub { color: #64748B !important; }
+
+.wx-search-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+}
+.wx-search-row input {
+  background: #F8FAFC !important;
+  border-color: rgba(0,0,0,0.15) !important;
+  color: #1E293B !important;
+}
+.wx-search-row input::placeholder { color: #94A3B8 !important; }
+
+.airport-btn {
+  background: #F1F5F9 !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #475569 !important;
+}
+.airport-btn:hover, .airport-btn.active {
+  background: var(--sky) !important;
+  border-color: var(--sky) !important;
+  color: #FFFFFF !important;
+}
+
+.wx-airport-header {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+.wx-airport-name { color: #1E293B !important; }
+.wx-obs-time     { color: #94A3B8 !important; }
+
+.wx-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+.wx-card-title { color: #1E293B !important; }
+
+.raw-string {
+  background: #F1F5F9 !important;
+  color: #334155 !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+
+.decoded-label { color: #64748B !important; }
+.decoded-value { color: #1E293B !important; }
+
+.taf-period {
+  background: #F8FAFC !important;
+  border-color: rgba(0,0,0,0.07) !important;
+}
+.taf-period-header { border-bottom-color: rgba(0,0,0,0.06) !important; }
+.taf-period-time   { color: #475569 !important; }
+.taf-detail-label  { color: #94A3B8 !important; }
+.taf-detail        { color: #1E293B !important; }
+
+/* TAF type labels — keep coloured but darken for light bg */
+.taf-type-FM    { background: rgba(74,158,204,0.15) !important;  color: #2A7AAA !important; }
+.taf-type-BECMG { background: rgba(232,160,48,0.15) !important;  color: #B8780A !important; }
+.taf-type-TEMPO { background: rgba(61,153,112,0.15) !important;  color: #1A7A52 !important; }
+.taf-type-PROB  { background: rgba(192,57,43,0.15)  !important;  color: #C0392B !important; }
+
+.pa-box {
+  background: #F8FAFC !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+.pa-box-title  { color: #64748B !important; }
+.pa-value      { color: #1E293B !important; }
+.pa-label      { color: #94A3B8 !important; }
+.pa-divider    { background: rgba(0,0,0,0.08) !important; }
+.pa-note       { color: #94A3B8 !important; }
+
+/* Runway wind section */
+.rwy-row   { border-bottom-color: rgba(0,0,0,0.06) !important; }
+.rwy-label { color: #64748B !important; }
+.rwy-cross, .rwy-head { color: #1E293B !important; }
+
+/* ── 14. Squawks page ────────────────────────────────────────── */
+.squawk-card, .sq-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
+}
+
+.plane-status-bar { background: rgba(0,0,0,0.03) !important; border-color: rgba(0,0,0,0.10) !important; }
+.plane-status-bar.available   { background: rgba(61,153,112,0.08)  !important; border-color: rgba(61,153,112,0.25) !important; }
+.plane-status-bar.squawk      { background: rgba(192,57,43,0.08)   !important; border-color: rgba(192,57,43,0.25)  !important; }
+.plane-status-bar.maintenance { background: rgba(212,131,26,0.08)  !important; border-color: rgba(212,131,26,0.25) !important; }
+.plane-status-bar.flying      { background: rgba(74,158,204,0.08)  !important; border-color: rgba(74,158,204,0.25) !important; }
+
+.status-tail   { color: #1E293B !important; }
+.status-note   { color: #94A3B8 !important; }
+.available .status-label   { color: #1A7A52 !important; }
+.squawk .status-label      { color: #C0392B !important; }
+.maintenance .status-label { color: #B8780A !important; }
+.flying .status-label      { color: #2A7AAA !important; }
+
+.filter-tab         { background: #FFFFFF !important; color: #475569 !important; border-color: rgba(0,0,0,0.12) !important; }
+.filter-tab:hover   { background: rgba(0,0,0,0.04) !important; color: #1E293B !important; }
+
+.squawk-meta, .sq-meta { color: #64748B !important; }
+.sq-desc, .squawk-desc { color: #334155 !important; }
+.sq-admin-note         { background: rgba(74,158,204,0.08) !important; color: #2A7AAA !important; border-color: rgba(74,158,204,0.20) !important; }
+
+/* ── 15. Post-flight page ────────────────────────────────────── */
+.pf-card {
+  background: #FFFFFF !important;
+  border-color: rgba(0,0,0,0.08) !important;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.07) !important;
+}
+.pf-card-header {
+  border-bottom-color: rgba(0,0,0,0.07) !important;
+  background: #F8FAFC !important;
+}
+.pf-card-header h2 { color: #1E293B !important; }
+.pf-card-header p  { color: #64748B !important; }
+
+.pf-section          { border-bottom-color: rgba(0,0,0,0.07) !important; }
+.pf-section-title    { color: #94A3B8 !important; }
+.pf-field label      { color: #475569 !important; }
+.pf-field small      { color: #94A3B8 !important; }
+.pf-field input::placeholder,
+.pf-field textarea::placeholder { color: #94A3B8 !important; }
+
+.cost-label   { color: #64748B !important; }
+.cost-value   { color: #1E293B !important; }
+.cost-note    { color: #94A3B8 !important; }
+.cost-divider { background: rgba(0,0,0,0.08) !important; }
+
+.fuel-opt {
+  background: #F8FAFC !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+.fuel-opt:hover    { border-color: rgba(74,158,204,0.40) !important; background: rgba(74,158,204,0.06) !important; }
+.fuel-opt.selected { border-color: var(--sky) !important; background: rgba(74,158,204,0.08) !important; }
+.fuel-opt-title    { color: #1E293B !important; }
+.fuel-opt-sub      { color: #64748B !important; }
+
+.tach-conflict-note {
+  background: rgba(232,160,48,0.10) !important;
+  color: #B8780A !important;
+  border-color: rgba(232,160,48,0.30) !important;
+}

@@ -124,7 +124,7 @@ export const handler = async (event) => {
                             <p>Good news — <strong>${safeTail}</strong> has been returned to airworthy status and is available to fly.</p>
                             <p>You were on the waitlist, so we wanted you to know first. Log in to schedule your flight.</p>
                             <a href="https://n2134y.com/schedule"
-                               style="background:#2A7A52;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:12px">
+                               style="background:#E8A030;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:12px">
                                 Book a Flight →
                             </a>
                             <p style="margin-top:20px;font-size:0.85em;color:#888">Safe skies — Hi-Line Flying Club</p>

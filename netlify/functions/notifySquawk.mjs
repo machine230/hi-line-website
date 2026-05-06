@@ -102,7 +102,7 @@ export const handler = async (event) => {
                     <p><strong>Description:</strong><br>${safeDesc}</p>
                     <hr>
                     <a href="https://n2134y.com/squawks.html"
-                       style="background:#667eea;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:8px">
+                       style="background:#E8A030;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:8px">
                         View Squawk Board
                     </a>
                 </div>`
