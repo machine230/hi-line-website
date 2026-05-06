@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Page Not Found · Hi-Line Flying Club</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(160deg, #0b1f14 0%, #0d1e24 55%, #0a1a2e 100%);
+            color: #fff; min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 24px;
+        }
+        .code {
+            font-family: 'Montserrat', sans-serif; font-weight: 900;
+            font-size: clamp(5em, 20vw, 9em); line-height: 1;
+            color: transparent;
+            background: linear-gradient(135deg, #2A7A52 0%, #5BB8E8 50%, #D4439A 100%);
+            -webkit-background-clip: text; background-clip: text;
+            margin-bottom: 12px;
+        }
+        .title {
+            font-family: 'Montserrat', sans-serif; font-weight: 700;
+            font-size: clamp(1.1em, 4vw, 1.6em);
+            color: rgba(255,255,255,0.75); margin-bottom: 10px;
+        }
+        .sub {
+            font-size: 0.95em; color: rgba(255,255,255,0.4);
+            max-width: 360px; line-height: 1.7; margin-bottom: 36px;
+        }
+        .links { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+        .btn {
+            padding: 12px 28px; border-radius: 8px;
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9em;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .btn-primary { background: #2A7A52; color: #fff; box-shadow: 0 0 14px rgba(42,122,82,0.35); }
+        .btn-primary:hover { background: #359966; transform: translateY(-2px); }
+        .btn-ghost { background: transparent; color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.2); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.07); color: #fff; transform: translateY(-2px); }
+        .ident {
+            margin-top: 56px; font-family: 'Montserrat', sans-serif;
+            font-size: 0.72em; letter-spacing: 2px; color: rgba(255,255,255,0.2);
+        }
+        .ident span { color: #5BB8E8; }
+    </style>
+</head>
+<body>
+    <div class="code">404</div>
+    <div class="title">Page not found.</div>
+    <p class="sub">Looks like this waypoint doesn't exist. Double-check your routing and try again.</p>
+    <div class="links">
+        <a href="/" class="btn btn-primary">Home</a>
+        <a href="/dashboard" class="btn btn-ghost">Member Portal</a>
+    </div>
+    <div class="ident">N213<span>4Y</span> · KRNT</div>
+</body>
+</html>

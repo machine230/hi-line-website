@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signing in — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(160deg, #0C1F14 0%, #0D1E20 50%, #0B1C2D 100%);
+            color: rgba(255,255,255,0.9);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cb-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        .cb-card {
+            background: rgba(13,30,32,0.82);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 48px 44px;
+            text-align: center;
+            backdrop-filter: blur(16px);
+            min-width: 280px;
+            max-width: 360px;
+            width: 100%;
+        }
+
+        .cb-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.8em;
+            letter-spacing: 3px;
+            color: #fff;
+            margin-bottom: 28px;
+            text-decoration: none;
+        }
+        .cb-logo span { color: #5BB8E8; }
+
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #5BB8E8;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .cb-msg {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9em;
+            letter-spacing: 0.3px;
+        }
+
+        .cb-error {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            background: rgba(220,53,69,0.12);
+            border: 1px solid rgba(220,53,69,0.30);
+            color: #ff8090;
+            font-size: 0.88em;
+            line-height: 1.5;
+            display: none;
+        }
+        .cb-error.visible { display: block; }
+
+        /* Password setup form — shown for invite + recovery flows */
+        .pw-form { display: none; text-align: left; }
+        .pw-form.visible { display: block; }
+        .pw-form h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15em;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+        .pw-form p {
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+        .pw-form label {
+            display: block;
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.55);
+            margin-bottom: 5px;
+            letter-spacing: 0.3px;
+        }
+        .pw-form input[type=password] {
+            width: 100%;
+            padding: 11px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            font-size: 0.95em;
+            margin-bottom: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .pw-form input[type=password]:focus { border-color: #5BB8E8; }
+        .pw-form button {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            background: #2A7A52;
+            color: #fff;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 4px;
+        }
+        .pw-form button:hover { background: #235f41; }
+        .pw-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .pw-field-error {
+            font-size: 0.82em;
+            color: #ff8090;
+            margin-top: -10px;
+            margin-bottom: 12px;
+            display: none;
+        }
+        .pw-field-error.visible { display: block; }
+    </style>
+</head>
+<body>
+    <div class="cb-wrap">
+        <div class="cb-card">
+            <a href="index.html" class="cb-logo">PNW<span>AV8R</span></a>
+
+            <!-- Spinner state -->
+            <div class="spinner" id="cbSpinner"></div>
+            <div class="cb-msg" id="cbMsg">Signing you in…</div>
+            <div class="cb-error" id="cbError"></div>
+
+            <!-- Password setup form (invite + recovery) -->
+            <div class="pw-form" id="pwForm">
+                <h2 id="pwTitle">Set your password</h2>
+                <p id="pwSubtitle">Choose a password to activate your account.</p>
+                <label for="pwInput">Password</label>
+                <input type="password" id="pwInput" placeholder="At least 8 characters" autocomplete="new-password">
+                <label for="pwConfirm">Confirm password</label>
+                <input type="password" id="pwConfirm" placeholder="Repeat password" autocomplete="new-password">
+                <div class="pw-field-error" id="pwFieldError"></div>
+                <button id="pwBtn" onclick="submitPassword()">Activate account</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/club-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+    <script>
+        // Capture URL params BEFORE the SDK clears the hash fragment.
+        const _urlParams = new URLSearchParams(
+            window.location.hash.substring(1) || window.location.search.substring(1)
+        );
+        const _urlType  = _urlParams.get('type');  // 'invite' | 'recovery' | null
+        const _urlError = _urlParams.get('error');
+        const _urlErrorDesc = _urlParams.get('error_description');
+
+        let done = false;
+
+        // Show error immediately if Supabase returned one in the URL
+        // (e.g. expired token, invalid link)
+        if (_urlError) {
+            const friendly = _urlErrorDesc
+                ? decodeURIComponent(_urlErrorDesc).replace(/\+/g, ' ')
+                : 'The link is invalid or has expired.';
+            // Use setTimeout so DOM + showError fn are ready
+            window.addEventListener('DOMContentLoaded', () => {
+                showError(
+                    friendly + '<br><br>' +
+                    'Ask your club admin to send a new invite, or ' +
+                    '<a href="login.html" style="color:#5BB8E8">return to login</a>.'
+                );
+            });
+        }
+
+        // ── UI helpers ──────────────────────────────────────────────────────────
+        function showError(html) {
+            document.getElementById('cbSpinner').style.display = 'none';
+            document.getElementById('cbMsg').textContent = '';
+            const el = document.getElementById('cbError');
+            el.innerHTML = html;
+            el.classList.add('visible');
+        }
+
+        function showPasswordForm(title, subtitle, btnLabel) {
+            document.getElementById('cbSpinner').style.display = 'none';
+            document.getElementById('cbMsg').textContent = '';
+            document.getElementById('pwTitle').textContent = title;
+            document.getElementById('pwSubtitle').textContent = subtitle;
+            document.getElementById('pwBtn').textContent = btnLabel || 'Set password';
+            document.getElementById('pwForm').classList.add('visible');
+            document.getElementById('pwInput').focus();
+        }
+
+        function setFieldError(msg) {
+            const el = document.getElementById('pwFieldError');
+            el.textContent = msg;
+            el.classList.toggle('visible', !!msg);
+        }
+
+        // ── Password submission ─────────────────────────────────────────────────
+        async function submitPassword() {
+            setFieldError('');
+            const pw  = document.getElementById('pwInput').value;
+            const pw2 = document.getElementById('pwConfirm').value;
+            if (pw.length < 8)  { setFieldError('Password must be at least 8 characters.'); return; }
+            if (pw !== pw2)     { setFieldError('Passwords do not match.'); return; }
+
+            const btn = document.getElementById('pwBtn');
+            btn.disabled = true;
+            btn.textContent = 'Saving…';
+
+            const { error } = await _supabase.auth.updateUser({ password: pw });
+            if (error) {
+                btn.disabled = false;
+                btn.textContent = 'Set password';
+                setFieldError(error.message);
+                return;
+            }
+
+            // Password saved — go to dashboard
+            window.location.replace('/dashboard.html');
+        }
+
+        // Allow Enter key to submit
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Enter' && document.getElementById('pwForm').classList.contains('visible')) {
+                submitPassword();
+            }
+        });
+
+        // ── Membership check + redirect ─────────────────────────────────────────
+        async function checkAndRedirect(session) {
+            if (done) return;
+            done = true;
+
+            // Check membership — look up by id first, fall back to email
+            let { data: member } = await _supabase
+                .from('members')
+                .select('id, membership_active')
+                .eq('id', session.user.id)
+                .maybeSingle();
+
+            if (!member) {
+                const { data: byEmail } = await _supabase
+                    .from('members')
+                    .select('id, membership_active')
+                    .eq('email', session.user.email)
+                    .maybeSingle();
+                member = byEmail;
+            }
+
+            if (!member || !member.membership_active) {
+                await _supabase.auth.signOut();
+                showError('Access denied. Your account is not yet active.<br>Contact your club admin.');
+                return;
+            }
+
+            window.location.replace('/dashboard.html');
+        }
+
+        // ── Auth state handler ──────────────────────────────────────────────────
+        _supabase.auth.onAuthStateChange((event, session) => {
+            if (!session) return;
+
+            if (event === 'SIGNED_IN' || event === 'USER_UPDATED') {
+                if (_urlType === 'invite') {
+                    // New member accepting an invite — must set a password first
+                    showPasswordForm(
+                        'Welcome! Set your password',
+                        'You've been invited to join the club. Choose a password to activate your account.',
+                        'Activate account'
+                    );
+                } else if (_urlType === 'recovery') {
+                    // Existing member doing password reset
+                    showPasswordForm(
+                        'Reset your password',
+                        'Enter a new password for your account.',
+                        'Save new password'
+                    );
+                } else {
+                    // Normal sign-in (e.g. OAuth callback)
+                    checkAndRedirect(session);
+                }
+            }
+
+            if (event === 'PASSWORD_RECOVERY') {
+                showPasswordForm(
+                    'Reset your password',
+                    'Enter a new password for your account.',
+                    'Save new password'
+                );
+            }
+        });
+
+        // Also check if session already exists (page reload after token exchange)
+        _supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session && !_urlType) checkAndRedirect(session);
+        });
+
+        // Timeout fallback
+        setTimeout(() => {
+            if (!done && !document.getElementById('pwForm').classList.contains('visible')) {
+                done = true;
+                showError('Sign-in timed out. <a href="login.html" style="color:#5BB8E8">Return to login</a>');
+            }
+        }, 15000);
+    </script>
+</body>
+</html>

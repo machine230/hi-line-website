@@ -1,0 +1,9 @@
+{
+  "name": "pnwav8r",
+  "version": "1.0.0",
+  "description": "PNWAV8R Flying Club — Netlify Functions dependencies",
+  "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.4"
+  }
+}

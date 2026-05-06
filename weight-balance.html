@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weight &amp; Balance — Hi-Line Flying Club</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="logo">N213<span>4Y</span></a>
+            <button class="mobile-menu" onclick="toggleMobileMenu()">☰</button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="index.html" class="nav-link">Home</a></li>
+                <li><a href="weather.html" class="nav-link">Weather</a></li>
+                <li class="dropdown">
+                    <a href="weight-balance.html" class="nav-link active">Weight & Balance</a>
+                    <ul class="dropdown-menu">
+                        <li><a href="wb.html" class="dropdown-link">N2134Y (Cessna 172D)</a></li>
+                        <li><a href="#" class="dropdown-link" onclick="showComingSoon()">Future Aircraft</a></li>
+                    </ul>
+                </li>
+                <li><a href="dashboard.html" class="nav-link" style="background:linear-gradient(135deg,#667eea,#764ba2);color:white;border-radius:20px;padding:6px 16px;font-weight:700;">Member Portal</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="wb-tools">
+            <h2 class="section-title">Weight & Balance Calculators</h2>
+            <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">
+                Professional weight and balance calculations for your aircraft
+            </p>
+            
+            <div class="aircraft-grid">
+                <div class="aircraft-card">
+                    <h3>N2134Y</h3>
+                    <p><strong>1959 Cessna 150</strong></p>
+                    <div class="aircraft-specs">
+                        <p><strong>Empty Weight:</strong> 1,049.2 lbs</p>
+                        <p><strong>Max Gross:</strong> 1,500 lbs</p>
+                        <p><strong>Max Baggage:</strong> 120 lbs</p>
+                        <p><strong>Fuel Capacity:</strong> 22 gallons</p>
+                    </div>
+                    <a href="wb.html" class="calc-btn">Calculate W&B</a>
+                </div>
+                
+                <div class="aircraft-card">
+                    <h3>Future Aircraft</h3>
+                    <p><strong>Coming Soon</strong></p>
+                    <div class="aircraft-specs">
+                        <p>Additional aircraft calculators</p>
+                        <p>will be added based on user</p>
+                        <p>requests and needs.</p>
+                        <p>&nbsp;</p>
+                    </div>
+                    <button class="calc-btn" onclick="showComingSoon()" style="background: #95a5a6;">Coming Soon</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="wb-tools">
+            <h3>Important Safety Information</h3>
+            <div style="background: #fff3cd; border: 2px solid #ffc107; border-left: 6px solid #ff6b35; border-radius: 8px; padding: 20px; margin: 20px 0;">
+                <h4 style="margin-top: 0; color: #856404;">⚠️ FLIGHT SAFETY NOTICE</h4>
+                <p style="color: #856404; line-height: 1.4;">
+                    <strong>These calculators are designed for specific aircraft with verified empty weight data.</strong><br>
+                    Always verify all calculations against your aircraft's official Pilot's Operating Handbook (POH) and current weight & balance documentation. These tools are for planning purposes only and should not replace proper preflight procedures.
+                </p>
+                <p style="color: #856404; line-height: 1.4;">
+                    <strong>Pilot responsibility:</strong> The pilot in command is solely responsible for ensuring the aircraft is loaded within approved limits before flight.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p><strong>Hi-Line Flying Club</strong> — N2134Y · KRNT</p>
+        <p>Weight & Balance calculations based on official aircraft documentation</p>
+        <p><strong>Always verify with current POH and aircraft records before flight</strong></p>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+        function showComingSoon() {
+            alert('Additional aircraft calculators coming soon! Contact us if you have specific aircraft you\'d like to see added.');
+        }
+    </script>
+</body>
+</html>

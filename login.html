@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js?v=3"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--body-bg);
+        }
+
+        .bg-img {
+            position: fixed; inset: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center 40%;
+            z-index: 0;
+        }
+        .bg-overlay {
+            position: fixed; inset: 0;
+            background: linear-gradient(to bottom, rgba(10,22,16,0.6) 0%, rgba(10,22,16,0.88) 100%);
+            z-index: 1;
+        }
+
+        .login-wrap {
+            position: relative; z-index: 2;
+            width: 100%; padding: 24px;
+            display: flex; flex-direction: column;
+            align-items: center;
+        }
+
+        .site-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 1.8em;
+            letter-spacing: 3px; color: #fff;
+            text-decoration: none; margin-bottom: 6px;
+        }
+        .site-logo span { color: #5BB8E8; }
+
+        .site-tagline {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.82em;
+            margin-bottom: 36px;
+            letter-spacing: 0.5px;
+        }
+
+        .login-card {
+            background: rgba(13,30,32,0.82);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 16px;
+            padding: 36px 40px;
+            width: 100%; max-width: 380px;
+            backdrop-filter: blur(16px);
+        }
+
+        .login-card h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700; font-size: 0.72em;
+            color: rgba(255,255,255,0.4);
+            text-transform: uppercase; letter-spacing: 3px;
+            margin-bottom: 22px;
+        }
+
+        input {
+            display: block; width: 100%; margin-bottom: 12px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 8px; padding: 12px 14px;
+            color: #fff; font-size: 0.95em;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #5BB8E8;
+            box-shadow: 0 0 0 3px rgba(91,184,232,0.1);
+        }
+        input::placeholder { color: rgba(255,255,255,0.28); }
+
+        .login-btn {
+            width: 100%; padding: 13px;
+            background: #2A7A52; color: #fff;
+            border: none; border-radius: 8px;
+            font-size: 0.95em; font-weight: 700;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            margin-top: 4px;
+            transition: background 0.2s;
+        }
+        .login-btn:hover { background: #359966; }
+        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .err {
+            margin-top: 14px; padding: 11px;
+            border-radius: 8px;
+            background: rgba(220,53,69,0.12);
+            border: 1px solid rgba(220,53,69,0.3);
+            color: #ff8090; font-size: 0.88em;
+            display: none;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            font-size: 0.8em;
+            color: rgba(255,255,255,0.3);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: rgba(255,255,255,0.6); }
+    </style>
+</head>
+<body>
+    <img class="bg-img" src="images/n7798e.png" alt="" onerror="this.style.display='none'">
+    <div class="bg-overlay"></div>
+
+
+    <div class="login-wrap">
+        <a href="index.html" class="site-logo">PNW<span>AV8R</span></a>
+        <div class="site-tagline">Hi-Line Flying Club · KRNT</div>
+
+        <div class="login-card">
+            <h2>Member Sign In</h2>
+            <input type="email" id="email" placeholder="Email" onkeydown="if(event.key==='Enter')signIn()">
+            <input type="password" id="pass" placeholder="Password" onkeydown="if(event.key==='Enter')signIn()">
+            <button class="login-btn" id="btn" onclick="signIn()">Sign In</button>
+            <div class="err" id="err"></div>
+        </div>
+
+        <a href="index.html" class="back-link">← Back to home</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/club-config.js?v=3"></script>
+    <script src="js/supabase-client.js?v=3"></script>
+    <script>
+        async function signIn() {
+            const email = document.getElementById('email').value.trim();
+            const pass  = document.getElementById('pass').value;
+            const err   = document.getElementById('err');
+            const btn   = document.getElementById('btn');
+            err.style.display = 'none';
+            btn.disabled = true; btn.textContent = 'Signing in…';
+            const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
+            btn.disabled = false; btn.textContent = 'Sign In';
+            if (error) {
+                err.textContent = 'Invalid email or password.';
+                err.style.display = 'block';
+            } else {
+                window.location.href = '/dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

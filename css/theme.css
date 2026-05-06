@@ -1,0 +1,90 @@
+/* ─────────────────────────────────────────────────────────────
+   PNWAV8R — Single dark theme (high contrast, no toggle)
+   Load BEFORE any page <style> block so variables resolve.
+───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ── Brand ───────────────────────────────────────────── */
+  --green:      #2A7A52;
+  --green-lt:   #35a86a;
+  --sky:        #5BB8E8;
+  --amber:      #F5B942;
+  --magenta:    #D4439A;
+  --red:        #e84c5a;
+
+  /* ── Layout backgrounds ──────────────────────────────── */
+  --body-bg:    linear-gradient(160deg, #0C1F14 0%, #0D1E20 50%, #0B1C2D 100%);
+  --nav-bg:     rgba(10, 26, 16, 0.98);
+
+  /* Surfaces — slightly more opaque for clear card boundaries */
+  --surface:    rgba(255, 255, 255, 0.07);
+  --surface-mid: rgba(255, 255, 255, 0.11);
+  --surface-hi: rgba(255, 255, 255, 0.16);
+  --modal-bg:   #10201a;
+
+  /* ── Borders ─────────────────────────────────────────── */
+  --border:     rgba(255, 255, 255, 0.14);
+  --border-c:   rgba(255, 255, 255, 0.14);   /* alias used by some pages */
+  --border-dim: rgba(255, 255, 255, 0.07);
+  --border-sub: rgba(255, 255, 255, 0.07);   /* alias */
+
+  /* ── Text ────────────────────────────────────────────── */
+  --text:       rgba(255, 255, 255, 0.93);
+  --text-dim:   rgba(255, 255, 255, 0.65);
+  --text-muted: rgba(255, 255, 255, 0.45);
+  --text-faint: rgba(255, 255, 255, 0.28);
+
+  /* ── Inputs — visible on dark bg ────────────────────── */
+  --input-bg:    rgba(255, 255, 255, 0.10);
+  --input-border: rgba(255, 255, 255, 0.22);
+  --input-text:  rgba(255, 255, 255, 0.93);
+  --placeholder: rgba(255, 255, 255, 0.38);
+
+  /* ── Interactive states ──────────────────────────────── */
+  --hover-bg:    rgba(255, 255, 255, 0.08);
+
+  /* ── Calendar ────────────────────────────────────────── */
+  --cal-header:  rgba(255, 255, 255, 0.05);
+  --cal-past:    rgba(0, 0, 0, 0.22);
+  --slot-hover:  rgba(91, 184, 232, 0.11);
+  --slot-select: rgba(42, 122, 82, 0.30);
+
+  /* ── Accent text / borders ──────────────────────────── */
+  --sky-text:   #5BB8E8;
+  --sky-border: rgba(91, 184, 232, 0.38);
+
+  /* ── Status chips (bg / border / text) ──────────────── */
+  --ok-bg:    rgba( 42, 122,  82, 0.20);  --ok-border:    rgba( 42, 122,  82, 0.45);  --ok-text:    #6edba0;
+  --err-bg:   rgba(220,  53,  69, 0.18);  --err-border:   rgba(220,  53,  69, 0.42);  --err-text:   #ff8090;
+  --warn-bg:  rgba(245, 185,  66, 0.16);  --warn-border:  rgba(245, 185,  66, 0.38);  --warn-text:  #f5c842;
+  --info-bg:  rgba( 91, 184, 232, 0.14);  --info-border:  rgba( 91, 184, 232, 0.35);  --info-text:  #5BB8E8;
+}
+
+/* ── Global resets ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background: var(--body-bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* ── Form input baseline ───────────────────────────────── */
+/* Ensures all inputs are readable without per-page overrides */
+input, select, textarea {
+  background: var(--input-bg);
+  color: var(--input-text);
+  border: 1px solid var(--input-border);
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-family: inherit;
+  font-size: 0.92em;
+}
+input::placeholder, textarea::placeholder { color: var(--placeholder); }
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid rgba(91, 184, 232, 0.5);
+  outline-offset: 1px;
+  border-color: rgba(91, 184, 232, 0.5);
+}
+select option { background: #112218; color: rgba(255,255,255,0.9); }

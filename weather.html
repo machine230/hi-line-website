@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviation Weather — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js?v=3"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--body-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* NAV */
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            height: 64px;
+            background: rgba(12,31,20,0.97);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+        }
+        .nav-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.25em;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .nav-logo span { color: #5BB8E8; }
+        .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+        .nav-links a {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.85em;
+            padding: 7px 14px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav-links .portal {
+            background: #2A7A52;
+            color: #fff !important;
+            box-shadow: 0 0 12px rgba(42,122,82,0.35);
+        }
+        .nav-links .portal:hover { background: #359966; }
+
+        /* PAGE */
+        .page { max-width: 860px; margin: 0 auto; padding: 48px 28px 64px; }
+        .page-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.6em;
+            margin-bottom: 6px;
+        }
+        .page-title span { color: #5BB8E8; }
+        .page-sub { color: rgba(255,255,255,0.5); font-size: 0.88em; margin-bottom: 32px; }
+        /* ── Search card ── */
+        .wx-search-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 36px 40px 30px;
+            margin-bottom: 28px;
+        }
+        .wx-search-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        .wx-search-row input {
+            padding: 13px 22px;
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 30px;
+            font-size: 1.1em;
+            width: 220px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #fff;
+            transition: border-color 0.2s;
+        }
+        .wx-search-row input::placeholder { color: rgba(255,255,255,0.35); }
+        .wx-search-row input:focus {
+            outline: none;
+            border-color: #5BB8E8;
+            box-shadow: 0 0 0 3px rgba(91,184,232,0.15);
+        }
+        .wx-search-row button {
+            background: #2A7A52;
+            color: white;
+            border: none;
+            padding: 13px 32px;
+            border-radius: 30px;
+            font-size: 1em;
+            font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+        .wx-search-row button:hover { background: #359966; transform: translateY(-2px); }
+        .quick-airports {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .airport-btn {
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.75);
+            padding: 7px 18px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Courier New', monospace;
+        }
+        .airport-btn:hover {
+            background: #5BB8E8;
+            border-color: #5BB8E8;
+            color: #0B1C2D;
+        }
+        .airport-btn.active {
+            background: #5BB8E8;
+            border-color: #5BB8E8;
+            color: #0B1C2D;
+            font-weight: 900;
+        }
+
+        /* ── Results ── */
+        #weatherResults { display: none; }
+
+        /* Airport header */
+        .wx-airport-header {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .wx-airport-name {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4em;
+            font-weight: 800;
+            color: #fff;
+        }
+        .wx-airport-meta {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .wx-icao {
+            font-family: 'Courier New', monospace;
+            font-size: 1em;
+            font-weight: bold;
+            color: #5BB8E8;
+            background: rgba(91,184,232,0.12);
+            padding: 4px 12px;
+            border-radius: 8px;
+        }
+        .wx-obs-time { color: rgba(255,255,255,0.45); font-size: 0.88em; }
+
+        /* Flight rules badge */
+        .fr-badge {
+            font-size: 1.2em;
+            font-weight: 800;
+            padding: 9px 22px;
+            border-radius: 30px;
+            letter-spacing: 2px;
+            color: white;
+        }
+        .fr-VFR  { background: #28a745; }
+        .fr-MVFR { background: #1a7abf; }
+        .fr-IFR  { background: #dc3545; }
+        .fr-LIFR { background: #6f42c1; }
+
+        /* Cards */
+        .wx-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 16px;
+        }
+        .wx-card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1em;
+            font-weight: 700;
+            color: rgba(255,255,255,0.85);
+            margin-bottom: 14px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .wx-card-title .fr-pill {
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 20px;
+            color: white;
+            letter-spacing: 1px;
+        }
+
+        /* Raw string box */
+        .raw-string {
+            background: rgba(0,0,0,0.35);
+            color: #5BB8E8;
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.92em;
+            line-height: 1.6;
+            word-break: break-all;
+            margin-bottom: 16px;
+            border: 1px solid rgba(91,184,232,0.15);
+        }
+
+        /* Decoded grid */
+        .decoded-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .decoded-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 12px 16px;
+            border-left: 3px solid #5BB8E8;
+        }
+        .decoded-label {
+            font-size: 0.72em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 4px;
+        }
+        .decoded-value {
+            font-size: 0.97em;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        /* TAF periods */
+        .taf-period {
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 14px 18px;
+            margin-bottom: 8px;
+            background: rgba(255,255,255,0.03);
+        }
+        .taf-period:last-child { margin-bottom: 0; }
+        .taf-period-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .taf-type-label {
+            font-size: 0.72em;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .taf-type-FM    { background: rgba(91,184,232,0.2);  color: #5BB8E8; }
+        .taf-type-BECMG { background: rgba(245,185,66,0.2);  color: #F5B942; }
+        .taf-type-TEMPO { background: rgba(42,122,82,0.25);  color: #5DD89A; }
+        .taf-type-PROB  { background: rgba(220,53,69,0.2);   color: #ff8090; }
+        .taf-period-time {
+            font-size: 0.83em;
+            color: rgba(255,255,255,0.4);
+            font-family: 'Courier New', monospace;
+        }
+        .taf-period-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            font-size: 0.88em;
+            color: rgba(255,255,255,0.8);
+        }
+        .taf-detail { display: flex; gap: 5px; }
+        .taf-detail-label { color: rgba(255,255,255,0.4); font-size: 0.85em; }
+
+        /* Pressure / Density Altitude box */
+        .pa-box {
+            background: linear-gradient(135deg, rgba(42,122,82,0.25) 0%, rgba(91,184,232,0.15) 100%);
+            border: 1px solid rgba(91,184,232,0.2);
+            border-radius: 16px;
+            padding: 24px 32px;
+            margin-bottom: 16px;
+            color: white;
+        }
+        .pa-box-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 16px;
+        }
+        .pa-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 20px;
+        }
+        .pa-item { text-align: center; }
+        .pa-value {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2em;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+        .pa-label {
+            font-size: 0.72em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255,255,255,0.5);
+        }
+        .pa-divider { width: 1px; background: rgba(255,255,255,0.12); align-self: stretch; }
+        .pa-note {
+            font-size: 0.73em;
+            color: rgba(255,255,255,0.35);
+            margin-top: 14px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+        }
+
+        /* Loading / error */
+        .wx-loading {
+            text-align: center;
+            padding: 50px;
+            color: rgba(255,255,255,0.4);
+            font-size: 1.05em;
+        }
+        .wx-loading .spinner {
+            width: 34px; height: 34px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: #5BB8E8;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .wx-error {
+            background: rgba(220,53,69,0.12);
+            border: 1px solid rgba(220,53,69,0.3);
+            border-left: 4px solid #dc3545;
+            border-radius: 10px;
+            padding: 18px 22px;
+            color: #ff8090;
+        }
+
+        /* Footer */
+        .page-footer {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 24px 28px;
+            text-align: center;
+            font-size: 0.78em;
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* ── Runway Wind Cards ── */
+        .rwy-grid {
+            display: flex; flex-wrap: wrap; gap: 14px;
+            justify-content: center; margin-top: 16px;
+        }
+        .rwy-card {
+            background: linear-gradient(160deg, rgba(10,26,18,0.90) 0%, rgba(8,20,34,0.88) 100%);
+            border: 1px solid rgba(91,184,232,0.18);
+            border-radius: 12px; padding: 14px 14px 12px;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+            min-width: 168px; max-width: 196px; flex: 1;
+        }
+        .rwy-card.best {
+            border-color: rgba(46,204,113,0.55);
+            box-shadow: 0 0 18px rgba(46,204,113,0.14);
+        }
+        .rwy-card-header {
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.8em;
+            color: rgba(255,255,255,0.75); text-align: center; line-height: 1.3;
+        }
+        .rwy-best-badge {
+            display: block; font-size: 0.78em; color: #2ecc71;
+            letter-spacing: 1px; margin-bottom: 2px;
+        }
+        .rwy-canvas { border-radius: 6px; display: block; }
+        .rwy-stats {
+            width: 100%; font-family: 'Courier New', monospace; font-size: 0.85em;
+            display: flex; flex-direction: column; gap: 3px;
+        }
+        .rwy-stat { display: flex; justify-content: space-between; gap: 6px; }
+        .rwy-stat-lbl { color: rgba(255,255,255,0.45); }
+        .rwy-stat-val { font-weight: 700; }
+        .rwy-sv-w   { color: #5BB8E8; }
+        .rwy-sv-hw  { color: #2ecc71; }
+        .rwy-sv-tw  { color: #ff8090; }
+        .rwy-sv-xw  { color: #ff8090; }
+        .rwy-legend {
+            width: 100%; display: flex; flex-direction: column; gap: 3px;
+            font-size: 0.72em; color: rgba(255,255,255,0.55);
+            border-top: 1px solid rgba(255,255,255,0.08); padding-top: 8px;
+        }
+        .rwy-leg-item { display: flex; align-items: center; gap: 7px; }
+        .rwy-leg-dot { width: 14px; height: 3px; border-radius: 2px; flex-shrink: 0; }
+        .rwy-wind-summary {
+            font-size: 0.88em; color: rgba(255,255,255,0.65);
+            text-align: center; margin-top: 2px;
+        }
+        .rwy-wind-summary strong { color: rgba(255,255,255,0.9); }
+
+        @media (max-width: 768px) {
+            .wx-search-card { padding: 24px 20px; }
+            .wx-card { padding: 20px; }
+            .wx-airport-header { padding: 18px 20px; }
+            .decoded-grid { grid-template-columns: 1fr 1fr; }
+            .rwy-card { min-width: 145px; max-width: 165px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">PNW<span>AV8R</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="weather.html" class="active">Weather</a></li>
+            <li><a href="wb.html">W&amp;B</a></li>
+            <li><a href="dashboard.html" class="portal">Member Portal</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO BANNER -->
+    <div style="position:relative;height:220px;overflow:hidden;background:linear-gradient(135deg,#0C1F14,#0D2B3A);">
+        <img src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=1400&q=80" alt="Clouds" style="width:100%;height:100%;object-fit:cover;opacity:0.35;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(12,31,20,0.85) 0%,rgba(12,31,20,0.4) 100%);display:flex;align-items:center;padding:0 52px;">
+            <div>
+                <div style="font-family:'Montserrat',sans-serif;font-size:0.72em;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#5BB8E8;margin-bottom:8px;">Hi-Line · KRNT</div>
+                <h1 style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:2em;line-height:1.1;">Aviation <span style="color:#5BB8E8;">Weather</span></h1>
+                <p style="color:rgba(255,255,255,0.55);font-size:0.88em;margin-top:6px;">Live METAR &amp; TAF · Performance Altitudes</p>
+            </div>
+        </div>
+    </div>
+
+    <div style="max-width:860px;margin:0 auto;padding:40px 28px 64px;">
+
+        <div class="wx-search-card">
+            <div class="wx-search-row">
+                <input type="text" id="airportInput" placeholder="KRNT" maxlength="4"
+                       onkeydown="if(event.key==='Enter') lookupWeather()">
+                <button onclick="lookupWeather()">Get Weather</button>
+            </div>
+            <div class="quick-airports">
+                <button class="airport-btn" onclick="lookupWeather('KRNT')">KRNT</button>
+                <button class="airport-btn" onclick="lookupWeather('KRNT')">KRNT</button>
+                <button class="airport-btn" onclick="lookupWeather('KSEA')">KSEA</button>
+                <button class="airport-btn" onclick="lookupWeather('KPAE')">KPAE</button>
+                <button class="airport-btn" onclick="lookupWeather('KAWO')">KAWO</button>
+                <button class="airport-btn" onclick="lookupWeather('KBVS')">KBVS</button>
+                <button class="airport-btn" onclick="lookupWeather('KOLM')">KOLM</button>
+                <button class="airport-btn" onclick="lookupWeather('KTCM')">KTCM</button>
+                <button class="airport-btn" onclick="lookupWeather('KTIW')">KTIW</button>
+                <button class="airport-btn" onclick="lookupWeather('KPDX')">KPDX</button>
+            </div>
+        </div>
+
+        <div id="weatherResults"></div>
+
+    </div>
+
+    <div class="page-footer">
+        Weather data via AVWX / NOAA · For flight planning reference only · Always verify with official sources before flight
+    </div>
+
+    <script>
+        async function lookupWeather(icaoArg) {
+            let icao = icaoArg;
+            if (!icao) {
+                const val = document.getElementById('airportInput').value.trim().toUpperCase();
+                if (!val || val.length < 2 || val.length > 4 || !/^[A-Z0-9]+$/.test(val)) {
+                    alert('Enter a valid airport identifier (2–4 alphanumeric characters, e.g. KRNT, S50, 1W1).');
+                    return;
+                }
+                icao = val;
+            }
+
+            document.getElementById('airportInput').value = icao;
+            document.querySelectorAll('.airport-btn').forEach(b => {
+                b.classList.toggle('active', b.textContent === icao);
+            });
+            history.replaceState(null, '', `weather.html?airport=${icao}`);
+            showLoading();
+
+            try {
+                const res  = await fetch(`/.netlify/functions/proxyWeather?icao=${icao}`);
+                const data = await res.json();
+
+                if (!res.ok || data.error) { showError(icao, data.error || 'Failed to fetch weather data.'); return; }
+                if (!data.metar || !data.metar.length) {
+                    showError(icao, `No weather data found for <strong>${icao}</strong>. Small airports often don't have an ASOS/AWOS. Try a nearby reporting airport — e.g. <strong>KRNT</strong>, <strong>KRNT</strong>, or <strong>KSEA</strong>.`);
+                    return;
+                }
+
+                renderResults(icao, data.metar[0], data.taf[0] || null, data.airport?.[0] || null);
+
+            } catch (e) {
+                showError(icao, 'Network error — check your connection and try again.');
+            }
+        }
+
+        function showLoading() {
+            const el = document.getElementById('weatherResults');
+            el.style.display = 'block';
+            el.innerHTML = `<div class="wx-card wx-loading"><div class="spinner"></div>Fetching weather data…</div>`;
+        }
+
+        function showError(icao, msg) {
+            const el = document.getElementById('weatherResults');
+            el.style.display = 'block';
+            el.innerHTML = `<div class="wx-card"><div class="wx-error">${msg}</div></div>`;
+        }
+
+        function renderResults(icao, m, taf, airport) {
+            const el   = document.getElementById('weatherResults');
+            el.style.display = 'block';
+
+            const name    = m.name  || icao;
+            const fr      = m.fltCat || computeFlightRules(m);
+            const obsTime = formatObsTime(m.obsTime);
+
+            // Build runway wind section (returns {html, draws} or null)
+            const rwySection = buildRunwayWindSection(m, airport);
+
+            let html = `
+                <div class="wx-airport-header">
+                    <div>
+                        <div class="wx-airport-name">${name}</div>
+                        <div class="wx-airport-meta">
+                            <span class="wx-icao">${icao}</span>
+                            <span class="wx-obs-time">${obsTime}</span>
+                        </div>
+                    </div>
+                    <div class="fr-badge fr-${fr}">${fr}</div>
+                </div>
+
+                <div class="wx-card">
+                    <div class="wx-card-title">
+                        METAR
+                        <span class="fr-pill fr-${fr}">${fr}</span>
+                    </div>
+                    <div class="raw-string">${m.rawOb || '—'}</div>
+                    <div class="decoded-grid">
+                        ${decodedItem('Wind',        decodeWind(m))}
+                        ${decodedItem('Visibility',  decodeVisibility(m))}
+                        ${decodedItem('Sky',         decodeSky(m.clouds))}
+                        ${decodedItem('Temperature', decodeTemp(m.temp))}
+                        ${decodedItem('Dewpoint',    decodeTemp(m.dewp))}
+                        ${decodedItem('Altimeter',   decodeAltimeter(m.altim))}
+                    </div>
+                </div>
+                ${renderPressureAltitude(m)}
+                ${rwySection ? rwySection.html : ''}`;
+
+            html += taf ? renderTAF(taf) :
+                `<div class="wx-card"><div class="wx-card-title">TAF</div>
+                 <p style="color:rgba(255,255,255,0.35);margin-top:8px;font-size:0.9em">No TAF available for ${icao}.</p></div>`;
+
+            el.innerHTML = html;
+
+            // Draw canvases AFTER DOM is updated
+            if (rwySection && rwySection.draws) {
+                requestAnimationFrame(() => {
+                    for (const d of rwySection.draws) {
+                        drawRunwayCanvas(d.canvasId, d.heading, d.oppId, d.windDir, d.windSpd, d.isVrb);
+                    }
+                });
+            }
+        }
+
+        // ── Runway Wind Components ──────────────────────────────
+
+        function buildRunwayWindSection(m, airport) {
+            const runways = airport?.runways;
+            if (!runways || !runways.length) return null;
+
+            const windSpd = m.wspd ?? 0;
+            const windDir = m.wdir;          // direction wind comes FROM
+            const isCalm  = windSpd === 0;
+            const isVrb   = !isCalm && (windDir == null || windDir === 0);
+
+            // Parse runway ends from API data
+            const ends = [];
+            for (const rwy of runways) {
+                const align = parseInt(rwy.alignment);
+                if (isNaN(align)) continue;
+                const parts  = (rwy.id || '').split('/');
+                const lowId  = parts[0] || String(Math.round(align / 10)).padStart(2, '0');
+                const highId = parts[1] || String(Math.round(((align + 180) % 360) / 10)).padStart(2, '0');
+                const hdgLow  = align;
+                const hdgHigh = (align + 180) % 360;
+                ends.push({ id: lowId,  oppId: highId, heading: hdgLow,  rwyId: rwy.id });
+                ends.push({ id: highId, oppId: lowId,  heading: hdgHigh, rwyId: rwy.id });
+            }
+            if (!ends.length) return null;
+
+            // Calculate components
+            for (const e of ends) {
+                if (isCalm || isVrb) { e.hw = 0; e.cw = 0; }
+                else {
+                    const A = (windDir - e.heading) * Math.PI / 180;
+                    e.hw = windSpd * Math.cos(A);   // + = headwind
+                    e.cw = windSpd * Math.sin(A);   // + = from right
+                }
+            }
+
+            // Sort: highest headwind first, then lowest crosswind
+            ends.sort((a, b) => b.hw - a.hw || Math.abs(a.cw) - Math.abs(b.cw));
+
+            const windStr = isCalm ? 'Calm' : isVrb ? `Variable @ ${windSpd} kt`
+                : `${String(windDir).padStart(3, '0')}° @ ${windSpd} kt`;
+
+            const draws = [];
+            const cards = ends.map((e, i) => {
+                const isBest = i === 0 && !isCalm && !isVrb && e.hw > 0;
+                const cid    = `rwyc-${e.id.replace(/[^a-z0-9]/gi, '')}-${i}`;
+                draws.push({ canvasId: cid, heading: e.heading, oppId: e.oppId, windDir, windSpd, isVrb });
+
+                const hwAbs  = Math.abs(e.hw).toFixed(1);
+                const cwAbs  = Math.abs(e.cw).toFixed(1);
+                const hwCls  = isCalm || isVrb ? 'rwy-sv-w' : e.hw >= 0 ? 'rwy-sv-hw' : 'rwy-sv-tw';
+                const hwLbl  = isCalm || isVrb ? '—' : (e.hw >= 0 ? `+${hwAbs}` : `−${hwAbs}`) + ' kt';
+                const hwName = e.hw >= 0 ? 'Headwind' : 'Tailwind';
+                const cwSide = e.cw >= 0 ? '(R)' : '(L)';
+
+                return `
+                <div class="rwy-card${isBest ? ' best' : ''}">
+                    <div class="rwy-card-header">
+                        ${isBest ? '<span class="rwy-best-badge">★ BEST</span>' : ''}
+                        RWY ${e.id}
+                    </div>
+                    <canvas id="${cid}" class="rwy-canvas" width="156" height="252"></canvas>
+                    <div class="rwy-stats">
+                        <div class="rwy-stat">
+                            <span class="rwy-stat-lbl">Wind&nbsp;&nbsp;&nbsp;</span>
+                            <span class="rwy-stat-val rwy-sv-w">${isCalm ? 'Calm' : windSpd.toFixed(1) + ' kt'}</span>
+                        </div>
+                        <div class="rwy-stat">
+                            <span class="rwy-stat-lbl">${hwName.padEnd(9)}</span>
+                            <span class="rwy-stat-val ${hwCls}">${hwLbl}</span>
+                        </div>
+                        <div class="rwy-stat">
+                            <span class="rwy-stat-lbl">Crosswind</span>
+                            <span class="rwy-stat-val rwy-sv-xw">${isCalm || isVrb ? '—' : cwAbs + ' kt ' + cwSide}</span>
+                        </div>
+                    </div>
+                    <div class="rwy-legend">
+                        <div class="rwy-leg-item"><span class="rwy-leg-dot" style="background:#5BB8E8"></span>Wind</div>
+                        <div class="rwy-leg-item"><span class="rwy-leg-dot" style="background:#2ecc71"></span>${hwName}</div>
+                        <div class="rwy-leg-item"><span class="rwy-leg-dot" style="background:#ff6b6b"></span>Crosswind</div>
+                    </div>
+                </div>`;
+            });
+
+            return {
+                html: `
+                    <div class="wx-card">
+                        <div class="wx-card-title">🛬 Runway Wind Components</div>
+                        <div class="rwy-wind-summary">Current wind: <strong>${windStr}</strong></div>
+                        <div class="rwy-grid">${cards.join('')}</div>
+                    </div>`,
+                draws
+            };
+        }
+
+        // ── Canvas: draw one runway end with wind vectors ────────────
+
+        function drawRunwayCanvas(canvasId, runwayHdg, oppId, windDir, windSpd, isVrb) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const cx = W / 2, cy = H / 2;
+
+            // Background
+            ctx.fillStyle = '#0b1520';
+            ctx.fillRect(0, 0, W, H);
+
+            // Runway rectangle
+            const rwW = 46, rwH = 188;
+            const rwX = cx - rwW / 2, rwY = cy - rwH / 2;
+            ctx.fillStyle = '#1d2835';
+            ctx.fillRect(rwX, rwY, rwW, rwH);
+
+            // Runway edge lines
+            ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+            ctx.lineWidth = 1; ctx.setLineDash([]);
+            ctx.strokeRect(rwX + 0.5, rwY + 0.5, rwW - 1, rwH - 1);
+
+            // Threshold bars (3 thick stripes at each end)
+            ctx.fillStyle = 'rgba(255,255,255,0.75)';
+            for (let i = 0; i < 3; i++) {
+                const barW = 8, barH = 5, gap = 3;
+                const bx = rwX + 4 + i * (barW + gap);
+                ctx.fillRect(bx, rwY + 8, barW, barH);
+                ctx.fillRect(bx, rwY + rwH - 8 - barH, barW, barH);
+            }
+
+            // Center dashes
+            ctx.fillStyle = 'rgba(255,255,255,0.7)';
+            const dH = 14, dW = 3, dGap = 22;
+            for (let y = rwY + 32; y < rwY + rwH - 32; y += dH + dGap) {
+                ctx.fillRect(cx - dW / 2, y, dW, dH);
+            }
+
+            // Runway numbers
+            const lowNum = String(Math.round(runwayHdg / 10)).padStart(2, '0');
+            const highStr = oppId || String(Math.round(((runwayHdg + 180) % 360) / 10)).padStart(2, '0');
+
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.font = 'bold 13px "Courier New", monospace';
+
+            // Current runway (bottom — approach end)
+            ctx.fillStyle = '#fff';
+            ctx.fillText(lowNum,   cx, rwY + rwH - 16);
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            ctx.fillText(highStr, cx, rwY + 16);
+
+            const isCalm = !windSpd || windSpd === 0;
+            if (isCalm || isVrb) {
+                ctx.fillStyle = 'rgba(255,255,255,0.35)';
+                ctx.font = '10px monospace';
+                ctx.fillText(isCalm ? 'CALM' : 'VARIABLE', cx, cy);
+                return;
+            }
+
+            // Arrow scale — cap so arrows stay inside canvas
+            const maxPx = 62;
+            const scale = Math.min(maxPx / windSpd, 4.8);
+
+            const A = (windDir - runwayHdg) * Math.PI / 180;
+            const hw = windSpd * Math.cos(A);
+            const cw = windSpd * Math.sin(A);
+
+            // Wind vector (blue) — points FROM center TOWARD wind source
+            arrow(ctx, cx, cy, cx + Math.sin(A) * windSpd * scale, cy - Math.cos(A) * windSpd * scale, '#5BB8E8', 2.5);
+
+            // Headwind/tailwind component (green) — vertical
+            if (Math.abs(hw) > 0.4) {
+                arrow(ctx, cx, cy, cx, cy - hw * scale, '#2ecc71', 2.5);
+            }
+
+            // Crosswind component (red) — horizontal
+            if (Math.abs(cw) > 0.4) {
+                arrow(ctx, cx, cy, cx + cw * scale, cy, '#ff6b6b', 2.5);
+            }
+        }
+
+        function arrow(ctx, x1, y1, x2, y2, color, lw) {
+            const dx = x2 - x1, dy = y2 - y1;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            if (len < 5) return;
+            const angle = Math.atan2(dy, dx);
+            const hs = Math.min(10, len * 0.38);
+
+            ctx.strokeStyle = color; ctx.fillStyle = color;
+            ctx.lineWidth = lw; ctx.lineCap = 'round';
+            ctx.setLineDash([]);
+            ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x2, y2);
+            ctx.lineTo(x2 - hs * Math.cos(angle - 0.42), y2 - hs * Math.sin(angle - 0.42));
+            ctx.lineTo(x2 - hs * Math.cos(angle + 0.42), y2 - hs * Math.sin(angle + 0.42));
+            ctx.closePath(); ctx.fill();
+        }
+
+        // ── Pressure & Density Altitude ──
+
+        function renderPressureAltitude(m) {
+            if (m.altim == null || m.elev == null) return '';
+
+            const altInHg   = m.altim / 33.8639;
+            const elevFt    = Math.round(m.elev * 3.28084);
+            const pa        = Math.round((29.92 - altInHg) * 1000 + elevFt);
+
+            // Density altitude (needs OAT)
+            let daHtml = '';
+            if (m.temp != null) {
+                const isaTempC = 15 - (1.98 * pa / 1000);
+                const da       = Math.round(pa + 120 * (m.temp - isaTempC));
+                const daColor  = da > elevFt + 2000 ? '#ff6b6b' : da > elevFt + 1000 ? '#ffd93d' : 'white';
+                daHtml = `
+                    <div class="pa-divider"></div>
+                    <div class="pa-item">
+                        <div class="pa-value" style="color:${daColor}">${da.toLocaleString()}<span style="font-size:0.45em;font-weight:400"> ft</span></div>
+                        <div class="pa-label">Density Altitude</div>
+                    </div>`;
+            }
+
+            return `
+                <div class="pa-box">
+                    <div class="pa-box-title">Performance Altitudes</div>
+                    <div class="pa-grid">
+                        <div class="pa-item">
+                            <div class="pa-value">${elevFt.toLocaleString()}<span style="font-size:0.45em;font-weight:400"> ft</span></div>
+                            <div class="pa-label">Field Elevation</div>
+                        </div>
+                        <div class="pa-divider"></div>
+                        <div class="pa-item">
+                            <div class="pa-value">${pa.toLocaleString()}<span style="font-size:0.45em;font-weight:400"> ft</span></div>
+                            <div class="pa-label">Pressure Altitude</div>
+                        </div>
+                        ${daHtml}
+                    </div>
+                    <div class="pa-note">
+                        PA = field elevation ± (29.92 − ${altInHg.toFixed(2)} inHg) × 1000
+                        ${m.temp != null ? `&nbsp;·&nbsp; DA uses OAT ${m.temp.toFixed(1)}°C` : ''}
+                    </div>
+                </div>`;
+        }
+
+        // ── Decode helpers ──
+
+        function decodedItem(label, value) {
+            return `<div class="decoded-item">
+                <div class="decoded-label">${label}</div>
+                <div class="decoded-value">${value}</div>
+            </div>`;
+        }
+
+        function decodeWind(m) {
+            if (m.wspd == null) return 'Calm';
+            if (m.wspd === 0)   return 'Calm';
+            const dir  = m.wdir === 0 ? 'VRB' : `${m.wdir}°`;
+            const gust = m.wgst ? ` G${m.wgst}` : '';
+            return `${dir} @ ${m.wspd}${gust} kt`;
+        }
+
+        function decodeVisibility(m) {
+            if (m.visib == null) return '—';
+            const v = String(m.visib);
+            return v === '10+' ? '10+ sm' : `${v} sm`;
+        }
+
+        function decodeSky(clouds) {
+            if (!clouds || clouds.length === 0) return 'Clear';
+            const labels = { FEW:'Few', SCT:'Scattered', BKN:'Broken', OVC:'Overcast', CLR:'Clear', SKC:'Clear', CAVOK:'Clear' };
+            return clouds.map(c => {
+                const lbl = labels[c.cover] || c.cover;
+                const alt = c.base != null ? ` @ ${c.base.toLocaleString()} ft` : '';
+                return `${lbl}${alt}`;
+            }).join('<br>');
+        }
+
+        function decodeTemp(c) {
+            if (c == null) return '—';
+            const f = Math.round(c * 9/5 + 32);
+            return `${c.toFixed(1)}°C / ${f}°F`;
+        }
+
+        function decodeAltimeter(mb) {
+            if (mb == null) return '—';
+            const inHg = (mb / 33.8639).toFixed(2);
+            return `${inHg} inHg`;
+        }
+
+        function formatObsTime(unixSec) {
+            if (!unixSec) return '';
+            const obs  = new Date(unixSec * 1000);
+            const now  = new Date();
+            const mins = Math.round((now - obs) / 60000);
+            const utc  = obs.toISOString().slice(11, 16) + 'Z';
+            if (mins < 0 || mins > 240) return `Observed ${utc}`;
+            if (mins < 2) return `Observed just now (${utc})`;
+            return `Observed ${mins} min ago (${utc})`;
+        }
+
+        function computeFlightRules(m) {
+            const vis  = parseFloat(m.visib) || 10;
+            const ceil = m.clouds ? getCeiling(m.clouds) : 9999;
+            if (ceil < 500  || vis < 1)   return 'LIFR';
+            if (ceil < 1000 || vis < 3)   return 'IFR';
+            if (ceil < 3000 || vis < 5)   return 'MVFR';
+            return 'VFR';
+        }
+
+        function getCeiling(clouds) {
+            const ceil = clouds.filter(c => ['BKN','OVC','VV'].includes(c.cover));
+            return ceil.length ? Math.min(...ceil.map(c => c.base || 9999)) : 9999;
+        }
+
+        // ── TAF renderer ──
+
+        function renderTAF(taf) {
+            const periods = (taf.fcsts || []).map(p => {
+                const type   = p.fcstChange || 'INITIAL';
+                const typeCs = type === 'INITIAL' ? '' : type;
+                const prob   = p.probability ? `PROB${p.probability} ` : '';
+                const label  = prob + (type === 'INITIAL' ? 'INITIAL' : type);
+
+                const from = p.timeFrom ? formatUTC(p.timeFrom) : '';
+                const to   = p.timeTo   ? formatUTC(p.timeTo)   : '';
+                const timeStr = from && to ? `${from}Z – ${to}Z` : '';
+
+                const wind = p.wspd != null ? (() => {
+                    if (p.wspd === 0) return 'Calm';
+                    const dir  = p.wdir === 0 ? 'VRB' : `${p.wdir}°`;
+                    const gust = p.wgst ? ` G${p.wgst}` : '';
+                    return `${dir} @ ${p.wspd}${gust} kt`;
+                })() : null;
+
+                const vis = p.visib != null ? (() => {
+                    const v = String(p.visib);
+                    return (v === '6+' || v === '10+') ? `${v} sm` : `${v} sm`;
+                })() : null;
+
+                const sky = p.clouds && p.clouds.length ? p.clouds.map(c => {
+                    const labels = { FEW:'Few', SCT:'Scattered', BKN:'Broken', OVC:'Overcast' };
+                    const alt = c.base != null ? ` @ ${c.base.toLocaleString()} ft` : '';
+                    return (labels[c.cover] || c.cover) + alt;
+                }).join(', ') : null;
+
+                const fr = p.clouds ? computeFlightRules(p) : null;
+                const frBadge = fr ? `<span class="fr-pill fr-${fr}" style="font-size:0.7em;padding:2px 8px;border-radius:10px;color:white;">${fr}</span>` : '';
+
+                const details = [
+                    wind ? `<div class="taf-detail"><span class="taf-detail-label">Wind</span> ${wind}</div>` : '',
+                    vis  ? `<div class="taf-detail"><span class="taf-detail-label">Vis</span> ${vis}</div>`   : '',
+                    sky  ? `<div class="taf-detail"><span class="taf-detail-label">Sky</span> ${sky}</div>`   : '',
+                ].join('');
+
+                return `<div class="taf-period">
+                    <div class="taf-period-header">
+                        <span class="taf-type-label taf-type-${typeCs}">${label}</span>
+                        <span class="taf-period-time">${timeStr}</span>
+                        ${frBadge}
+                    </div>
+                    <div class="taf-period-details">${details || '<span style="color:#95a5a6">See raw TAF</span>'}</div>
+                </div>`;
+            }).join('');
+
+            return `<div class="wx-card">
+                <div class="wx-card-title">TAF</div>
+                <div class="raw-string">${taf.rawTAF || '—'}</div>
+                ${periods}
+            </div>`;
+        }
+
+        function formatUTC(unixSec) {
+            return new Date(unixSec * 1000).toISOString().slice(11, 16);
+        }
+
+        // On load — check URL param
+        document.addEventListener('DOMContentLoaded', () => {
+            const airport = new URLSearchParams(window.location.search).get('airport');
+            if (airport) lookupWeather(airport.toUpperCase());
+        });
+    </script>
+</body>
+</html>

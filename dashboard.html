@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js?v=3"></script>
+    <style>body{visibility:hidden}</style>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        /* ── BASE ── */
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: linear-gradient(160deg, #0b1f14 0%, #0d1e24 55%, #0a1a2e 100%);
+            color: var(--text);
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* ── NAV — matches all public pages ── */
+        .club-nav {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(12,31,20,0.97);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+            padding: 0;
+        }
+        .club-nav-inner {
+            max-width: 1100px; margin: 0 auto;
+            padding: 0 28px; height: 64px;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 16px;
+        }
+        .club-nav-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 1.25em;
+            color: #fff; text-decoration: none; letter-spacing: 1px;
+        }
+        .club-nav-logo span { color: #5BB8E8; }
+        .club-nav-links { display: flex; gap: 4px; align-items: center; }
+        .club-nav-links a {
+            text-decoration: none; color: rgba(255,255,255,0.75);
+            font-family: 'Montserrat', sans-serif; font-weight: 700;
+            font-size: 0.84em; padding: 7px 13px; border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .club-nav-links a:hover, .club-nav-links a.active {
+            color: #fff; background: rgba(255,255,255,0.09);
+        }
+        #navUser { font-size: 0.82em; color: rgba(255,255,255,0.5); font-family: 'Montserrat', sans-serif; }
+        .hamburger-btn { display:none; background:none; border:none; cursor:pointer; padding:8px; }
+        .hamburger-btn span { display:block; width:22px; height:2px; background:#fff; border-radius:2px; margin:5px 0; }
+
+        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+
+        /* ── AIRPLANE CARD — sectional chart inspired ── */
+        .airplane-card {
+            border-radius: 16px; padding: 28px 32px;
+            margin-bottom: 24px; color: white;
+            display: grid; grid-template-columns: 1fr auto;
+            gap: 20px; align-items: start;
+            position: relative; overflow: hidden;
+            /* Subtle compass rose background via radial gradients */
+            background-image:
+                radial-gradient(circle at 85% 50%, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.04) 60px, transparent 61px),
+                radial-gradient(circle at 85% 50%, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.03) 90px, transparent 91px),
+                radial-gradient(circle at 85% 50%, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.02) 120px, transparent 121px);
+        }
+        .airplane-card.available   { background-color: #0D3320; border: 1px solid rgba(42,122,82,0.5); }
+        .airplane-card.flying      { background-color: #0A2040; border: 1px solid rgba(91,184,232,0.5); }
+        .airplane-card.maintenance { background-color: #2A1A08; border: 1px solid rgba(212,131,26,0.5); }
+        .airplane-card.squawk      { background-color: #2A0810; border: 1px solid rgba(220,53,69,0.5); }
+        /* Magenta airway line accent (sectional chart) */
+        .airplane-card::before {
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, transparent, #D4439A, #5BB8E8, transparent);
+        }
+        .ac-tail { font-family:'Montserrat',sans-serif; font-size:2.4em; font-weight:900; letter-spacing:3px; line-height:1; }
+        .ac-model { font-size:0.88em; opacity:0.65; margin-top:4px; font-family:'Montserrat',sans-serif; letter-spacing:1px; }
+        .ac-status-badge { background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25); padding:5px 16px; border-radius:20px; font-size:0.75em; font-weight:700; letter-spacing:2px; text-transform:uppercase; margin-top:14px; display:inline-block; font-family:'Montserrat',sans-serif; }
+        .ac-stats { display:flex; gap:24px; margin-top:20px; flex-wrap:wrap; }
+        .ac-stat-label { font-size:0.68em; opacity:0.55; text-transform:uppercase; letter-spacing:1.5px; font-family:'Montserrat',sans-serif; }
+        .ac-stat-value { font-size:1.15em; font-weight:700; margin-top:3px; font-family:'Courier New',monospace; }
+        .ac-actions { display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+        .ac-btn { padding:10px 22px; border-radius:8px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:white; font-weight:700; font-size:0.88em; cursor:pointer; text-decoration:none; text-align:center; white-space:nowrap; transition:background 0.2s; font-family:'Montserrat',sans-serif; }
+        .ac-btn:hover { background:rgba(255,255,255,0.18); }
+        .ac-btn.primary { background:#2A7A52; border-color:#2A7A52; color:white; box-shadow:0 0 12px rgba(42,122,82,0.35); }
+        .ac-btn.primary:hover { background:#359966; }
+
+        /* ── DOCS ROW ── */
+        .docs-row { display:flex; gap:12px; margin-bottom:24px; flex-wrap:wrap; }
+        .doc-tile {
+            display:flex; align-items:center; gap:12px;
+            background: linear-gradient(135deg, rgba(10,30,20,0.85), rgba(9,22,36,0.80));
+            border:1px solid rgba(91,184,232,0.20);
+            border-left: 3px solid rgba(91,184,232,0.5);
+            border-radius:12px; padding:13px 20px;
+            text-decoration:none; color:rgba(255,255,255,0.88);
+            font-weight:600; font-size:0.88em;
+            transition:all 0.2s; flex:1; min-width:180px;
+        }
+        .doc-tile:hover { background:linear-gradient(135deg,rgba(91,184,232,0.12),rgba(91,184,232,0.06)); border-color:rgba(91,184,232,0.55); color:#fff; transform:translateY(-1px); box-shadow:0 4px 16px rgba(91,184,232,0.12); }
+        .doc-icon { font-size:1.6em; flex-shrink:0; }
+        .doc-info { line-height:1.35; }
+        .doc-label { font-size:0.68em; text-transform:uppercase; letter-spacing:1.5px; color:#5BB8E8; opacity:0.7; font-weight:700; font-family:'Montserrat',sans-serif; }
+
+        /* ── LAYOUT ── */
+        .dash-grid { display:grid; grid-template-columns:2fr 1fr; gap:20px; }
+        @media(max-width:768px){ .dash-grid { grid-template-columns:1fr; } }
+
+        /* ── CARDS ── */
+        .dash-card {
+            background: linear-gradient(160deg, rgba(11,30,20,0.88) 0%, rgba(9,22,38,0.85) 100%);
+            border: 1px solid rgba(91,184,232,0.16);
+            border-radius: 14px; padding: 22px 26px;
+            margin-bottom: 20px;
+            position: relative; overflow: hidden;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.30);
+        }
+        /* Magenta→sky left accent bar */
+        .dash-card::before {
+            content:''; position:absolute;
+            left:0; top:0; bottom:0; width:3px;
+            background: linear-gradient(to bottom, #D4439A 0%, #5BB8E8 100%);
+        }
+        .dash-card-title {
+            font-size:0.68em; font-weight:700;
+            text-transform:uppercase; letter-spacing:2.5px;
+            color: #5BB8E8;
+            opacity: 0.8;
+            margin-bottom:16px; padding-left:10px;
+            font-family:'Montserrat',sans-serif;
+        }
+
+        /* ── CALENDAR ── */
+        .week-cal { overflow-x:auto; }
+        .week-cal table { width:100%; border-collapse:collapse; font-size:0.8em; }
+        .week-cal th { padding:6px 4px; text-align:center; color:rgba(255,255,255,0.50); font-weight:700; font-size:0.82em; border-bottom:1px solid rgba(91,184,232,0.18); font-family:'Montserrat',sans-serif; }
+        .week-cal th .wc-num { font-size:1.3em; font-weight:900; color:rgba(255,255,255,0.9); display:block; }
+        .week-cal th.today-col { color:#5BB8E8; }
+        .week-cal th.today-col .wc-num { background:#D4439A; color:white; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; margin:0 auto; box-shadow:0 0 10px rgba(212,67,154,0.5); }
+        .week-cal td { padding:3px 2px; text-align:center; vertical-align:top; }
+        .wc-slot { height:22px; border-radius:4px; margin-bottom:2px; font-size:0.73em; font-weight:600; display:flex; align-items:center; justify-content:center; }
+        .wc-slot.free  { background:rgba(42,122,82,0.30);  color:#6ee8a4; border:1px solid rgba(42,122,82,0.45); }
+        .wc-slot.mine  { background:rgba(212,67,154,0.30);  color:#F07EC4; border:1px solid rgba(212,67,154,0.45); }
+        .wc-slot.taken { background:rgba(91,184,232,0.25);  color:#7ccfed; border:1px solid rgba(91,184,232,0.40); }
+        .wc-slot.past  { background:rgba(255,255,255,0.04); color:rgba(255,255,255,0.2); }
+        .wc-time-col { width:44px; color:rgba(255,255,255,0.35); font-size:0.78em; text-align:right; padding-right:6px; font-family:'Courier New',monospace; }
+        .week-nav-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+        .wk-btn { padding:5px 14px; border-radius:8px; border:1px solid rgba(91,184,232,0.25); background:rgba(91,184,232,0.08); font-size:0.8em; cursor:pointer; color:#5BB8E8; font-family:'Montserrat',sans-serif; transition:all 0.2s; }
+        .wk-btn:hover { background:rgba(91,184,232,0.16); border-color:rgba(91,184,232,0.45); color:#fff; }
+        .wk-title { font-size:0.85em; font-weight:700; color:rgba(255,255,255,0.88); font-family:'Montserrat',sans-serif; }
+
+        /* ── SQUAWKS ── */
+        .squawk-item { display:flex; gap:12px; align-items:flex-start; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+        .squawk-item:last-child { border-bottom:none; }
+        .squawk-dot { width:9px; height:9px; border-radius:50%; background:#ff8090; box-shadow:0 0 6px rgba(220,53,69,0.6); margin-top:5px; flex-shrink:0; }
+        .squawk-text { font-size:0.88em; color:rgba(255,255,255,0.90); }
+        .squawk-meta { font-size:0.75em; color:rgba(255,255,255,0.40); margin-top:3px; }
+
+        /* ── RESERVATIONS ── */
+        .res-item { display:flex; align-items:center; gap:14px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+        .res-item:last-child { border-bottom:none; }
+        .res-date-box { background:rgba(212,67,154,0.2); border:1px solid rgba(212,67,154,0.4); color:#F07EC4; border-radius:10px; padding:8px 12px; text-align:center; min-width:52px; flex-shrink:0; }
+        .res-date-mon { font-size:0.62em; font-weight:700; text-transform:uppercase; letter-spacing:1px; font-family:'Montserrat',sans-serif; }
+        .res-date-day { font-size:1.4em; font-weight:900; line-height:1; font-family:'Montserrat',sans-serif; }
+        .res-info { flex:1; }
+        .res-time { font-weight:600; font-size:0.92em; color:rgba(255,255,255,0.9); }
+        .res-who  { font-size:0.8em; color:rgba(255,255,255,0.4); margin-top:2px; }
+        .res-cancel-btn { font-size:0.75em; color:#ff8090; background:none; border:1px solid rgba(220,53,69,0.35); padding:4px 12px; border-radius:20px; cursor:pointer; }
+        .empty-state { color:rgba(255,255,255,0.40); font-size:0.88em; padding:12px 0; }
+
+        /* ── AIRWORTHY BANNER ── */
+        .aw-banner { border-radius:10px; padding:11px 20px; margin-bottom:18px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; font-weight:700; font-size:0.9em; font-family:'Montserrat',sans-serif; }
+        .aw-banner.airworthy     { background:rgba(42,122,82,0.18);  color:#5DD89A; border:1px solid rgba(42,122,82,0.4); }
+        .aw-banner.not-airworthy { background:rgba(220,53,69,0.15);  color:#ff8090; border:1px solid rgba(220,53,69,0.35); }
+        .aw-banner.unknown       { background:rgba(245,185,66,0.12); color:#F5B942; border:1px solid rgba(245,185,66,0.3); }
+        .aw-dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:8px; flex-shrink:0; }
+        .aw-banner.airworthy .aw-dot     { background:#5DD89A; }
+        .aw-banner.not-airworthy .aw-dot { background:#ff8090; }
+        .aw-banner.unknown .aw-dot       { background:#F5B942; }
+        .aw-overdue { font-size:0.8em; font-weight:600; opacity:0.8; }
+
+        /* ── INSPECTION ITEMS ── */
+        .insp-item { display:flex; align-items:center; gap:14px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+        .insp-item:last-child { border-bottom:none; }
+        .insp-badge { font-size:0.7em; font-weight:700; padding:3px 10px; border-radius:20px; white-space:nowrap; flex-shrink:0; font-family:'Montserrat',sans-serif; }
+        .insp-badge.current  { background:rgba(42,122,82,0.25);  color:#5DD89A; border:1px solid rgba(42,122,82,0.4); }
+        .insp-badge.due-soon { background:rgba(245,185,66,0.15); color:#F5B942; border:1px solid rgba(245,185,66,0.3); }
+        .insp-badge.overdue  { background:rgba(220,53,69,0.18);  color:#ff8090; border:1px solid rgba(220,53,69,0.35); }
+        .insp-badge.unknown  { background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.12); }
+        .insp-name { font-weight:600; font-size:0.88em; color:rgba(255,255,255,0.85); }
+        .insp-meta { font-size:0.75em; color:rgba(255,255,255,0.35); margin-top:2px; }
+        .insp-edit { font-size:0.75em; background:none; border:1px solid rgba(255,255,255,0.12); border-radius:12px; padding:3px 10px; cursor:pointer; color:rgba(255,255,255,0.4); margin-left:auto; flex-shrink:0; display:none; }
+        .insp-edit:hover { color:#fff; border-color:rgba(255,255,255,0.3); }
+
+        /* ── SQUAWK ALERT CARDS ── */
+        .squawk-alert-section { display:none; margin-bottom:20px; }
+        .squawk-alert-section.has-squawks { display:block; }
+        .squawk-alert-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+        .squawk-alert-title { font-size:0.72em; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#ff8090; display:flex; align-items:center; gap:8px; font-family:'Montserrat',sans-serif; }
+        .squawk-alert-title::before { content:''; display:inline-block; width:8px; height:8px; border-radius:50%; background:#dc3545; animation:pulse 1.5s infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .squawk-alert-link { font-size:0.82em; color:#5BB8E8; font-weight:600; text-decoration:none; font-family:'Montserrat',sans-serif; }
+        .squawk-alert-link:hover { color:#fff; }
+        .squawk-cards-row { display:flex; gap:12px; flex-wrap:wrap; }
+        .sq-alert-card {
+            background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+            border-radius:12px; padding:16px 20px; flex:1; min-width:220px; max-width:320px;
+            border-top:3px solid rgba(255,255,255,0.1); position:relative;
+        }
+        .sq-alert-card.no_go   { border-top-color:#dc3545; }
+        .sq-alert-card.caution { border-top-color:#F5B942; }
+        .sq-alert-card.go      { border-top-color:#2A7A52; }
+        .sq-alert-num { font-size:0.68em; font-weight:700; color:rgba(255,255,255,0.3); letter-spacing:1px; margin-bottom:6px; font-family:'Montserrat',sans-serif; }
+        .sq-alert-badges { display:flex; gap:6px; margin-bottom:8px; flex-wrap:wrap; }
+        .sq-alert-badge { font-size:0.68em; font-weight:700; padding:3px 10px; border-radius:20px; font-family:'Montserrat',sans-serif; }
+        .sq-alert-badge.no_go   { background:rgba(220,53,69,0.25); color:#ff8090; border:1px solid rgba(220,53,69,0.4); }
+        .sq-alert-badge.caution { background:rgba(245,185,66,0.15); color:#F5B942; border:1px solid rgba(245,185,66,0.3); }
+        .sq-alert-badge.go      { background:rgba(42,122,82,0.2); color:#5DD89A; border:1px solid rgba(42,122,82,0.35); }
+        .sq-alert-desc { font-size:0.88em; font-weight:600; color:rgba(255,255,255,0.85); line-height:1.4; margin-bottom:8px; }
+        .sq-alert-meta { font-size:0.73em; color:rgba(255,255,255,0.3); }
+
+        /* ── PROFILE MODAL ── */
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:2000; align-items:center; justify-content:center; padding:16px; }
+        .modal-overlay.open { display:flex; }
+        .modal-box { background:#111E2A; border:1px solid rgba(255,255,255,0.12); border-radius:18px; padding:36px; width:100%; max-width:440px; box-shadow:0 24px 64px rgba(0,0,0,0.6); }
+        .modal-box h2 { font-family:'Montserrat',sans-serif; font-size:1.1em; font-weight:900; color:#fff; margin-bottom:22px; }
+        .form-group { margin-bottom:14px; }
+        .form-label { font-size:0.72em; font-weight:700; color:rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:1.5px; display:block; margin-bottom:6px; font-family:'Montserrat',sans-serif; }
+        .form-input { width:100%; padding:11px 14px; background:rgba(255,255,255,0.10); border:1px solid rgba(255,255,255,0.22); border-radius:8px; font-size:0.93em; color:#fff; font-family:'Open Sans',sans-serif; }
+        .form-input:focus { outline:none; border-color:#5BB8E8; box-shadow:0 0 0 3px rgba(91,184,232,0.20); }
+        .form-input[disabled] { opacity:0.45; cursor:default; }
+        .modal-actions { display:flex; gap:10px; margin-top:20px; }
+        .save-btn { flex:1; padding:11px; background:#2A7A52; color:white; border:none; border-radius:8px; font-size:0.92em; font-weight:700; cursor:pointer; font-family:'Montserrat',sans-serif; }
+        .save-btn:hover { background:#359966; }
+        .close-btn { padding:11px 18px; background:transparent; color:rgba(255,255,255,0.6); border:1px solid rgba(255,255,255,0.15); border-radius:8px; font-size:0.92em; font-weight:600; cursor:pointer; font-family:'Montserrat',sans-serif; }
+        .close-btn:hover { background:rgba(255,255,255,0.07); }
+        .profile-msg { font-size:0.85em; margin-top:10px; }
+        .profile-msg.success { color:#5DD89A; }
+        .profile-msg.error   { color:#ff8090; }
+        .modal-box { max-height:92vh; overflow-y:auto; }
+        .optional-section { margin-top:22px; padding-top:18px; border-top:1px solid rgba(255,255,255,0.08); }
+        .optional-section-title { font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.82em; color:rgba(255,255,255,0.45); letter-spacing:0.08em; text-transform:uppercase; margin-bottom:4px; }
+        .optional-section-note  { font-size:0.78em; color:rgba(255,255,255,0.32); margin-bottom:14px; line-height:1.5; }
+        /* Docs inside profile modal */
+        .profile-doc-section { margin-top:20px; padding-top:16px; border-top:1px solid rgba(255,255,255,0.08); }
+        .profile-doc-upload { display:flex; flex-direction:column; gap:8px; margin-bottom:12px; }
+        .profile-doc-upload select,
+        .profile-doc-upload input[type=text],
+        .profile-doc-upload input[type=file] { padding:9px 12px; border:1px solid rgba(255,255,255,0.12); border-radius:8px; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.9); font-family:inherit; font-size:0.88em; }
+        .profile-doc-upload input[type=file] { padding:6px 12px; cursor:pointer; }
+        .profile-doc-list { display:flex; flex-direction:column; gap:6px; }
+        .profile-doc-item { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 12px; border-radius:7px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); font-size:0.82em; }
+        .profile-doc-item a { color:#5BB8E8; text-decoration:none; font-weight:600; }
+        .profile-doc-item a:hover { text-decoration:underline; }
+        .profile-doc-del { background:none; border:none; color:rgba(255,100,100,0.5); cursor:pointer; font-size:1rem; padding:0 4px; line-height:1; }
+        .profile-doc-del:hover { color:rgba(255,100,100,0.9); }
+        .upload-btn { padding:9px 20px; background:rgba(91,184,232,0.12); color:#5BB8E8; border:1px solid rgba(91,184,232,0.3); border-radius:8px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.84em; cursor:pointer; transition:background 0.2s; align-self:flex-start; }
+        .upload-btn:hover { background:rgba(91,184,232,0.22); }
+        .upload-btn:disabled { opacity:0.5; cursor:default; }
+
+        /* ── PILOT CURRENCY ── */
+        .currency-row { display:flex; flex-direction:column; gap:8px; }
+        .currency-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:8px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07); }
+        .currency-item.current { background:rgba(42,122,82,0.12); border-color:rgba(42,122,82,0.3); }
+        .currency-item.lapsed  { background:rgba(220,53,69,0.10); border-color:rgba(220,53,69,0.3); }
+        .currency-item.missing { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.1); }
+        .currency-icon { font-size:1.2rem; flex-shrink:0; line-height:1; }
+        .currency-label { font-weight:700; font-size:0.88em; color:rgba(255,255,255,0.88); }
+        .currency-detail { font-size:0.75em; color:rgba(255,255,255,0.4); margin-top:2px; }
+
+        /* ── WAITLIST BANNER ── */
+        .waitlist-banner { border-radius:10px; padding:14px 20px; margin-bottom:18px; display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:rgba(245,185,66,0.09); border:1px solid rgba(245,185,66,0.3); color:rgba(255,255,255,0.85); font-size:0.88em; }
+        .waitlist-banner.visible { display:flex; }
+        .waitlist-text { display:flex; align-items:center; gap:10px; flex:1; min-width:0; }
+        .waitlist-btn { padding:8px 18px; border-radius:8px; font-weight:700; font-size:0.84em; cursor:pointer; font-family:'Montserrat',sans-serif; background:rgba(245,185,66,0.18); color:#F5B942; border:1px solid rgba(245,185,66,0.4); transition:background 0.2s; white-space:nowrap; }
+        .waitlist-btn:hover { background:rgba(245,185,66,0.32); }
+        .waitlist-btn.on-list { background:rgba(220,53,69,0.14); color:#ff8090; border-color:rgba(220,53,69,0.4); }
+        .waitlist-btn.on-list:hover { background:rgba(220,53,69,0.28); }
+
+        @media(max-width:680px) {
+            .hamburger-btn { display:block; }
+            .club-nav-inner { flex-wrap:nowrap; }
+            .club-nav-links { display:none; position:absolute; top:64px; left:0; right:0; flex-direction:column; background:rgba(12,31,20,0.99); padding:8px 24px 20px; box-shadow:0 8px 24px rgba(0,0,0,0.5); z-index:999; }
+            .club-nav-links.nav-open { display:flex; }
+            .club-nav-links a { padding:13px 4px; border-bottom:1px solid rgba(255,255,255,0.06); border-radius:0; font-size:1em; }
+            .airplane-card { grid-template-columns:1fr; }
+            .ac-actions { flex-direction:row; flex-wrap:wrap; }
+            .ac-btn { flex:1; min-width:120px; }
+            .docs-row { flex-direction:column; }
+            .doc-tile { min-width:unset; }
+            .squawk-cards-row { flex-direction:column; }
+            .sq-alert-card { max-width:100%; }
+            .week-cal table { min-width:480px; }
+            .wk-btn { padding:8px 16px; min-height:44px; }
+            .modal-box { padding:24px; margin:16px; max-width:calc(100vw - 32px); }
+        }
+    </style>
+</head>
+<body>
+    <nav class="club-nav">
+        <div class="club-nav-inner">
+            <a href="dashboard.html" class="club-nav-logo">PNW<span>AV8R</span></a>
+            <div id="navLinks" class="club-nav-links">
+                <a href="dashboard.html" class="active">Dashboard</a>
+                <a href="schedule.html">Schedule</a>
+                <a href="squawks.html">Squawks</a>
+                <a href="post-flight.html">Post-Flight</a>
+                <a href="directory.html">Directory</a>
+                <a href="#" onclick="openProfile(); return false;">Profile</a>
+                <span id="adminLink" style="display:none"><a href="admin.html">Admin</a></span>
+            </div>
+            <div id="navUser"></div>
+            <button class="hamburger-btn" onclick="toggleNav()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        <!-- Airplane status -->
+        <div id="airplaneCard" class="airplane-card available">
+            <div>
+                <div class="ac-tail">N2134Y</div>
+                <div class="ac-model">1959 Cessna 150</div>
+                <span class="ac-status-badge" id="acStatusBadge">Loading…</span>
+                <div class="ac-stats">
+                    <div>
+                        <div class="ac-stat-label">Tach Time</div>
+                        <div class="ac-stat-value" id="acTach">—</div>
+                    </div>
+                    <div>
+                        <div class="ac-stat-label">Current Fuel</div>
+                        <div class="ac-stat-value" id="acFuel">—</div>
+                    </div>
+                    <div>
+                        <div class="ac-stat-label">Last Oil</div>
+                        <div class="ac-stat-value" id="acOil">—</div>
+                    </div>
+                    <div>
+                        <div class="ac-stat-label">Open Squawks</div>
+                        <div class="ac-stat-value" id="acSquawks">—</div>
+                    </div>
+                    <div>
+                        <div class="ac-stat-label">My Hours</div>
+                        <div class="ac-stat-value" id="acMyHours">—</div>
+                    </div>
+                    <div>
+                        <div class="ac-stat-label">My Dry Cost</div>
+                        <div class="ac-stat-value" id="acMyCost">—</div>
+                    </div>
+                </div>
+            </div>
+            <div class="ac-actions">
+                <a href="schedule.html" class="ac-btn primary">Book Flight</a>
+                <a href="post-flight.html" class="ac-btn">Post-Flight</a>
+            </div>
+        </div>
+
+        <!-- Waitlist banner — shown only when aircraft is grounded -->
+        <div class="waitlist-banner" id="waitlistBanner">
+            <div class="waitlist-text">
+                <span>⚠️</span>
+                <span id="waitlistStatusText">N2134Y is currently grounded. Join the waitlist to be notified when it's airworthy again.</span>
+            </div>
+            <button class="waitlist-btn" id="waitlistBtn" onclick="toggleWaitlist()">Join Waitlist</button>
+        </div>
+
+        <!-- Squawk alert cards -->
+        <div class="squawk-alert-section" id="squawkAlertSection">
+            <div class="squawk-alert-header">
+                <div class="squawk-alert-title">Open Squawks</div>
+                <a href="squawks.html" class="squawk-alert-link">View all &rarr;</a>
+            </div>
+            <div class="squawk-cards-row" id="squawkAlertCards"></div>
+        </div>
+
+        <!-- Airworthy banner -->
+        <div class="aw-banner unknown" id="awBanner">
+            <div><span class="aw-dot"></span><span id="awStatus">Checking airworthiness…</span></div>
+            <div class="aw-overdue" id="awDetail"></div>
+        </div>
+
+        <!-- Docs row -->
+        <div class="docs-row">
+            <a href="/docs/N2134Y-POH.pdf" target="_blank" class="doc-tile">
+                <div class="doc-icon">📖</div>
+                <div class="doc-info">
+                    <div class="doc-label">Reference</div>
+                    <div>Pilot Operating Handbook</div>
+                </div>
+            </a>
+            <a href="/docs/N2134Y-Checklist.pdf" target="_blank" class="doc-tile">
+                <div class="doc-icon">✅</div>
+                <div class="doc-info">
+                    <div class="doc-label">N2134Y</div>
+                    <div>Flight Checklist</div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Pilot Currency -->
+        <div class="dash-card" id="currencyCard" style="display:none;margin-bottom:24px">
+            <div class="dash-card-title">Pilot Currency</div>
+            <div class="currency-row" id="currencyRow"></div>
+        </div>
+
+        <!-- My Flight Log -->
+        <div class="dash-card" style="margin-bottom:24px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+                <div class="dash-card-title" style="margin-bottom:0">My Flight Log</div>
+                <div id="myFlightLogTotal" style="font-size:0.82em;color:rgba(255,255,255,0.4);font-weight:600"></div>
+            </div>
+            <div id="myFlightLog">
+                <div style="color:rgba(255,255,255,0.35);font-size:0.9em;text-align:center;padding:20px 0">No flights logged yet.</div>
+            </div>
+        </div>
+
+        <div class="dash-grid">
+            <div>
+                <!-- This week availability -->
+                <div class="dash-card">
+                    <div class="week-nav-row">
+                        <div class="dash-card-title" style="margin-bottom:0">This Week — N2134Y Availability</div>
+                        <div style="display:flex;gap:6px;">
+                            <button class="wk-btn" onclick="shiftMiniWeek(-1)">&#8592;</button>
+                            <button class="wk-btn" onclick="shiftMiniWeek(1)">&#8594;</button>
+                        </div>
+                    </div>
+                    <div class="week-cal" id="miniCal"></div>
+                </div>
+
+                <!-- Upcoming reservations -->
+                <div class="dash-card">
+                    <div class="dash-card-title">Upcoming Reservations</div>
+                    <div id="reservationList"><div class="empty-state">Loading…</div></div>
+                </div>
+            </div>
+
+            <!-- Right column -->
+            <div>
+                <!-- FAA Inspections -->
+                <div class="dash-card">
+                    <div class="dash-card-title">FAA Required Inspections</div>
+                    <div id="inspectionList"><div class="empty-state">Loading…</div></div>
+                </div>
+
+                <!-- Open squawks -->
+                <div class="dash-card">
+                    <div class="dash-card-title">Open Squawks</div>
+                    <div id="squawkList"><div class="empty-state">Loading…</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile modal -->
+    <div class="modal-overlay" id="profileModal">
+        <div class="modal-box">
+            <h2>My Profile</h2>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="text" class="form-input" id="profileEmail" disabled>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Name</label>
+                <input type="text" class="form-input" id="profileName" placeholder="Your full name" maxlength="100">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Phone</label>
+                <input type="tel" class="form-input" id="profilePhone" placeholder="e.g. 206-555-1234" pattern="[\d\s\+\-\(\)]+" maxlength="20">
+            </div>
+
+            <!-- ── Optional currency tracking ── -->
+            <div class="optional-section">
+                <div class="optional-section-title">Currency Tracking (optional)</div>
+                <div class="optional-section-note">Track your own BFR, medical, and date of birth for the currency card on your dashboard. This is self-managed and not enforced by the club.</div>
+                <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" class="form-input" id="profileDob">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">BFR Date <span style="font-weight:400;color:rgba(255,255,255,0.35)">(most recent)</span></label>
+                    <input type="date" class="form-input" id="profileBfrDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Medical Type</label>
+                    <select class="form-input" id="profileMedClass">
+                        <option value="">— Not tracked —</option>
+                        <option value="1">1st Class</option>
+                        <option value="2">2nd Class</option>
+                        <option value="3">3rd Class</option>
+                        <option value="4">BasicMed</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Medical Issue Date</label>
+                    <input type="date" class="form-input" id="profileMedDate">
+                </div>
+            </div>
+
+            <!-- ── Optional document upload ── -->
+            <div class="profile-doc-section">
+                <div class="optional-section-title">My Documents (optional)</div>
+                <div class="optional-section-note">Upload your medical certificate, ratings, or endorsements for your own reference. Files are private to you.</div>
+                <div class="profile-doc-upload">
+                    <select id="profileDocType">
+                        <option value="medical">Medical Certificate</option>
+                        <option value="rating">Rating</option>
+                        <option value="endorsement">Endorsement</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="text" id="profileDocLabel" placeholder="Label (e.g. 3rd Class Medical, PPL)" maxlength="80">
+                    <input type="file" id="profileDocFile" accept=".pdf,.jpg,.jpeg,.png">
+                    <button class="upload-btn" id="profileUploadBtn" onclick="uploadProfileDoc()">Upload Document</button>
+                </div>
+                <div class="profile-doc-msg" id="profileDocMsg" style="font-size:0.83em;margin-bottom:10px"></div>
+                <div class="profile-doc-list" id="profileDocList"><div style="color:rgba(255,255,255,0.25);font-size:0.82em;padding:4px 0">Loading documents…</div></div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:22px">
+                <button class="close-btn" onclick="closeProfile()">Close</button>
+                <button class="save-btn" onclick="saveProfile()">Save Profile</button>
+            </div>
+            <div class="profile-msg" id="profileMsg"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/club-config.js?v=3"></script>
+    <script src="js/supabase-client.js?v=3"></script>
+    <script src="js/utils.js?v=3"></script>
+    <script src="js/auth.js?v=3"></script>
+    <script>
+        const SLOT_HRS = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+        const DAYS_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+        let currentMember = null;
+        let airplaneId    = null;
+        let reservations  = [];
+        let miniWeekStart = getWeekStart(new Date());
+
+        // Failsafe: never leave page blank more than 8 seconds
+        setTimeout(() => { document.body.style.visibility = 'visible'; }, 8000);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const session = await requireAuth();
+            if (!session) return;
+
+            currentMember = await getCurrentMember();
+            if (!currentMember) {
+                await _supabase.auth.signOut();
+                window.location.href = '/login.html';
+                return;
+            }
+
+            renderNavUser(currentMember);
+            if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
+
+            await Promise.all([loadAirplane(), loadReservations(), loadSquawks(), loadInspections(), loadMyFlightLog(), loadCurrency()]);
+            await loadWaitlistBanner();
+
+            const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+            _supabase.channel('reservations').on('postgres_changes', { event:'*', schema:'public', table:'reservations' }, debounce(async () => { await loadReservations(); renderMiniCal(); }, 500)).subscribe();
+            _supabase.channel('airplanes').on('postgres_changes',    { event:'*', schema:'public', table:'airplanes'    }, debounce(loadAirplane, 500)).subscribe();
+            _supabase.channel('squawks').on('postgres_changes',      { event:'*', schema:'public', table:'squawks'      }, debounce(loadSquawks, 500)).subscribe();
+          } catch (err) {
+            console.error('[dashboard] init error:', err?.message || err);
+            document.body.style.visibility = 'visible';
+          }
+        });
+
+        function getWeekStart(d) {
+            const s = new Date(d); s.setHours(0,0,0,0);
+            s.setDate(s.getDate() - s.getDay());
+            return s;
+        }
+
+        function shiftMiniWeek(dir) {
+            const n = new Date(miniWeekStart);
+            n.setDate(n.getDate() + dir * 7);
+            const today = new Date(); today.setHours(0,0,0,0);
+            if (n < getWeekStart(today)) return;
+            miniWeekStart = n;
+            renderMiniCal();
+        }
+
+        async function loadAirplane() {
+            const { data: plane } = await _supabase.from('airplanes').select('*, smoh_base').eq('tail_number', AIRPLANE_TAIL).single();
+            if (!plane) return;
+            airplaneId = plane.id;
+
+            const statusMap = { available:{cls:'available',label:'Available'}, flying:{cls:'flying',label:'In the Air'}, maintenance:{cls:'maintenance',label:'Maintenance'}, squawk:{cls:'squawk',label:'Squawk — Grounded'} };
+            const s = statusMap[plane.status] || statusMap.available;
+            document.getElementById('airplaneCard').className = `airplane-card ${s.cls}`;
+            document.getElementById('acStatusBadge').textContent = s.label;
+            const tach = plane.current_tach || 0;
+            document.getElementById('acTach').textContent = tach ? tach.toFixed(1) : '—';
+
+            // Latest flight log for current fuel/oil
+            const { data: log } = await _supabase
+                .from('flight_logs')
+                .select('fuel_added_gallons, needs_fuel, fuel_estimate_left_tank, fuel_estimate_right_tank, oil_added_quarts, oil_qty_end_quarts, completed_at')
+                .eq('airplane_id', plane.id)
+                .or('is_deleted.is.null,is_deleted.eq.false')
+                .order('completed_at', { ascending: false })
+                .limit(1).single();
+
+            const fuelEl = document.getElementById('acFuel');
+            const oilEl  = document.getElementById('acOil');
+            if (log) {
+                if (log.needs_fuel) {
+                    // Build with DOM — no innerHTML with DB values
+                    fuelEl.textContent = '';
+                    const warn = document.createElement('span');
+                    warn.style.cssText = 'color:#ffc107;font-weight:700';
+                    warn.textContent = '⚠ Needs Fuel';
+                    const detail = document.createElement('small');
+                    detail.style.cssText = 'display:block;font-size:0.8em;opacity:0.85';
+                    const lt = log.fuel_estimate_left_tank  != null ? log.fuel_estimate_left_tank  + ' L' : '?';
+                    const rt = log.fuel_estimate_right_tank != null ? log.fuel_estimate_right_tank + ' R' : '?';
+                    detail.textContent = lt + ' / ' + rt;
+                    fuelEl.appendChild(warn);
+                    fuelEl.appendChild(detail);
+                } else if (log.fuel_added_gallons != null) {
+                    fuelEl.textContent = log.fuel_added_gallons + ' gal added';
+                } else {
+                    fuelEl.textContent = 'Not reported';
+                }
+                if (log.oil_qty_end_quarts != null) {
+                    const lowOil = log.oil_qty_end_quarts < 4;
+                    if (lowOil) {
+                        oilEl.textContent = '';
+                        const owarn = document.createElement('span');
+                        owarn.style.cssText = 'color:#ffc107;font-weight:700';
+                        owarn.textContent = '⚠ ' + log.oil_qty_end_quarts + ' qt';
+                        const olabel = document.createElement('small');
+                        olabel.style.cssText = 'font-size:0.8em;opacity:0.85';
+                        olabel.textContent = ' (low)';
+                        oilEl.appendChild(owarn);
+                        oilEl.appendChild(olabel);
+                    } else {
+                        oilEl.textContent = log.oil_qty_end_quarts + ' qt';
+                    }
+                } else if (log.oil_added_quarts != null) {
+                    oilEl.textContent = '+' + log.oil_added_quarts + ' qt added';
+                } else {
+                    oilEl.textContent = 'Not reported';
+                }
+            } else {
+                fuelEl.textContent = 'Not reported';
+                oilEl.textContent  = 'Not reported';
+            }
+
+            const { count } = await _supabase.from('squawks').select('*', { count:'exact', head:true }).eq('airplane_id', plane.id).eq('status','open');
+            document.getElementById('acSquawks').textContent = count ?? 0;
+        }
+
+        async function loadMyFlightLog() {
+            const { data: plane } = await _supabase.from('airplanes').select('id').eq('tail_number', AIRPLANE_TAIL).single();
+            if (!plane) return;
+
+            const { data: logs } = await _supabase
+                .from('flight_logs')
+                .select('flight_hours, flight_cost, tach_start, tach_end, completed_at, notes, needs_fuel, fuel_added_gallons')
+                .eq('member_id', currentMember.id)
+                .eq('airplane_id', plane.id)
+                .or('is_deleted.is.null,is_deleted.eq.false')
+                .order('completed_at', { ascending: false });
+
+            if (!logs?.length) {
+                document.getElementById('acMyHours').textContent = '0.0 hr';
+                document.getElementById('acMyCost').textContent  = '$0.00';
+                return;
+            }
+
+            let totalHrs = 0, totalCost = 0;
+            logs.forEach(function(f) {
+                const hrs  = f.flight_hours  != null ? f.flight_hours
+                           : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10
+                           : 0;
+                const cost = f.flight_cost   != null ? f.flight_cost
+                           : Math.round(hrs * 65 * 100) / 100;
+                totalHrs  += hrs;
+                totalCost += cost;
+            });
+
+            document.getElementById('acMyHours').textContent = totalHrs.toFixed(1) + ' hr';
+            document.getElementById('acMyCost').textContent  = '$' + totalCost.toFixed(2);
+
+            // Render personal flight log card
+            const logEl = document.getElementById('myFlightLog');
+            if (!logEl) return;
+            logEl.innerHTML = logs.slice(0, 10).map(function(f) {
+                const hrs  = f.flight_hours != null ? f.flight_hours
+                           : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10
+                           : null;
+                const cost = f.flight_cost  != null ? f.flight_cost
+                           : hrs != null ? Math.round(hrs * 65 * 100) / 100 : null;
+                const date = new Date(f.completed_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(91,184,232,0.12);gap:12px;flex-wrap:wrap">
+                    <div style="font-size:0.85em;color:rgba(255,255,255,0.55);min-width:80px">${date}</div>
+                    <div style="flex:1;font-size:0.88em;color:rgba(255,255,255,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(f.notes) || '—'}</div>
+                    <div style="text-align:right;flex-shrink:0">
+                        <span style="font-weight:700;color:#fff">${hrs != null ? hrs.toFixed(1) + ' hr' : '—'}</span>
+                        <span style="color:#5DD89A;font-weight:700;margin-left:12px">${cost != null ? '$' + cost.toFixed(2) : '—'}</span>
+                    </div>
+                </div>`;
+            }).join('');
+
+            const totalRow = document.getElementById('myFlightLogTotal');
+            if (totalRow) {
+                totalRow.textContent = logs.length + ' flight' + (logs.length !== 1 ? 's' : '') + ' · ' + totalHrs.toFixed(1) + ' hr total · $' + totalCost.toFixed(2) + ' total dry cost';
+            }
+        }
+
+        async function loadReservations() {
+            const now = new Date().toISOString();
+            const { data } = await _supabase
+                .from('reservations')
+                .select('*, members(name)')
+                .gte('end_time', now)
+                .neq('status', 'cancelled')
+                .order('start_time', { ascending: true })
+                .limit(10);
+
+            reservations = data || [];
+
+            const el = document.getElementById('reservationList');
+            if (!reservations.length) { el.innerHTML = '<div class="empty-state">No upcoming reservations.</div>'; renderMiniCal(); return; }
+
+            el.innerHTML = reservations.map(r => {
+                const start = new Date(r.start_time), end = new Date(r.end_time);
+                const isMe  = r.member_id === currentMember?.id;
+                return `<div class="res-item">
+                    <div class="res-date-box">
+                        <div class="res-date-mon">${start.toLocaleString('en-US',{month:'short'})}</div>
+                        <div class="res-date-day">${start.getDate()}</div>
+                    </div>
+                    <div class="res-info">
+                        <div class="res-time">${fmtTime(start)} – ${fmtTime(end)}</div>
+                        <div class="res-who">${escapeHtml(r.members?.name) || '—'}${isMe ? ' <strong>(you)</strong>' : ''}</div>
+                    </div>
+                    ${isMe ? `<button class="res-cancel-btn" onclick="cancelReservation('${escapeHtml(r.id)}')">Cancel</button>` : ''}
+                </div>`;
+            }).join('');
+
+            renderMiniCal();
+        }
+
+        function renderMiniCal() {
+            const el  = document.getElementById('miniCal');
+            const now = new Date();
+            const today = new Date(); today.setHours(0,0,0,0);
+
+            // Build header
+            let html = '<table><thead><tr><th class="wc-time-col"></th>';
+            for (let c = 0; c < 7; c++) {
+                const day = new Date(miniWeekStart); day.setDate(day.getDate() + c);
+                const isToday = day.toDateString() === today.toDateString();
+                html += `<th class="${isToday ? 'today-col' : ''}">
+                    <div style="font-size:0.8em;color:rgba(255,255,255,0.4)">${DAYS_SHORT[day.getDay()]}</div>
+                    <div class="wc-num">${day.getDate()}</div>
+                </th>`;
+            }
+            html += '</tr></thead><tbody>';
+
+            // Build rows
+            SLOT_HRS.forEach(h => {
+                html += `<tr><td class="wc-time-col">${fmtHour(h)}</td>`;
+                for (let c = 0; c < 7; c++) {
+                    const day = new Date(miniWeekStart); day.setDate(day.getDate() + c);
+                    const slotStart = new Date(day); slotStart.setHours(h, 0, 0, 0);
+                    const slotEnd   = new Date(day); slotEnd.setHours(h + 1, 0, 0, 0);
+                    const isPast    = slotStart < now;
+
+                    const res = reservations.find(r => {
+                        const rs = new Date(r.start_time), re = new Date(r.end_time);
+                        return rs < slotEnd && re > slotStart && r.status !== 'cancelled';
+                    });
+
+                    let cls = 'wc-slot free', label = '';
+                    if (isPast)      { cls = 'wc-slot past'; }
+                    else if (res) {
+                        const isMe = res.member_id === currentMember?.id;
+                        cls   = isMe ? 'wc-slot mine' : 'wc-slot taken';
+                        label = isMe ? 'You' : escapeHtml(res.members?.name?.split(' ')[0] || '');
+                    }
+
+                    html += `<td><div class="${cls}">${label}</div></td>`;
+                }
+                html += '</tr>';
+            });
+
+            html += '</tbody></table>';
+            el.innerHTML = html;
+        }
+
+        async function loadInspections() {
+            const { data: plane } = await _supabase.from('airplanes').select('id').eq('tail_number', AIRPLANE_TAIL).single();
+            if (!plane) return;
+
+            const { data } = await _supabase
+                .from('inspections')
+                .select('*')
+                .eq('airplane_id', plane.id)
+                .order('name');
+
+            const el = document.getElementById('inspectionList');
+            if (!data || !data.length) {
+                el.innerHTML = '<div class="empty-state">No inspections found. Run the SQL setup first.</div>';
+                updateAirworthyBanner([]);
+                return;
+            }
+
+            const today = new Date(); today.setHours(0,0,0,0);
+            const items = data.map(insp => {
+                let status = 'unknown', dueText = 'Not recorded', daysLeft = null;
+                if (insp.last_completed) {
+                    const last = new Date(insp.last_completed);
+                    const due  = new Date(last);
+                    due.setDate(due.getDate() + insp.interval_days);
+                    daysLeft = Math.floor((due - today) / 86400000);
+                    if (daysLeft < 0)        { status = 'overdue';  dueText = `Overdue by ${Math.abs(daysLeft)}d`; }
+                    else if (daysLeft <= 30) { status = 'due-soon'; dueText = `Due in ${daysLeft}d (${fmtDate(due.toISOString())})`; }
+                    else                     { status = 'current';  dueText = `Due ${fmtDate(due.toISOString())}`; }
+                }
+                return { ...insp, status, dueText, daysLeft };
+            });
+
+            // Sort: overdue first, then due-soon, then current, then unknown
+            const order = { overdue:0, 'due-soon':1, current:2, unknown:3 };
+            items.sort((a,b) => order[a.status] - order[b.status]);
+
+            const labelMap = { overdue:'Overdue', 'due-soon':'Due Soon', current:'Current', unknown:'Not Set' };
+            el.innerHTML = items.map(i => `
+                <div class="insp-item">
+                    <div>
+                        <div class="insp-name">${i.name}</div>
+                        <div class="insp-meta">${i.dueText}</div>
+                    </div>
+                    <span class="insp-badge ${i.status}">${labelMap[i.status]}</span>
+                </div>`).join('');
+
+            updateAirworthyBanner(items);
+        }
+
+        function updateAirworthyBanner(items) {
+            const banner   = document.getElementById('awBanner');
+            const awStatus = document.getElementById('awStatus');
+            const awDetail = document.getElementById('awDetail');
+
+            if (!items.length) {
+                banner.className = 'aw-banner unknown';
+                awStatus.textContent = 'Airworthiness unknown — no inspection data';
+                awDetail.textContent = '';
+                return;
+            }
+
+            const overdue  = items.filter(i => i.status === 'overdue');
+            const dueSoon  = items.filter(i => i.status === 'due-soon');
+
+            if (overdue.length) {
+                banner.className = 'aw-banner not-airworthy';
+                awStatus.textContent = 'NOT AIRWORTHY';
+                awDetail.textContent = `${overdue.length} inspection${overdue.length > 1 ? 's' : ''} overdue: ${overdue.map(i => i.name).join(', ')}`;
+            } else if (dueSoon.length) {
+                banner.className = 'aw-banner unknown';
+                awStatus.textContent = 'AIRWORTHY — Inspections due soon';
+                awDetail.textContent = dueSoon.map(i => `${i.name} in ${i.daysLeft}d`).join(' · ');
+            } else {
+                banner.className = 'aw-banner airworthy';
+                awStatus.textContent = 'AIRWORTHY';
+                awDetail.textContent = 'All FAA required inspections current';
+            }
+        }
+
+        async function loadSquawks() {
+            const { data: plane } = await _supabase.from('airplanes').select('id').eq('tail_number', AIRPLANE_TAIL).single();
+            if (!plane) return;
+            const { data } = await _supabase.from('squawks').select('*, members(name)').eq('airplane_id', plane.id).eq('status','open').order('reported_at', { ascending: false });
+
+            // Sidebar list
+            const el = document.getElementById('squawkList');
+            if (!data || !data.length) {
+                el.innerHTML = '<div class="empty-state">No open squawks.</div>';
+                document.getElementById('squawkAlertSection').classList.remove('has-squawks');
+                return;
+            }
+            el.innerHTML = data.map(s => `
+                <div class="squawk-item">
+                    <div class="squawk-dot"></div>
+                    <div>
+                        <div class="squawk-text">${escapeHtml(s.description)}</div>
+                        <div class="squawk-meta">Reported by ${escapeHtml(s.members?.name || '—')} · ${fmtDate(s.reported_at)}</div>
+                    </div>
+                </div>`).join('');
+
+            // Alert cards below airplane card
+            const gngLabel = { no_go:'🛑 NO-GO', caution:'⚠️ CAUTION', go:'✅ GO' };
+            document.getElementById('squawkAlertSection').classList.add('has-squawks');
+            document.getElementById('squawkAlertCards').innerHTML = data.map((s, i) => {
+                const gng = s.go_no_go;
+                const num = `SQ-${String(i + 1).padStart(3, '0')}`;
+                return `<div class="sq-alert-card ${gng || ''}">
+                    <div class="sq-alert-num">${escapeHtml(num)}</div>
+                    ${gng ? `<div class="sq-alert-badges"><span class="sq-alert-badge ${gng}">${gngLabel[gng]}</span></div>` : ''}
+                    <div class="sq-alert-desc">${escapeHtml(s.description)}</div>
+                    <div class="sq-alert-meta">${escapeHtml(s.members?.name) || '—'} &middot; ${fmtDate(s.reported_at)}</div>
+                </div>`;
+            }).join('');
+        }
+
+        async function cancelReservation(id) {
+            if (!confirm('Cancel this reservation?')) return;
+            // Client-side ownership check — RLS enforces this server-side too
+            const res = reservations.find(function(r){ return r.id === id; });
+            if (!res || res.member_id !== currentMember.id) {
+                alert('You can only cancel your own reservations.');
+                return;
+            }
+            const { error } = await _supabase.from('reservations').update({ status: 'cancelled' }).eq('id', id);
+            if (error) { console.error('[cancelReservation]', error?.message || error); alert('Cancel failed. Please try again.'); return; }
+            loadReservations();
+        }
+
+        // Profile
+        async function openProfile() {
+            document.getElementById('profileEmail').value = currentMember.email || '';
+            document.getElementById('profileName').value  = currentMember.name  || '';
+            document.getElementById('profilePhone').value = currentMember.phone || '';
+            document.getElementById('profileMsg').textContent = '';
+            document.getElementById('profileDocMsg').textContent = '';
+
+            // Fetch currency fields from DB
+            const { data: m } = await _supabase
+                .from('members')
+                .select('bfr_date, medical_class, medical_date, date_of_birth')
+                .eq('id', currentMember.id)
+                .single();
+            if (m) {
+                document.getElementById('profileDob').value      = m.date_of_birth || '';
+                document.getElementById('profileBfrDate').value  = m.bfr_date      || '';
+                document.getElementById('profileMedClass').value = m.medical_class != null ? String(m.medical_class) : '';
+                document.getElementById('profileMedDate').value  = m.medical_date  || '';
+            }
+
+            document.getElementById('profileModal').classList.add('open');
+            loadProfileDocs();
+        }
+        function closeProfile() {
+            document.getElementById('profileModal').classList.remove('open');
+        }
+        async function saveProfile() {
+            const name     = document.getElementById('profileName').value.trim();
+            const phone    = document.getElementById('profilePhone').value.trim();
+            const dob      = document.getElementById('profileDob').value      || null;
+            const bfrDate  = document.getElementById('profileBfrDate').value  || null;
+            const medClass = parseInt(document.getElementById('profileMedClass').value) || null;
+            const medDate  = document.getElementById('profileMedDate').value  || null;
+            const msg      = document.getElementById('profileMsg');
+            if (!name) { msg.className = 'profile-msg error'; msg.textContent = 'Name is required.'; return; }
+
+            const { error } = await _supabase.from('members').update({
+                name,
+                phone,
+                profile_completed: true,
+                date_of_birth:  dob,
+                bfr_date:       bfrDate,
+                medical_class:  medClass,
+                medical_date:   medDate
+            }).eq('id', currentMember.id);
+            if (error) {
+                console.error('[saveProfile]', error?.message || error);
+                msg.className = 'profile-msg error'; msg.textContent = 'Save failed. Please try again.';
+            } else {
+                currentMember.name  = name;
+                currentMember.phone = phone;
+                msg.className = 'profile-msg success'; msg.textContent = 'Profile updated!';
+                renderNavUser(currentMember);
+                await loadCurrency();          // refresh currency card
+                setTimeout(closeProfile, 1400);
+            }
+        }
+
+        // ── Profile document helpers ──
+        async function loadProfileDocs() {
+            const listEl = document.getElementById('profileDocList');
+            listEl.innerHTML = '<div style="color:rgba(255,255,255,0.25);font-size:0.82em;padding:4px 0">Loading…</div>';
+            const { data: docs } = await _supabase
+                .from('member_documents')
+                .select('id, doc_type, label, storage_path, created_at')
+                .eq('member_id', currentMember.id)
+                .order('created_at', { ascending: false });
+            if (!docs?.length) {
+                listEl.innerHTML = '<div style="color:rgba(255,255,255,0.25);font-size:0.82em;padding:4px 0">No documents on file.</div>';
+                return;
+            }
+            const items = await Promise.all(docs.map(async d => {
+                const { data: urlData } = await _supabase.storage
+                    .from('member-docs').createSignedUrl(d.storage_path, 3600);
+                const url = urlData?.signedUrl || '#';
+                const typeTag = { medical:'💊 Medical', rating:'🛩 Rating', endorsement:'✍️ Endorsement', other:'📄 Other' }[d.doc_type] || d.doc_type;
+                return `<div class="profile-doc-item">
+                    <span style="color:rgba(255,255,255,0.5);font-size:0.8em">${typeTag}</span>
+                    <a href="${url}" target="_blank" rel="noopener">${escapeHtml(d.label)}</a>
+                    <button class="profile-doc-del" onclick="deleteProfileDoc('${d.id}','${escapeHtml(d.storage_path)}')" title="Remove">✕</button>
+                </div>`;
+            }));
+            listEl.innerHTML = items.join('');
+        }
+
+        async function uploadProfileDoc() {
+            const file    = document.getElementById('profileDocFile').files[0];
+            const label   = document.getElementById('profileDocLabel').value.trim();
+            const docType = document.getElementById('profileDocType').value;
+            const msgEl   = document.getElementById('profileDocMsg');
+            const btn     = document.getElementById('profileUploadBtn');
+            if (!file)  { msgEl.style.color='#ff8090'; msgEl.textContent='Choose a file first.'; return; }
+            if (!label) { msgEl.style.color='#ff8090'; msgEl.textContent='Add a label for this document.'; return; }
+            btn.disabled = true;
+            msgEl.style.color='rgba(255,255,255,0.45)'; msgEl.textContent='Uploading…';
+            const path = `${currentMember.id}/${Date.now()}-${file.name}`;
+            const { error: upErr } = await _supabase.storage.from('member-docs').upload(path, file);
+            if (upErr) {
+                btn.disabled = false;
+                msgEl.style.color='#ff8090'; msgEl.textContent='Upload failed: ' + (upErr.message || '');
+                return;
+            }
+            const { error: dbErr } = await _supabase.from('member_documents').insert({
+                member_id:    currentMember.id,
+                doc_type:     docType,
+                label:        label,
+                storage_path: path
+            });
+            btn.disabled = false;
+            if (dbErr) {
+                msgEl.style.color='#ff8090'; msgEl.textContent='Saved file but DB insert failed: ' + (dbErr.message || '');
+            } else {
+                msgEl.style.color='#5DD89A'; msgEl.textContent='Document uploaded!';
+                document.getElementById('profileDocLabel').value = '';
+                document.getElementById('profileDocFile').value  = '';
+                await loadProfileDocs();
+            }
+        }
+
+        async function deleteProfileDoc(docId, storagePath) {
+            if (!confirm('Remove this document?')) return;
+            await _supabase.storage.from('member-docs').remove([storagePath]);
+            await _supabase.from('member_documents').delete().eq('id', docId);
+            await loadProfileDocs();
+        }
+
+        async function loadCurrency() {
+            const { data: m } = await _supabase
+                .from('members')
+                .select('bfr_date, medical_class, medical_date, date_of_birth')
+                .eq('id', currentMember.id)
+                .single();
+            if (!m) return;
+
+            // 90-day passenger currency — 3 T&Ls in last 90 days (FAA 61.57a)
+            const cutoff = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+            const { data: logs90 } = await _supabase
+                .from('flight_logs')
+                .select('landings')
+                .eq('member_id', currentMember.id)
+                .gte('completed_at', cutoff)
+                .or('is_deleted.is.null,is_deleted.eq.false');
+            const landingCount    = (logs90 || []).reduce((s, f) => s + (f.landings || 0), 0);
+            const hasLandingData  = (logs90 || []).some(f => f.landings != null);
+            const passengerCurrent = hasLandingData && landingCount >= 3;
+
+            // BFR — within 24 calendar months (FAA 61.56)
+            let bfrExpiry = null, bfrCurrent = false;
+            if (m.bfr_date) {
+                bfrExpiry = new Date(m.bfr_date);
+                bfrExpiry.setMonth(bfrExpiry.getMonth() + 24);
+                bfrCurrent = bfrExpiry > new Date();
+            }
+
+            // Medical — duration per 14 CFR § 61.23(d)
+            // A certificate does NOT downgrade — higher-class privileges expire first,
+            // then the same cert continues under lower-class privileges.
+            // For private pilots we track the FINAL expiry (when 3rd-class privileges end):
+            //   1st class: 72 mo (<40) or 36 mo (≥40) from issue date
+            //   2nd class: 60 mo (<40) or 24 mo (≥40) from issue date
+            //   3rd class: 60 mo (<40) or 24 mo (≥40) from issue date
+            //   BasicMed:  48 mo regardless of age
+            const ageAt = (issueDate, dob) =>
+                (new Date(issueDate) - new Date(dob)) / (365.25 * 86400000);
+
+            let medExpiry = null, medCurrent = false, medPrivilegeNote = '';
+            if (m.medical_date) {
+                let months = 24; // conservative fallback (3rd class, age ≥ 40)
+                const age = m.date_of_birth ? ageAt(m.medical_date, m.date_of_birth) : null;
+                if (m.medical_class === 1) {
+                    months = (age !== null && age < 40) ? 72 : 36;
+                    medPrivilegeNote = ' (private pilot privileges)';
+                } else if (m.medical_class === 2) {
+                    months = (age !== null && age < 40) ? 60 : 24;
+                    medPrivilegeNote = ' (private pilot privileges)';
+                } else if (m.medical_class === 3) {
+                    months = (age !== null && age < 40) ? 60 : 24;
+                } else if (m.medical_class === 4) {
+                    months = 48; // BasicMed — 48 months regardless of age
+                }
+                medExpiry = new Date(m.medical_date);
+                medExpiry.setMonth(medExpiry.getMonth() + months);
+                medCurrent = medExpiry > new Date();
+            }
+
+            const card = document.getElementById('currencyCard');
+            const row  = document.getElementById('currencyRow');
+            if (!card || !row) return;
+            card.style.display = '';
+
+            const fmtD = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+            const classLabel = { 1:'1st Class', 2:'2nd Class', 3:'3rd Class', 4:'BasicMed' };
+            const notTracked = 'Not tracked — tap Profile to add';
+
+            const items = [
+                hasLandingData ? {
+                    cls:    passengerCurrent ? 'current' : 'lapsed',
+                    icon:   passengerCurrent ? '✅' : '⚠️',
+                    label:  '90-Day Passenger Currency',
+                    detail: landingCount + ' of 3 required landings in the past 90 days'
+                } : {
+                    cls:    'missing',
+                    icon:   '—',
+                    label:  '90-Day Passenger Currency',
+                    detail: 'Not tracked — landings auto-populate from post-flight logs'
+                },
+                {
+                    cls:    m.bfr_date ? (bfrCurrent ? 'current' : 'lapsed') : 'missing',
+                    icon:   m.bfr_date ? (bfrCurrent ? '✅' : '⚠️') : '—',
+                    label:  'Biennial Flight Review (BFR)',
+                    detail: m.bfr_date
+                        ? (bfrCurrent ? 'Expires ' + fmtD(bfrExpiry) : 'Expired ' + fmtD(bfrExpiry))
+                        : notTracked
+                },
+                {
+                    cls:    m.medical_date ? (medCurrent ? 'current' : 'lapsed') : 'missing',
+                    icon:   m.medical_date ? (medCurrent ? '✅' : '⚠️') : '—',
+                    label:  'Medical Certificate' + (m.medical_class ? ' — ' + (classLabel[m.medical_class] || '') : ''),
+                    detail: m.medical_date
+                        ? (medCurrent ? 'Expires ' + fmtD(medExpiry) : 'Expired ' + fmtD(medExpiry)) + medPrivilegeNote
+                        : notTracked
+                }
+            ];
+
+            row.innerHTML = items.map(it =>
+                `<div class="currency-item ${it.cls}">
+                    <span class="currency-icon">${it.icon}</span>
+                    <div>
+                        <div class="currency-label">${it.label}</div>
+                        <div class="currency-detail">${it.detail}</div>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        async function loadWaitlistBanner() {
+            if (!airplaneId || !currentMember) return;
+            const { data: plane } = await _supabase
+                .from('airplanes').select('status').eq('id', airplaneId).single();
+            if (!plane || plane.status !== 'squawk') return;
+
+            const { data: myWait } = await _supabase
+                .from('waitlist')
+                .select('id')
+                .eq('airplane_id', airplaneId)
+                .eq('member_id', currentMember.id)
+                .maybeSingle();
+
+            const onList   = !!myWait;
+            const banner   = document.getElementById('waitlistBanner');
+            const btn      = document.getElementById('waitlistBtn');
+            const statusTx = document.getElementById('waitlistStatusText');
+            if (!banner || !btn || !statusTx) return;
+
+            banner.classList.add('visible');
+            if (onList) {
+                btn.textContent = 'Leave Waitlist';
+                btn.classList.add('on-list');
+                statusTx.textContent = "N2134Y is grounded — you're on the waitlist. We'll email you when it's back.";
+            } else {
+                btn.textContent = 'Join Waitlist';
+                btn.classList.remove('on-list');
+                statusTx.textContent = 'N2134Y is currently grounded. Join the waitlist to be notified when it\'s airworthy again.';
+            }
+        }
+
+        async function toggleWaitlist() {
+            const btn    = document.getElementById('waitlistBtn');
+            const onList = btn.classList.contains('on-list');
+            btn.disabled = true;
+            if (onList) {
+                await _supabase.from('waitlist')
+                    .delete().eq('airplane_id', airplaneId).eq('member_id', currentMember.id);
+            } else {
+                await _supabase.from('waitlist')
+                    .insert({ airplane_id: airplaneId, member_id: currentMember.id });
+            }
+            btn.disabled = false;
+            await loadWaitlistBanner();
+        }
+
+        function fmtTime(d)  { return d.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}); }
+        function fmtHour(h)  { const d = new Date(); d.setHours(h,0,0,0); return d.toLocaleString('en-US',{hour:'numeric',hour12:true}); }
+        function fmtDate(iso){ return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+        function toggleNav() { document.getElementById('navLinks').classList.toggle('nav-open'); }
+    </script>
+</body>
+</html>

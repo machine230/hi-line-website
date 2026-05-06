@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js?v=3"></script>
+    <style>body{visibility:hidden}</style>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--body-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        .club-nav {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(12,31,20,0.97);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+        }
+        .club-nav-inner {
+            max-width: 1100px; margin: 0 auto;
+            padding: 0 28px; height: 64px;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 16px;
+        }
+        .club-nav-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 1.25em;
+            color: #fff; text-decoration: none; letter-spacing: 1px;
+        }
+        .club-nav-logo span { color: #5BB8E8; }
+        .club-nav-links { display: flex; gap: 4px; align-items: center; }
+        .club-nav-links a {
+            text-decoration: none; color: rgba(255,255,255,0.7);
+            font-family: 'Montserrat', sans-serif; font-weight: 700;
+            font-size: 0.84em; padding: 7px 13px; border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .club-nav-links a:hover, .club-nav-links a.active {
+            color: #fff; background: rgba(255,255,255,0.09);
+        }
+        #navUser { font-size: 0.82em; color: rgba(255,255,255,0.45); font-family: 'Montserrat', sans-serif; }
+        .hamburger-btn { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+        .hamburger-btn span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; margin: 5px 0; }
+
+        /* ── PAGE ── */
+        .page-wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+
+        /* ── TABS ── */
+        .admin-tabs {
+            display: flex; gap: 4px; margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            flex-wrap: wrap;
+        }
+        .admin-tab {
+            padding: 9px 20px; background: none; border: none;
+            font-family: 'Montserrat', sans-serif; font-size: 0.84em; font-weight: 700;
+            color: rgba(255,255,255,0.45); cursor: pointer;
+            border-bottom: 2px solid transparent; margin-bottom: -1px;
+            transition: color 0.2s;
+        }
+        .admin-tab.active { color: #5BB8E8; border-bottom-color: #5BB8E8; }
+        .admin-tab:hover:not(.active) { color: rgba(255,255,255,0.8); }
+
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+
+        /* ── CARDS ── */
+        .admin-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 14px; margin-bottom: 20px; overflow: hidden;
+        }
+        .admin-card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 12px;
+        }
+        .admin-card-header h3 {
+            font-family: 'Montserrat', sans-serif; font-size: 0.9em; font-weight: 700;
+            color: rgba(255,255,255,0.9); margin: 0;
+        }
+
+        /* ── TABLES ── */
+        .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .admin-table { width: 100%; border-collapse: collapse; }
+        .admin-table th {
+            background: rgba(255,255,255,0.04); padding: 11px 18px;
+            text-align: left; font-family: 'Montserrat', sans-serif;
+            font-size: 0.7em; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: rgba(255,255,255,0.35);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .admin-table td {
+            padding: 13px 18px; border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.88em; color: rgba(255,255,255,0.85); vertical-align: middle;
+        }
+        .admin-table tr:hover td { background: rgba(255,255,255,0.03); }
+        .empty-row td { color: rgba(255,255,255,0.3); text-align: center; padding: 28px; }
+
+        /* ── BADGES ── */
+        .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72em; font-weight: 700; }
+        .badge-green  { background: rgba(42,122,82,0.2);   color: #5DD89A; border: 1px solid rgba(42,122,82,0.35); }
+        .badge-red    { background: rgba(220,53,69,0.15);  color: #ff8090; border: 1px solid rgba(220,53,69,0.3); }
+        .badge-blue   { background: rgba(91,184,232,0.15); color: #5BB8E8; border: 1px solid rgba(91,184,232,0.3); }
+        .badge-grey   { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); }
+        .badge-orange { background: rgba(212,131,26,0.15); color: #F5B942; border: 1px solid rgba(212,131,26,0.3); }
+        .badge-warn   { background: rgba(245,185,66,0.15); color: #F5B942; border: 1px solid rgba(245,185,66,0.3); }
+
+        /* ── TABLE BUTTONS ── */
+        .tbl-btn {
+            padding: 5px 13px; border-radius: 6px; font-size: 0.8em;
+            font-weight: 700; cursor: pointer; border: none;
+            font-family: 'Montserrat', sans-serif; transition: opacity 0.2s;
+        }
+        .tbl-btn:hover { opacity: 0.82; }
+        .tbl-btn + .tbl-btn { margin-left: 5px; }
+        .tbl-btn-primary { background: #2A7A52; color: #fff; }
+        .tbl-btn-danger  { background: rgba(220,53,69,0.18); color: #ff8090; border: 1px solid rgba(220,53,69,0.3); }
+        .tbl-btn-success { background: rgba(42,122,82,0.2);  color: #5DD89A; border: 1px solid rgba(42,122,82,0.35); }
+        .tbl-btn-warn    { background: rgba(245,185,66,0.15); color: #F5B942; border: 1px solid rgba(245,185,66,0.3); }
+
+        /* ── ADD MEMBER FORM ── */
+        .add-member-form {
+            padding: 20px 24px;
+            background: rgba(255,255,255,0.03);
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+        .add-member-form h4 {
+            font-family: 'Montserrat', sans-serif; font-size: 0.7em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: rgba(255,255,255,0.35); margin: 0 0 14px;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
+        .form-field label {
+            display: block; font-size: 0.75em; font-weight: 700;
+            color: rgba(255,255,255,0.4); text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 5px;
+        }
+        .form-field input, .form-field select {
+            width: 100%; padding: 9px 12px;
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 7px;
+            font-size: 0.9em; font-family: inherit;
+            background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9);
+        }
+        .form-field input:focus, .form-field select:focus {
+            outline: none; border-color: #5BB8E8;
+        }
+        .form-field input::placeholder { color: rgba(255,255,255,0.22); }
+        .form-submit {
+            padding: 9px 20px; background: #2A7A52; color: #fff;
+            border: none; border-radius: 7px; font-weight: 700; cursor: pointer;
+            font-family: 'Montserrat', sans-serif; font-size: 0.88em; white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .form-submit:hover { background: #359966; }
+
+        /* ── AIRCRAFT STATUS ── */
+        .status-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .status-opt {
+            padding: 7px 16px; border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05); font-size: 0.84em; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+            color: rgba(255,255,255,0.65); font-family: 'Montserrat', sans-serif;
+        }
+        .status-opt:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+        .status-opt.active-available    { background: rgba(42,122,82,0.2);   border-color: rgba(42,122,82,0.5);   color: #5DD89A; }
+        .status-opt.active-flying       { background: rgba(91,184,232,0.15); border-color: rgba(91,184,232,0.4);  color: #5BB8E8; }
+        .status-opt.active-maintenance  { background: rgba(212,131,26,0.15); border-color: rgba(212,131,26,0.4);  color: #F5B942; }
+        .status-opt.active-squawk       { background: rgba(220,53,69,0.15);  border-color: rgba(220,53,69,0.4);   color: #ff8090; }
+
+        /* ── FILTER BAR ── */
+        .filter-bar {
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .filter-bar label {
+            display: block; font-size: 0.72em; font-weight: 700;
+            color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;
+        }
+        .filter-bar input, .filter-bar select {
+            padding: 8px 12px; border: 1px solid rgba(255,255,255,0.12); border-radius: 7px;
+            font-size: 0.88em; font-family: inherit;
+            background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85);
+        }
+        .filter-bar input:focus, .filter-bar select:focus { outline: none; border-color: #5BB8E8; }
+        .filter-bar select option { background: #0D1E20; }
+        .ff { flex: 1; min-width: 140px; }
+        .ff-narrow { flex: 0 0 auto; }
+        .filter-btn { padding: 8px 16px; border-radius: 7px; font-size: 0.84em; font-weight: 700; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; }
+        .filter-btn-apply { background: #2A7A52; color: #fff; }
+        .filter-btn-apply:hover { background: #359966; }
+        .filter-btn-clear { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); }
+
+        /* ── SECTION LABELS (within card bodies) ── */
+        .section-lbl {
+            font-family: 'Montserrat', sans-serif; font-size: 0.7em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            color: rgba(255,255,255,0.3); margin-bottom: 10px;
+        }
+
+        /* ── MODALS ── */
+        .modal-bg {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.6); z-index: 2000;
+            align-items: center; justify-content: center; padding: 16px;
+        }
+        .modal-bg.open { display: flex; }
+        .modal-box {
+            background: #111E2A;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px; padding: 32px;
+            width: 100%; max-width: 480px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+        }
+        .modal-box h2 {
+            font-family: 'Montserrat', sans-serif; font-size: 1em; font-weight: 700;
+            color: #fff; margin: 0 0 20px;
+        }
+        .modal-field { margin-bottom: 14px; }
+        .modal-field label {
+            display: block; font-size: 0.75em; font-weight: 700;
+            color: rgba(255,255,255,0.4); text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 5px;
+        }
+        .modal-field input, .modal-field textarea {
+            width: 100%; padding: 11px 14px;
+            border: 1px solid rgba(255,255,255,0.12); border-radius: 8px;
+            font-size: 0.92em; font-family: inherit;
+            background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.9);
+        }
+        .modal-field input:focus, .modal-field textarea:focus {
+            outline: none; border-color: #5BB8E8;
+        }
+        .modal-field input::placeholder, .modal-field textarea::placeholder { color: rgba(255,255,255,0.22); }
+        .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-actions button { flex: 1; padding: 11px; border-radius: 8px; font-size: 0.92em; font-weight: 700; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; }
+        .modal-cancel { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.12) !important; }
+        .modal-save   { background: #2A7A52; color: #fff; }
+        .modal-save:hover { background: #359966; }
+
+        /* ── ADMIN CARD BODY PADDING ── */
+        .card-body-pad { padding: 24px; }
+        .inline-form { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
+        .inline-form .form-field { flex: 0 0 180px; }
+
+        /* ── MSG COLORS ── */
+        .msg-ok  { color: #5DD89A; }
+        .msg-err { color: #ff8090; }
+
+        /* ── DOC UPLOAD (member edit modal) ── */
+        .doc-section { margin-top:24px; padding-top:20px; border-top:1px solid rgba(255,255,255,0.1); }
+        .doc-section h4 { font-family:'Montserrat',sans-serif; font-size:0.72em; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:rgba(255,255,255,0.35); margin:0 0 14px; }
+        .doc-upload-row { display:flex; flex-direction:column; gap:8px; }
+        .doc-upload-row select,
+        .doc-upload-row input[type="text"],
+        .doc-upload-row input[type="file"] { width:100%; padding:9px 12px; border:1px solid rgba(255,255,255,0.12); border-radius:7px; font-size:0.88em; font-family:inherit; background:rgba(255,255,255,0.07); color:rgba(255,255,255,0.9); }
+        .doc-upload-row select option { background:#0D1E20; }
+        .doc-upload-row input[type="file"] { color:rgba(255,255,255,0.55); cursor:pointer; }
+        .doc-list { margin-top:12px; display:flex; flex-direction:column; gap:6px; }
+        .doc-list-item { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 12px; background:rgba(255,255,255,0.04); border-radius:8px; border:1px solid rgba(255,255,255,0.08); font-size:0.85em; }
+        .doc-list-item a { color:#5BB8E8; text-decoration:none; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .doc-list-item a:hover { text-decoration:underline; }
+        .doc-type-tag { font-size:0.72em; font-weight:700; padding:2px 8px; border-radius:12px; background:rgba(91,184,232,0.12); color:#5BB8E8; border:1px solid rgba(91,184,232,0.25); white-space:nowrap; font-family:'Montserrat',sans-serif; }
+
+        /* ── MOBILE ── */
+        @media(max-width: 680px) {
+            .hamburger-btn { display: block; }
+            .club-nav-inner { position: relative; }
+            .club-nav-links {
+                display: none; position: absolute; top: 64px; left: 0; right: 0;
+                flex-direction: column; background: rgba(12,31,20,0.99);
+                padding: 12px 24px 24px;
+                border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 999;
+            }
+            .club-nav-links.nav-open { display: flex; }
+            .club-nav-links a { padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; font-size: 1em; width: 100%; }
+            .page-wrap { padding: 16px; }
+            .admin-tabs { gap: 2px; }
+            .admin-tab { font-size: 0.78em; padding: 8px 11px; }
+            .form-row { grid-template-columns: 1fr; }
+            .tbl-btn { padding: 7px 12px; min-height: 36px; }
+            .form-submit { padding: 11px 18px; min-height: 42px; }
+            .status-options { flex-direction: column; }
+            .status-opt { text-align: center; padding: 11px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="club-nav">
+        <div class="club-nav-inner">
+            <a href="dashboard.html" class="club-nav-logo">PNW<span>AV8R</span></a>
+            <div id="navLinks" class="club-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="schedule.html">Schedule</a>
+                <a href="squawks.html">Squawks</a>
+                <a href="post-flight.html">Post-Flight</a>
+                <a href="directory.html">Directory</a>
+                <a href="admin.html" class="active">Admin</a>
+            </div>
+            <div id="navUser"></div>
+            <button class="hamburger-btn" onclick="toggleNav()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="admin-tabs">
+            <button class="admin-tab active" onclick="showTab('members',this)">Members</button>
+            <button class="admin-tab" onclick="showTab('aircraft',this)">Aircraft</button>
+            <button class="admin-tab" onclick="showTab('inspections',this)">Inspections</button>
+            <button class="admin-tab" onclick="showTab('squawks',this)">Squawks</button>
+            <button class="admin-tab" onclick="showTab('reservations',this)">Reservations</button>
+            <button class="admin-tab" onclick="showTab('flights',this)">Flight Log</button>
+        </div>
+
+        <!-- ── Members ── -->
+        <div class="tab-panel active" id="tab-members">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h3>Club Members</h3>
+                    <span id="memberTotal" style="font-size:0.78em;color:rgba(255,255,255,0.35);font-family:'Montserrat',sans-serif"></span>
+                </div>
+                <div class="table-scroll">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th><th>Email</th><th>Phone</th>
+                                <th>Membership</th><th>PIC</th><th>Role</th><th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberTableBody">
+                            <tr><td colspan="7" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="add-member-form">
+                    <h4>Invite New Member</h4>
+                    <p style="font-size:0.8em;color:rgba(255,255,255,0.4);margin-bottom:14px;line-height:1.5">
+                        Adds the member to the club roster and sends them an email with a link to set their password and log in.
+                    </p>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label>Full Name</label>
+                            <input type="text" id="newName" placeholder="Jane Smith" maxlength="100">
+                        </div>
+                        <div class="form-field">
+                            <label>Email</label>
+                            <input type="email" id="newEmail" placeholder="jane@email.com">
+                        </div>
+                        <div class="form-field">
+                            <label>Phone</label>
+                            <input type="tel" id="newPhone" placeholder="(206) 555-1234" pattern="[\d\s\+\-\(\)]+" maxlength="20">
+                        </div>
+                        <div class="form-field" style="flex:0 0 auto">
+                            <label>Role</label>
+                            <select id="newRole" style="padding:10px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:#fff;font-family:inherit;font-size:0.9em">
+                                <option value="member">Member</option>
+                                <option value="ap">A&amp;P (Maintenance)</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div style="display:flex;align-items:flex-end">
+                            <button class="form-submit" onclick="inviteMember()">Send Invite</button>
+                        </div>
+                    </div>
+                    <div id="addMemberMsg" style="margin-top:10px;font-size:0.85em"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Aircraft ── -->
+        <div class="tab-panel" id="tab-aircraft">
+            <div class="admin-card">
+                <div class="admin-card-header"><h3>N2134Y — Aircraft Status</h3></div>
+                <div class="card-body-pad">
+                    <div style="margin-bottom:24px">
+                        <div class="section-lbl">Set Status</div>
+                        <div class="status-options" id="statusOptions">
+                            <button class="status-opt" onclick="setAircraftStatus('available')">Available</button>
+                            <button class="status-opt" onclick="setAircraftStatus('flying')">In the Air</button>
+                            <button class="status-opt" onclick="setAircraftStatus('maintenance')">Maintenance</button>
+                            <button class="status-opt" onclick="setAircraftStatus('squawk')">Grounded — Squawk</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom:24px">
+                        <div class="section-lbl">Update Tach Time</div>
+                        <div class="inline-form">
+                            <div class="form-field">
+                                <label>Current Tach</label>
+                                <input type="number" id="tachUpdate" step="0.1" min="0" max="99999.9" placeholder="e.g. 2849.6">
+                            </div>
+                            <button class="form-submit" onclick="updateTach()">Update</button>
+                        </div>
+                        <div id="tachMsg" style="margin-top:8px;font-size:0.85em"></div>
+                    </div>
+                    <div style="margin-bottom:24px">
+                        <div class="section-lbl">Maintenance Note</div>
+                        <div class="inline-form">
+                            <div class="form-field" style="flex:1;min-width:200px">
+                                <label>Note (shown on dashboard)</label>
+                                <input type="text" id="maintNote" placeholder="Annual due, oil change, etc." maxlength="500">
+                            </div>
+                            <button class="form-submit" onclick="saveMaintNote()">Save Note</button>
+                        </div>
+                        <div id="maintMsg" style="margin-top:8px;font-size:0.85em"></div>
+                    </div>
+                    <div>
+                        <div class="section-lbl">Maintenance Window (blocks calendar booking)</div>
+                        <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
+                            <div class="form-field" style="flex:1;min-width:200px">
+                                <label>Grounded From</label>
+                                <input type="datetime-local" id="adminGroundedFrom">
+                            </div>
+                            <div class="form-field" style="flex:1;min-width:200px">
+                                <label>Expected Return (optional)</label>
+                                <input type="datetime-local" id="adminGroundedUntil">
+                            </div>
+                        </div>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <button class="form-submit" onclick="saveGroundingPeriod()">Save Window</button>
+                            <button class="form-submit" style="background:rgba(220,53,69,0.25);border-color:rgba(220,53,69,0.4);color:#ff8090;" onclick="clearGroundingPeriod()">Clear Window</button>
+                        </div>
+                        <div id="groundingMsg" style="margin-top:8px;font-size:0.85em"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Squawks ── -->
+        <div class="tab-panel" id="tab-squawks">
+            <div class="admin-card">
+                <div class="admin-card-header"><h3>Open Squawks</h3></div>
+                <div class="table-scroll">
+                    <table class="admin-table">
+                        <thead><tr><th>Description</th><th>Reported By</th><th>Date</th><th>Action</th></tr></thead>
+                        <tbody id="squawkTableBody">
+                            <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="admin-card">
+                <div class="admin-card-header"><h3>Resolved Squawks</h3></div>
+                <div class="table-scroll">
+                    <table class="admin-table">
+                        <thead><tr><th>Description</th><th>Reported By</th><th>Resolved By</th><th>Date</th></tr></thead>
+                        <tbody id="resolvedTableBody">
+                            <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Inspections ── -->
+        <div class="tab-panel" id="tab-inspections">
+            <div class="admin-card">
+                <div class="admin-card-header"><h3>FAA Required Inspections — N2134Y</h3></div>
+                <div class="table-scroll">
+                    <table class="admin-table">
+                        <thead><tr><th>Inspection</th><th>Interval</th><th>Last Completed</th><th>Next Due</th><th>Status</th><th>Action</th></tr></thead>
+                        <tbody id="inspTableBody">
+                            <tr><td colspan="6" style="text-align:center;padding:28px;color:rgba(255,255,255,0.3)">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Reservations ── -->
+        <div class="tab-panel" id="tab-reservations">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h3>All Reservations</h3>
+                    <div style="display:flex;gap:6px">
+                        <button class="tbl-btn tbl-btn-primary" onclick="setResFilter('upcoming')" id="resFiltUpcoming" style="border-radius:16px">Upcoming</button>
+                        <button class="tbl-btn tbl-btn-warn"    onclick="setResFilter('past')"     id="resFiltPast"     style="border-radius:16px">Past</button>
+                        <button class="tbl-btn tbl-btn-primary" onclick="setResFilter('all')"      id="resFiltAll"      style="border-radius:16px;background:rgba(255,255,255,0.08);color:rgba(255,255,255,0.6)">All</button>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table class="admin-table">
+                        <thead><tr><th>Pilot</th><th>Date</th><th>Start</th><th>End</th><th>Purpose</th><th>Actions</th></tr></thead>
+                        <tbody id="resTableBody">
+                            <tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Flight Log ── -->
+        <div class="tab-panel" id="tab-flights">
+            <div class="admin-card">
+                <div class="admin-card-header"><h3>Flight Logs</h3></div>
+                <div class="filter-bar">
+                    <div class="ff">
+                        <label>Pilot</label>
+                        <select id="flightFilterPilot"><option value="">All Pilots</option></select>
+                    </div>
+                    <div class="ff">
+                        <label>From</label>
+                        <input type="date" id="flightFilterFrom">
+                    </div>
+                    <div class="ff">
+                        <label>To</label>
+                        <input type="date" id="flightFilterTo">
+                    </div>
+                    <div class="ff-narrow" style="display:flex;gap:6px;align-self:flex-end">
+                        <button class="filter-btn filter-btn-apply" onclick="loadFlights()">Apply</button>
+                        <button class="filter-btn filter-btn-clear" onclick="clearFlightFilters()">Clear</button>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                    <table class="admin-table">
+                        <thead>
+                            <tr><th>Pilot</th><th>Date</th><th>Tach Start</th><th>Tach End</th><th>Hours</th><th>Dry Rate Cost</th><th>Fuel</th><th>Oil Added</th><th>Notes</th><th>Delete</th></tr>
+                        </thead>
+                        <tbody id="flightTableBody">
+                            <tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
+                        </tbody>
+                        <tfoot id="flightTableFoot"></tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Member edit modal -->
+    <div class="modal-bg" id="memberEditModal">
+        <div class="modal-box" style="max-width:520px;max-height:90vh;overflow-y:auto">
+            <h2>Edit Member — <span id="meModalName" style="color:#5BB8E8"></span></h2>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="modal-field" style="margin-bottom:0">
+                    <label>BFR Date</label>
+                    <input type="date" id="meBfrDate" style="color-scheme:dark">
+                </div>
+                <div class="modal-field" style="margin-bottom:0">
+                    <label>Medical Class</label>
+                    <select id="meMedClass" style="width:100%;padding:11px 14px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.9);font-family:inherit;font-size:0.92em">
+                        <option value="">— not set —</option>
+                        <option value="1">1st Class</option>
+                        <option value="2">2nd Class</option>
+                        <option value="3">3rd Class</option>
+                        <option value="4">BasicMed</option>
+                    </select>
+                </div>
+                <div class="modal-field" style="margin-bottom:0">
+                    <label>Medical Issue Date</label>
+                    <input type="date" id="meMedDate" style="color-scheme:dark">
+                </div>
+                <div class="modal-field" style="margin-bottom:0">
+                    <label>Date of Birth <span style="font-size:0.85em;opacity:0.5">(medical expiry)</span></label>
+                    <input type="date" id="meDob" style="color-scheme:dark">
+                </div>
+            </div>
+
+            <div id="meMsg" style="font-size:0.85em;margin-top:10px"></div>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeMemberEdit()">Cancel</button>
+                <button class="modal-save" onclick="saveMemberEdit()">Save Changes</button>
+            </div>
+
+            <!-- Document upload section -->
+            <div class="doc-section">
+                <h4>Member Documents</h4>
+                <div class="doc-upload-row">
+                    <select id="meDocType">
+                        <option value="medical">Medical Certificate</option>
+                        <option value="rating">Rating Certificate</option>
+                        <option value="endorsement">Endorsement</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <input type="text" id="meDocLabel" placeholder="Label, e.g. PPL Certificate — Dec 2024" maxlength="120">
+                    <input type="file" id="meDocFile" accept=".pdf,.jpg,.jpeg,.png">
+                    <button class="form-submit" onclick="uploadMemberDoc()" id="meUploadBtn">Upload Document</button>
+                </div>
+                <div id="meDocMsg" style="font-size:0.82em;margin-top:6px"></div>
+                <div class="doc-list" id="meDocList">
+                    <div style="color:rgba(255,255,255,0.3);font-size:0.85em;padding:8px 0">No documents on file.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reservation edit modal -->
+    <div class="modal-bg" id="resModal">
+        <div class="modal-box">
+            <h2>Edit Reservation</h2>
+            <div class="modal-field">
+                <label>Start Date &amp; Time</label>
+                <input type="datetime-local" id="resEditStart">
+            </div>
+            <div class="modal-field">
+                <label>End Date &amp; Time</label>
+                <input type="datetime-local" id="resEditEnd">
+            </div>
+            <div class="modal-field">
+                <label>Purpose (optional)</label>
+                <input type="text" id="resEditPurpose" placeholder="e.g. Cross-country, Training…" maxlength="200">
+            </div>
+            <div id="resEditMsg" style="font-size:0.85em;margin-top:6px"></div>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeResEdit()">Cancel</button>
+                <button class="modal-save"   onclick="saveReservation()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inspection edit modal -->
+    <div class="modal-bg" id="inspModal">
+        <div class="modal-box">
+            <h2>Update Inspection</h2>
+            <div id="inspEditName" style="font-size:0.85em;color:rgba(255,255,255,0.4);margin-bottom:20px"></div>
+            <div class="modal-field">
+                <label>Last Completed Date</label>
+                <input type="date" id="inspEditDate">
+            </div>
+            <div class="modal-field">
+                <label>Notes (optional)</label>
+                <textarea id="inspEditNotes" rows="3" maxlength="1000" placeholder="e.g. Done by ABC Aviation, work order #123"></textarea>
+            </div>
+            <div id="inspEditMsg" style="font-size:0.85em;margin-top:6px"></div>
+            <div class="modal-actions">
+                <button class="modal-cancel" onclick="closeInspEdit()">Cancel</button>
+                <button class="modal-save"   onclick="saveInspection()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/club-config.js?v=3"></script>
+    <script src="js/supabase-client.js?v=3"></script>
+    <script src="js/utils.js?v=3"></script>
+    <script src="js/auth.js?v=3"></script>
+    <script>
+        let currentMember = null;
+        let airplaneId    = null;
+        let currentAircraftStatus = 'available';
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const session = await requireAdmin();
+            if (!session) return;
+            currentMember = await getCurrentMember();
+            renderNavUser(currentMember);
+            const { data: plane } = await _supabase.from('airplanes').select('*,grounded_from,grounded_until').eq('tail_number', AIRPLANE_TAIL).single();
+            airplaneId = plane?.id;
+            if (plane) {
+                currentAircraftStatus = plane.status;
+                highlightStatus(plane.status);
+                document.getElementById('tachUpdate').value = plane.current_tach || '';
+                if (plane.grounded_from)  document.getElementById('adminGroundedFrom').value  = plane.grounded_from.slice(0,16);
+                if (plane.grounded_until) document.getElementById('adminGroundedUntil').value = plane.grounded_until.slice(0,16);
+                document.getElementById('maintNote').value  = plane.notes || '';
+            }
+            await Promise.all([ loadMembers(), loadSquawks(), loadFlights(), loadInspections(), loadReservations() ]);
+            populatePilotFilter();
+        });
+
+        function showTab(name, btn) {
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.admin-tab').forEach(b => b.classList.remove('active'));
+            document.getElementById('tab-' + name).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // ── Members ──
+        async function loadMembers() {
+            const { data } = await _supabase.from('members').select('*').order('name');
+            const tbody = document.getElementById('memberTableBody');
+            const total = document.getElementById('memberTotal');
+            if (!data?.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No members yet.</td></tr>'; return; }
+
+            const active = data.filter(m => m.membership_active).length;
+            if (total) total.textContent = `${active} active · ${data.length} total`;
+
+            const roleBadge = { admin:'badge-orange', ap:'badge-warn', member:'badge-grey' };
+            const roleLabel = { admin:'Admin', ap:'A&amp;P', member:'Member' };
+            tbody.innerHTML = data.map(m => `
+                <tr style="${!m.membership_active ? 'opacity:0.5' : ''}">
+                    <td><strong>${escapeHtml(m.name || '—')}</strong></td>
+                    <td style="font-size:0.88em">${escapeHtml(m.email)}</td>
+                    <td style="font-size:0.88em">${escapeHtml(m.phone) || '<span style="color:rgba(255,255,255,0.3)">—</span>'}</td>
+                    <td><span class="badge ${m.membership_active ? 'badge-green' : 'badge-red'}">${m.membership_active ? 'Active' : 'Inactive'}</span></td>
+                    <td><span class="badge ${m.pic_status ? 'badge-blue' : 'badge-grey'}">${m.pic_status ? '✓ PIC' : '—'}</span></td>
+                    <td><span class="badge ${roleBadge[m.role] || 'badge-grey'}">${roleLabel[m.role] || escapeHtml(m.role)}</span></td>
+                    <td style="white-space:nowrap">
+                        <button class="tbl-btn ${m.membership_active ? 'tbl-btn-danger' : 'tbl-btn-success'}"
+                            onclick="toggleMembership('${escapeHtml(m.id)}', ${!!m.membership_active})">
+                            ${m.membership_active ? 'Deactivate' : 'Activate'}
+                        </button>
+                        <button class="tbl-btn ${m.pic_status ? 'tbl-btn-warn' : 'tbl-btn-primary'}"
+                            onclick="togglePIC('${escapeHtml(m.id)}', ${!!m.pic_status})">
+                            ${m.pic_status ? 'PIC ✓' : 'Set PIC'}
+                        </button>
+                        ${m.role !== 'admin' ? `
+                        <button class="tbl-btn tbl-btn-warn"
+                            onclick="cycleRole('${escapeHtml(m.id)}', '${escapeHtml(m.role)}')">
+                            ${m.role === 'ap' ? '→ Member' : '→ A&amp;P'}
+                        </button>` : ''}
+                        <button class="tbl-btn" style="background:rgba(91,184,232,0.12);border-color:rgba(91,184,232,0.3);color:#5BB8E8"
+                            onclick="resendInvite('${escapeHtml(m.email)}', '${escapeHtml(m.name || m.email)}')">
+                            Re-invite
+                        </button>
+                        <button class="tbl-btn" style="background:rgba(212,131,26,0.12);border-color:rgba(212,131,26,0.3);color:#F5B942"
+                            onclick="openMemberEdit('${escapeHtml(m.id)}')">
+                            Edit
+                        </button>
+                    </td>
+                </tr>`).join('');
+        }
+
+        async function inviteMember() {
+            const name  = document.getElementById('newName').value.trim();
+            const email = document.getElementById('newEmail').value.trim().toLowerCase();
+            const phone = document.getElementById('newPhone').value.trim();
+            const role  = document.getElementById('newRole').value;
+            const msg   = document.getElementById('addMemberMsg');
+
+            if (!name || name.length < 2)  { msg.className='msg-err'; msg.textContent='Enter the member\'s full name.'; return; }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.className='msg-err'; msg.textContent='Enter a valid email address.'; return; }
+
+            const btn = document.querySelector('.add-member-form .form-submit');
+            btn.disabled = true; btn.textContent = 'Sending…';
+            msg.className = ''; msg.textContent = '';
+
+            try {
+                const { data: { session } } = await _supabase.auth.getSession();
+                const res = await fetch('/.netlify/functions/inviteMember', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`
+                    },
+                    body: JSON.stringify({ name, email, phone: phone || null, role })
+                });
+                const result = await res.json();
+                if (!res.ok) {
+                    msg.className = 'msg-err';
+                    msg.textContent = result.error || 'Failed to send invite.';
+                    return;
+                }
+                msg.className = 'msg-ok';
+                msg.textContent = result.message || `Invite sent to ${email}!`;
+                document.getElementById('newName').value  = '';
+                document.getElementById('newEmail').value = '';
+                document.getElementById('newPhone').value = '';
+                document.getElementById('newRole').value  = 'member';
+                loadMembers();
+            } catch (e) {
+                msg.className = 'msg-err';
+                msg.textContent = 'Network error. Is the Netlify function deployed?';
+            } finally {
+                btn.disabled = false; btn.textContent = 'Send Invite';
+            }
+        }
+
+        async function resendInvite(email, name) {
+            if (!confirm(`Re-send invite email to ${name} (${email})?`)) return;
+            const { data: { session } } = await _supabase.auth.getSession();
+            const res = await fetch('/.netlify/functions/inviteMember', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session.access_token}` },
+                body: JSON.stringify({ name, email, role: 'member' })
+            });
+            const result = await res.json();
+            alert(result.message || result.error || 'Done.');
+        }
+
+        async function toggleMembership(id, current) {
+            await _supabase.from('members').update({ membership_active: !current }).eq('id', id);
+            loadMembers();
+        }
+
+        async function togglePIC(id, current) {
+            await _supabase.from('members').update({ pic_status: !current }).eq('id', id);
+            loadMembers();
+        }
+
+        async function cycleRole(id, currentRole) {
+            const newRole = currentRole === 'ap' ? 'member' : 'ap';
+            const label   = newRole === 'ap' ? 'A&P (Maintenance)' : 'Member';
+            if (!confirm(`Change this member's role to ${label}?`)) return;
+            await _supabase.from('members').update({ role: newRole }).eq('id', id);
+            loadMembers();
+        }
+
+        // ── Member Edit (BFR / Medical / Docs) ──
+        let editMemberId = null;
+
+        async function openMemberEdit(id) {
+            editMemberId = id;
+            const { data: m } = await _supabase
+                .from('members')
+                .select('name, bfr_date, medical_class, medical_date, date_of_birth')
+                .eq('id', id).single();
+            if (!m) { alert('Could not load member data.'); return; }
+
+            document.getElementById('meModalName').textContent = m.name || '—';
+            document.getElementById('meBfrDate').value  = m.bfr_date  || '';
+            document.getElementById('meMedClass').value = m.medical_class || '';
+            document.getElementById('meMedDate').value  = m.medical_date  || '';
+            document.getElementById('meDob').value      = m.date_of_birth || '';
+            document.getElementById('meMsg').textContent = '';
+            document.getElementById('meDocMsg').textContent = '';
+            document.getElementById('meDocLabel').value = '';
+            document.getElementById('meDocFile').value  = '';
+
+            await loadMemberDocs(id);
+            document.getElementById('memberEditModal').classList.add('open');
+        }
+
+        function closeMemberEdit() {
+            document.getElementById('memberEditModal').classList.remove('open');
+            editMemberId = null;
+        }
+
+        async function saveMemberEdit() {
+            const bfrDate  = document.getElementById('meBfrDate').value  || null;
+            const medClass = parseInt(document.getElementById('meMedClass').value) || null;
+            const medDate  = document.getElementById('meMedDate').value  || null;
+            const dob      = document.getElementById('meDob').value      || null;
+            const msg      = document.getElementById('meMsg');
+
+            const { error } = await _supabase.from('members').update({
+                bfr_date:      bfrDate,
+                medical_class: medClass,
+                medical_date:  medDate,
+                date_of_birth: dob
+            }).eq('id', editMemberId);
+
+            if (error) {
+                console.error('[saveMemberEdit]', error?.message || error);
+                msg.className = 'msg-err'; msg.textContent = 'Save failed. ' + (error.message || '');
+            } else {
+                msg.className = 'msg-ok'; msg.textContent = 'Saved!';
+                setTimeout(() => { msg.textContent = ''; }, 2000);
+            }
+        }
+
+        async function loadMemberDocs(memberId) {
+            const { data: docs } = await _supabase
+                .from('member_documents')
+                .select('id, doc_type, label, storage_path, created_at')
+                .eq('member_id', memberId)
+                .order('created_at', { ascending: false });
+
+            const listEl = document.getElementById('meDocList');
+            if (!docs?.length) {
+                listEl.innerHTML = '<div style="color:rgba(255,255,255,0.3);font-size:0.85em;padding:8px 0">No documents on file.</div>';
+                return;
+            }
+
+            // Generate signed URLs for each doc
+            const items = await Promise.all(docs.map(async (d) => {
+                const { data: signed } = await _supabase.storage
+                    .from('member-docs')
+                    .createSignedUrl(d.storage_path, 3600);
+                return { ...d, url: signed?.signedUrl || null };
+            }));
+
+            const typeLabel = { medical:'Medical', rating:'Rating', endorsement:'Endorsement', other:'Other' };
+            listEl.innerHTML = items.map(d => `
+                <div class="doc-list-item">
+                    <span class="doc-type-tag">${typeLabel[d.doc_type] || d.doc_type}</span>
+                    ${d.url
+                        ? `<a href="${d.url}" target="_blank" rel="noopener">${escapeHtml(d.label)}</a>`
+                        : `<span style="color:rgba(255,255,255,0.5)">${escapeHtml(d.label)}</span>`}
+                    <span style="color:rgba(255,255,255,0.25);font-size:0.8em;white-space:nowrap">${new Date(d.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+                </div>`).join('');
+        }
+
+        async function uploadMemberDoc() {
+            const file    = document.getElementById('meDocFile').files[0];
+            const docType = document.getElementById('meDocType').value;
+            const label   = document.getElementById('meDocLabel').value.trim();
+            const msg     = document.getElementById('meDocMsg');
+            const btn     = document.getElementById('meUploadBtn');
+
+            if (!file)  { msg.className='msg-err'; msg.textContent='Please select a file to upload.'; return; }
+            if (!label) { msg.className='msg-err'; msg.textContent='Please enter a label for this document.'; return; }
+            if (file.size > 10 * 1024 * 1024) { msg.className='msg-err'; msg.textContent='File must be 10 MB or smaller.'; return; }
+
+            btn.disabled = true; btn.textContent = 'Uploading…';
+            msg.textContent = '';
+
+            const storagePath = `${editMemberId}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
+            const { error: upErr } = await _supabase.storage
+                .from('member-docs')
+                .upload(storagePath, file, { upsert: false });
+
+            if (upErr) {
+                console.error('[uploadMemberDoc] storage error:', upErr?.message || upErr);
+                msg.className = 'msg-err'; msg.textContent = 'Upload failed: ' + (upErr.message || 'Storage error');
+                btn.disabled = false; btn.textContent = 'Upload Document';
+                return;
+            }
+
+            const { error: dbErr } = await _supabase.from('member_documents').insert({
+                member_id:    editMemberId,
+                doc_type:     docType,
+                label:        label,
+                storage_path: storagePath,
+                uploaded_by:  currentMember.id
+            });
+
+            if (dbErr) {
+                console.error('[uploadMemberDoc] db error:', dbErr?.message || dbErr);
+                msg.className = 'msg-err'; msg.textContent = 'File uploaded but metadata save failed. Contact support.';
+            } else {
+                msg.className = 'msg-ok'; msg.textContent = 'Document uploaded!';
+                document.getElementById('meDocLabel').value = '';
+                document.getElementById('meDocFile').value  = '';
+                await loadMemberDocs(editMemberId);
+                setTimeout(() => { msg.textContent = ''; }, 3000);
+            }
+            btn.disabled = false; btn.textContent = 'Upload Document';
+        }
+
+        // ── Aircraft ──
+        function highlightStatus(status) {
+            document.querySelectorAll('.status-opt').forEach(b => {
+                b.className = 'status-opt';
+                const val = b.textContent.trim().toLowerCase().replace(/\s.*/, '');
+                const map = { available:'available', in:'flying', maintenance:'maintenance', grounded:'squawk' };
+                if (map[val] === status) b.classList.add('active-' + status);
+            });
+        }
+
+        async function setAircraftStatus(status) {
+            await _supabase.from('airplanes').update({ status, updated_at: new Date().toISOString() }).eq('id', airplaneId);
+            currentAircraftStatus = status;
+            highlightStatus(status);
+        }
+
+        async function updateTach() {
+            const val = parseFloat(document.getElementById('tachUpdate').value);
+            const msg = document.getElementById('tachMsg');
+            if (isNaN(val) || val < 0 || val > 99999) { msg.className='msg-err'; msg.textContent='Enter a valid tach number (0–99999).'; return; }
+            if (!airplaneId) { msg.className='msg-err'; msg.textContent='Aircraft not loaded.'; return; }
+            await _supabase.from('airplanes').update({ current_tach: val, updated_at: new Date().toISOString() }).eq('id', airplaneId);
+            msg.className='msg-ok'; msg.textContent='Tach updated.';
+            setTimeout(() => msg.textContent = '', 2000);
+        }
+
+        async function saveGroundingPeriod() {
+            const fromVal  = document.getElementById('adminGroundedFrom').value;
+            const untilVal = document.getElementById('adminGroundedUntil').value;
+            const msg      = document.getElementById('groundingMsg');
+            if (!fromVal) { msg.className='msg-err'; msg.textContent='Please set a "Grounded From" date.'; return; }
+            const { error } = await _supabase.from('airplanes').update({
+                grounded_from:  new Date(fromVal).toISOString(),
+                grounded_until: untilVal ? new Date(untilVal).toISOString() : null,
+                updated_at:     new Date().toISOString()
+            }).eq('id', airplaneId);
+            if (error) { msg.className='msg-err'; msg.textContent='Save failed. Try again.'; return; }
+            msg.className='msg-ok'; msg.textContent='Maintenance window saved. Calendar is now blocked.';
+            setTimeout(() => msg.textContent = '', 3000);
+        }
+
+        async function clearGroundingPeriod() {
+            const msg = document.getElementById('groundingMsg');
+            const { error } = await _supabase.from('airplanes').update({
+                grounded_from:  null,
+                grounded_until: null,
+                updated_at:     new Date().toISOString()
+            }).eq('id', airplaneId);
+            if (error) { msg.className='msg-err'; msg.textContent='Clear failed. Try again.'; return; }
+            document.getElementById('adminGroundedFrom').value  = '';
+            document.getElementById('adminGroundedUntil').value = '';
+            msg.className='msg-ok'; msg.textContent='Maintenance window cleared.';
+            setTimeout(() => msg.textContent = '', 3000);
+        }
+
+        async function saveMaintNote() {
+            const note = document.getElementById('maintNote').value.trim();
+            const msg  = document.getElementById('maintMsg');
+            if (note.length > 1000) { msg.className='msg-err'; msg.textContent='Note must be 1000 characters or less.'; return; }
+            if (!airplaneId) { msg.className='msg-err'; msg.textContent='Aircraft not loaded.'; return; }
+            await _supabase.from('airplanes').update({ notes: note || null, updated_at: new Date().toISOString() }).eq('id', airplaneId);
+            msg.className='msg-ok'; msg.textContent='Note saved.';
+            setTimeout(() => msg.textContent = '', 2000);
+        }
+
+        // ── Squawks ──
+        async function loadSquawks() {
+            const { data: open } = await _supabase.from('squawks').select('*, reported:members!squawks_reported_by_fkey(name)')
+                .eq('airplane_id', airplaneId).eq('status', 'open').order('reported_at', { ascending: false });
+
+            const { data: resolved } = await _supabase.from('squawks')
+                .select('*, reported:members!squawks_reported_by_fkey(name), resolver:members!squawks_resolved_by_fkey(name)')
+                .eq('airplane_id', airplaneId).eq('status', 'resolved')
+                .order('resolved_at', { ascending: false }).limit(20);
+
+            const ob = document.getElementById('squawkTableBody');
+            ob.innerHTML = open?.length ? open.map(s => `
+                <tr class="squawk-row">
+                    <td>${escapeHtml(s.description)}</td>
+                    <td>${escapeHtml(s.reported?.name) || '—'}</td>
+                    <td>${fmtDate(s.reported_at)}</td>
+                    <td><button class="tbl-btn tbl-btn-success" onclick="resolveSquawk('${escapeHtml(s.id)}')">Resolve</button></td>
+                </tr>`).join('')
+                : '<tr class="empty-row"><td colspan="4">No open squawks.</td></tr>';
+
+            const rb = document.getElementById('resolvedTableBody');
+            rb.innerHTML = resolved?.length ? resolved.map(s => `
+                <tr>
+                    <td>${escapeHtml(s.description)}</td>
+                    <td>${escapeHtml(s.reported?.name) || '—'}</td>
+                    <td>${escapeHtml(s.resolver?.name) || '—'}</td>
+                    <td>${fmtDate(s.resolved_at)}</td>
+                </tr>`).join('')
+                : '<tr class="empty-row"><td colspan="4">No resolved squawks.</td></tr>';
+        }
+
+        async function resolveSquawk(id) {
+            await _supabase.from('squawks').update({
+                status: 'resolved',
+                resolved_by: currentMember.id,
+                resolved_at: new Date().toISOString()
+            }).eq('id', id);
+            const { count } = await _supabase.from('squawks')
+                .select('*', { count:'exact', head:true }).eq('airplane_id', airplaneId).eq('status', 'open');
+            if (count === 0 && currentAircraftStatus === 'squawk') {
+                await setAircraftStatus('available');
+            }
+            loadSquawks();
+        }
+
+        // ── Flight Log ──
+        async function populatePilotFilter() {
+            const { data } = await _supabase.from('members').select('id,name').order('name');
+            const sel = document.getElementById('flightFilterPilot');
+            if (!data?.length) return;
+            data.forEach(m => {
+                const opt = document.createElement('option');
+                opt.value = m.id; opt.textContent = m.name;
+                sel.appendChild(opt);
+            });
+        }
+
+        function clearFlightFilters() {
+            document.getElementById('flightFilterPilot').value = '';
+            document.getElementById('flightFilterFrom').value  = '';
+            document.getElementById('flightFilterTo').value    = '';
+            loadFlights();
+        }
+
+        async function loadFlights() {
+            const pilotId  = document.getElementById('flightFilterPilot')?.value || '';
+            const fromDate = document.getElementById('flightFilterFrom')?.value  || '';
+            const toDate   = document.getElementById('flightFilterTo')?.value    || '';
+
+            const tbody = document.getElementById('flightTableBody');
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>';
+
+            let q = _supabase.from('flight_logs')
+                .select('*, members(name)').eq('airplane_id', airplaneId)
+                .or('is_deleted.is.null,is_deleted.eq.false')
+                .order('completed_at', { ascending: false }).limit(100);
+
+            if (pilotId)  q = q.eq('member_id', pilotId);
+            if (fromDate) q = q.gte('completed_at', fromDate + 'T00:00:00');
+            if (toDate)   q = q.lte('completed_at', toDate   + 'T23:59:59');
+
+            const { data } = await q;
+
+            if (!data?.length) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">No flight logs found.</td></tr>';
+                document.getElementById('flightTableFoot').innerHTML = '';
+                return;
+            }
+
+            let totalHrs = 0, totalCost = 0;
+            tbody.innerHTML = data.map(f => {
+                const hrs  = f.flight_hours  != null ? f.flight_hours
+                           : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10 : null;
+                const cost = f.flight_cost   != null ? f.flight_cost
+                           : hrs != null ? Math.round(hrs * 65 * 100) / 100 : null;
+                if (hrs  != null) totalHrs  += hrs;
+                if (cost != null) totalCost += cost;
+
+                const timeStr = hrs  != null ? hrs.toFixed(1)  + ' hr' : '—';
+                const costStr = cost != null ? '$' + cost.toFixed(2)   : '—';
+
+                let fuelStr = '—';
+                if (f.needs_fuel) {
+                    const lt = f.fuel_estimate_left_tank  != null ? f.fuel_estimate_left_tank  + ' L' : '?';
+                    const rt = f.fuel_estimate_right_tank != null ? f.fuel_estimate_right_tank + ' R' : '?';
+                    fuelStr = `<span class="badge badge-warn" title="Needs Fuel">Needs Fuel<br><small>${lt} / ${rt}</small></span>`;
+                } else if (f.fuel_added_gallons != null) {
+                    fuelStr = f.fuel_added_gallons + ' gal';
+                }
+                const oilStr = f.oil_added_quarts ? f.oil_added_quarts + ' qt' : '—';
+
+                return `<tr>
+                    <td><strong>${escapeHtml(f.members?.name) || '—'}</strong></td>
+                    <td>${fmtDate(f.completed_at)}</td>
+                    <td>${f.tach_start ?? '—'}</td>
+                    <td>${f.tach_end ?? '—'}</td>
+                    <td><strong>${timeStr}</strong></td>
+                    <td><strong style="color:#5DD89A">${costStr}</strong></td>
+                    <td>${fuelStr}</td>
+                    <td>${oilStr}</td>
+                    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${escapeHtml(f.notes)}">${escapeHtml(f.notes) || '—'}</td>
+                    <td><button class="tbl-btn tbl-btn-danger" onclick="deleteFlightLog('${escapeHtml(f.id)}')">Delete</button></td>
+                </tr>`;
+            }).join('');
+
+            document.getElementById('flightTableFoot').innerHTML = `
+                <tr style="background:rgba(42,122,82,0.1);border-top:1px solid rgba(42,122,82,0.3)">
+                    <td colspan="4" style="padding:12px 18px;font-family:'Montserrat',sans-serif;font-size:0.72em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.35)">
+                        TOTALS — ${data.length} flight${data.length !== 1 ? 's' : ''}
+                    </td>
+                    <td style="padding:12px 18px;font-weight:700;color:#fff">${totalHrs.toFixed(1)} hr</td>
+                    <td style="padding:12px 18px;font-weight:700;color:#5DD89A">$${totalCost.toFixed(2)}</td>
+                    <td colspan="4" style="padding:12px 18px;font-size:0.8em;color:rgba(255,255,255,0.3)">$65/hr dry rate</td>
+                </tr>`;
+        }
+
+        async function deleteFlightLog(id) {
+            if (!confirm('Soft-delete this flight log? It will be hidden from all views but not permanently removed.')) return;
+            const { error } = await _supabase.from('flight_logs').update({
+                is_deleted: true, deleted_by: currentMember.id, deleted_at: new Date().toISOString()
+            }).eq('id', id);
+            if (error) { console.error('[deleteFlightLog]', error?.message || error); alert('Delete failed. Please try again.'); return; }
+            loadFlights();
+        }
+
+        // ── Reservations ──
+        let resFilter = 'upcoming';
+
+        function setResFilter(f) {
+            resFilter = f;
+            ['upcoming','past','all'].forEach(k => {
+                document.getElementById('resFilt' + k.charAt(0).toUpperCase() + k.slice(1)).style.opacity = (k === f) ? '1' : '0.5';
+            });
+            loadReservations();
+        }
+
+        async function loadReservations() {
+            if (!airplaneId) return;
+            const tbody = document.getElementById('resTableBody');
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>';
+
+            let q = _supabase.from('reservations')
+                .select('*, member:members(name,email)').eq('airplane_id', airplaneId)
+                .order('start_time', { ascending: false });
+
+            const now = new Date().toISOString();
+            if (resFilter === 'upcoming') q = q.gte('start_time', now);
+            else if (resFilter === 'past') q = q.lt('start_time', now);
+
+            const { data, error } = await q.limit(80);
+            if (error) { console.error('[loadReservations]', error?.message || error); tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#ff8090;padding:28px">Failed to load. Please refresh.</td></tr>'; return; }
+            if (!data?.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="6">No reservations found.</td></tr>'; return; }
+
+            tbody.innerHTML = data.map(r => {
+                const start = new Date(r.start_time);
+                const end   = new Date(r.end_time);
+                return `<tr style="${start < new Date() ? 'opacity:0.6' : ''}">
+                    <td><strong>${escapeHtml(r.member?.name) || '—'}</strong><br><small style="color:rgba(255,255,255,0.35)">${escapeHtml(r.member?.email) || ''}</small></td>
+                    <td>${start.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
+                    <td>${start.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</td>
+                    <td>${end.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</td>
+                    <td>${escapeHtml(r.purpose) || '—'}</td>
+                    <td>
+                        <button class="tbl-btn tbl-btn-primary" onclick="openResEdit('${escapeHtml(r.id)}','${start.toISOString()}','${end.toISOString()}','${escapeHtml(r.purpose||'')}')">Edit</button>
+                        <button class="tbl-btn tbl-btn-danger"  onclick="deleteReservation('${escapeHtml(r.id)}')">Delete</button>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        async function deleteReservation(id) {
+            if (!confirm('Delete this reservation? This cannot be undone.')) return;
+            const { error } = await _supabase.from('reservations').delete().eq('id', id);
+            if (error) { console.error('[deleteReservation]', error?.message || error); alert('Delete failed. Please try again.'); return; }
+            loadReservations();
+        }
+
+        let editResId = null;
+        function openResEdit(id, startIso, endIso, purpose) {
+            editResId = id;
+            const toLocal = iso => {
+                const d = new Date(iso), pad = n => String(n).padStart(2,'0');
+                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            };
+            document.getElementById('resEditStart').value   = toLocal(startIso);
+            document.getElementById('resEditEnd').value     = toLocal(endIso);
+            document.getElementById('resEditPurpose').value = purpose;
+            document.getElementById('resEditMsg').textContent = '';
+            document.getElementById('resModal').classList.add('open');
+        }
+        function closeResEdit() { document.getElementById('resModal').classList.remove('open'); }
+
+        async function saveReservation() {
+            const startVal   = document.getElementById('resEditStart').value;
+            const endVal     = document.getElementById('resEditEnd').value;
+            const purposeVal = document.getElementById('resEditPurpose').value.trim();
+            const msg        = document.getElementById('resEditMsg');
+
+            if (!startVal || !endVal) { msg.className='msg-err'; msg.textContent='Start and end times are required.'; return; }
+            const start = new Date(startVal), end = new Date(endVal);
+            if (end <= start) { msg.className='msg-err'; msg.textContent='End time must be after start time.'; return; }
+            if ((end - start) > 12 * 3600000) { msg.className='msg-err'; msg.textContent='Reservation cannot exceed 12 hours.'; return; }
+
+            const { error } = await _supabase.from('reservations').update({
+                start_time: start.toISOString(), end_time: end.toISOString(), purpose: purposeVal || null
+            }).eq('id', editResId);
+
+            if (error) { console.error('[saveReservation]', error?.message || error); msg.className='msg-err'; msg.textContent='Save failed. Please try again.'; return; }
+            msg.className='msg-ok'; msg.textContent='Saved!';
+            setTimeout(() => { closeResEdit(); loadReservations(); }, 700);
+        }
+
+        // ── Inspections ──
+        async function loadInspections() {
+            const { data } = await _supabase.from('inspections').select('*').eq('airplane_id', airplaneId).order('name');
+            const tbody = document.getElementById('inspTableBody');
+            if (!data?.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:rgba(255,255,255,0.3)">No inspections found. Run the SQL setup script first.</td></tr>';
+                return;
+            }
+            const today = new Date(); today.setHours(0,0,0,0);
+            tbody.innerHTML = data.map(insp => {
+                let status = 'unknown', dueText = '—', nextDue = '—';
+                if (insp.last_completed) {
+                    const due = new Date(insp.last_completed);
+                    due.setDate(due.getDate() + insp.interval_days);
+                    const days = Math.floor((due - today) / 86400000);
+                    nextDue = fmtDate(due.toISOString());
+                    if (days < 0)        { status = 'overdue';  dueText = `Overdue ${Math.abs(days)}d`; }
+                    else if (days <= 30) { status = 'due-soon'; dueText = `Due in ${days}d`; }
+                    else                 { status = 'current';  dueText = `${days}d remaining`; }
+                }
+                const badgeMap = { overdue:'badge-red', 'due-soon':'badge-orange', current:'badge-green', unknown:'badge-grey' };
+                const labelMap = { overdue:'Overdue', 'due-soon':'Due Soon', current:'Current', unknown:'Not Set' };
+                const interval = insp.interval_days === 365 ? '12 months' : insp.interval_days === 730 ? '24 months' : insp.interval_days + 'd';
+                return `<tr>
+                    <td>
+                        <strong>${escapeHtml(insp.name)}</strong>
+                        <div style="font-size:0.78em;color:rgba(255,255,255,0.35);margin-top:2px">${escapeHtml(insp.description) || ''}</div>
+                    </td>
+                    <td>${interval}</td>
+                    <td>${insp.last_completed ? fmtDate(insp.last_completed) : '—'}</td>
+                    <td>${nextDue}</td>
+                    <td><span class="badge ${badgeMap[status]}">${labelMap[status]}</span> <small style="color:rgba(255,255,255,0.35);margin-left:4px">${dueText}</small></td>
+                    <td><button class="tbl-btn tbl-btn-primary" onclick="openInspEdit('${escapeHtml(insp.id)}','${escapeHtml(insp.name)}','${insp.last_completed||''}','${escapeHtml(insp.notes||'')}')">Update</button></td>
+                </tr>`;
+            }).join('');
+        }
+
+        let editInspId = null;
+        function openInspEdit(id, name, lastCompleted, notes) {
+            editInspId = id;
+            document.getElementById('inspEditName').textContent = name;
+            document.getElementById('inspEditDate').value  = lastCompleted || '';
+            document.getElementById('inspEditNotes').value = notes || '';
+            document.getElementById('inspEditMsg').textContent = '';
+            document.getElementById('inspModal').classList.add('open');
+        }
+        function closeInspEdit() { document.getElementById('inspModal').classList.remove('open'); }
+
+        async function saveInspection() {
+            const date  = document.getElementById('inspEditDate').value;
+            const notes = document.getElementById('inspEditNotes').value.trim();
+            const msg   = document.getElementById('inspEditMsg');
+            if (!date) { msg.className='msg-err'; msg.textContent='Please enter a completion date.'; return; }
+            const { error } = await _supabase.from('inspections').update({
+                last_completed: date, notes: notes || null,
+                updated_at: new Date().toISOString(), updated_by: currentMember.id
+            }).eq('id', editInspId);
+            if (error) { console.error('[saveInspection]', error?.message || error); msg.className='msg-err'; msg.textContent='Save failed. Please try again.'; return; }
+            msg.className='msg-ok'; msg.textContent='Saved!';
+            setTimeout(() => { closeInspEdit(); loadInspections(); }, 800);
+        }
+
+        function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+        function toggleNav()  { document.getElementById('navLinks').classList.toggle('nav-open'); }
+    </script>
+</body>
+</html>

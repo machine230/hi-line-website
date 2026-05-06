@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N2134Y Weight &amp; Balance — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <script src="js/theme.js?v=3"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--body-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* NAV */
+        nav {
+            position: sticky; top: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 36px; height: 64px;
+            background: rgba(12,31,20,0.97);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+        }
+        .nav-logo { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.25em; color: #fff; text-decoration: none; letter-spacing: 1px; }
+        .nav-logo span { color: #5BB8E8; }
+        .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+        .nav-links a { color: rgba(255,255,255,0.8); text-decoration: none; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85em; padding: 7px 14px; border-radius: 6px; transition: color 0.2s, background 0.2s; }
+        .nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav-links .portal { background: #2A7A52; color: #fff !important; box-shadow: 0 0 12px rgba(42,122,82,0.35); }
+        .nav-links .portal:hover { background: #359966; }
+
+        /* PAGE WRAP */
+        .page { max-width: 980px; margin: 0 auto; padding: 40px 28px 64px; }
+
+        /* CALCULATOR — instrument panel aesthetic */
+        .wb-calculator {
+            background: #111820;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+        }
+        .wb-content { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+
+        /* Input side — graph paper grid texture like the Jeppesen E6B */
+        .input-section {
+            padding: 28px;
+            border-right: 1px solid rgba(255,255,255,0.08);
+            background-image:
+                linear-gradient(rgba(91,184,232,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(91,184,232,0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-color: #111820;
+        }
+        .results-section { padding: 28px; background: #0E141C; }
+
+        .input-section h2, .results-section h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: rgba(245,185,66,0.7); /* amber — like E6B scale markings */
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(245,185,66,0.15);
+            padding-bottom: 8px;
+        }
+        .input-group { margin-bottom: 16px; }
+        .input-group label {
+            display: block; margin-bottom: 5px;
+            font-weight: 600; font-size: 0.82em;
+            color: rgba(255,255,255,0.6);
+            text-transform: uppercase; letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .input-group input {
+            width: 100%; padding: 11px 14px;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(245,185,66,0.2);
+            border-radius: 6px; font-size: 1.05em;
+            color: #F5B942; /* amber readout like an instrument */
+            font-family: 'Courier New', monospace;
+            font-weight: bold; letter-spacing: 1px;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #F5B942;
+            box-shadow: 0 0 0 3px rgba(245,185,66,0.12);
+            color: #fff;
+        }
+        .input-group small { color: rgba(255,255,255,0.3); font-size: 0.73em; margin-top: 4px; display: block; }
+        .results-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+        .results-table th, .results-table td { padding: 9px 11px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85em; }
+        .results-table th {
+            background: rgba(245,185,66,0.08);
+            color: rgba(245,185,66,0.7);
+            font-weight: 700; font-size: 0.7em;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .results-table td { color: rgba(255,255,255,0.8); font-family: 'Courier New', monospace; }
+        .total-row td { font-weight: 700; color: #F5B942 !important; background: rgba(245,185,66,0.07) !important; border-top: 1px solid rgba(245,185,66,0.25); }
+        .status { padding: 11px; border-radius: 6px; margin: 12px 0; font-weight: 700; text-align: center; font-family: 'Montserrat', sans-serif; font-size: 0.85em; letter-spacing: 2px; }
+        .status.safe    { background: rgba(42,122,82,0.2);   color: #5DD89A; border: 1px solid rgba(42,122,82,0.4); }
+        .status.warning { background: rgba(245,185,66,0.12); color: #F5B942; border: 1px solid rgba(245,185,66,0.3); }
+        .status.danger  { background: rgba(220,53,69,0.18);  color: #ff8090; border: 1px solid rgba(220,53,69,0.35); }
+        .button-group { display: flex; gap: 10px; margin-top: 20px; }
+        /* CX-3 style amber calculate button */
+        .calc-button {
+            flex:1; padding:13px; border:none; border-radius:6px;
+            font-size:0.88em; font-weight:700; font-family:'Montserrat',sans-serif;
+            cursor:pointer; letter-spacing:1px;
+            background: #D4831A;
+            color: #fff;
+            box-shadow: 0 0 12px rgba(212,131,26,0.35);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .calc-button:hover { background:#F5A030; box-shadow:0 0 20px rgba(245,160,48,0.45); }
+        .print-button {
+            flex:1; padding:13px; border:1px solid rgba(255,255,255,0.15);
+            border-radius:6px; font-size:0.88em; font-weight:700;
+            font-family:'Montserrat',sans-serif; cursor:pointer;
+            background: rgba(255,255,255,0.04); color:rgba(255,255,255,0.6);
+            transition:background 0.2s;
+        }
+        .print-button:hover { background:rgba(255,255,255,0.09); }
+
+        /* CG Scale */
+        .cg-section {
+            background: rgba(0,0,0,0.3);
+            padding: 16px; border-radius: 8px; margin: 14px 0;
+            border-left: 3px solid #D4831A;
+        }
+        .cg-section h4 { font-family:'Montserrat',sans-serif; font-size:0.75em; font-weight:700; color:rgba(245,185,66,0.65); margin-bottom:14px; text-transform:uppercase; letter-spacing:2px; }
+        .cg-scale-container { margin: 16px 0; }
+        .cg-scale { position:relative; height:40px; border-radius:20px; overflow:hidden; margin-bottom:15px; background:linear-gradient(90deg,#e74c3c 0%,#e74c3c 15%,#27ae60 15%,#27ae60 85%,#e74c3c 85%,#e74c3c 100%); }
+        .safe-zone { position:absolute; left:15%; width:70%; height:100%; background:linear-gradient(90deg,#f39c12 0%,#27ae60 20%,#27ae60 80%,#f39c12 100%); }
+        .cg-indicator { position:absolute; top:-15px; height:70px; width:6px; background:#fff; border:3px solid #0B1C2D; border-radius:3px; box-shadow:0 0 10px rgba(0,0,0,0.5); transition:left 0.3s ease; z-index:15; }
+        .cg-pointer { position:absolute; top:-5px; left:-12px; width:0; height:0; border-left:15px solid transparent; border-right:15px solid transparent; border-top:20px solid #fff; }
+        .cg-pointer::after { content:''; position:absolute; top:20px; left:-3px; width:6px; height:35px; background:#fff; border-top:none; }
+        .cg-value { position:absolute; top:60px; left:-25px; background:#0B1C2D; color:#5BB8E8; padding:5px 10px; border-radius:6px; font-size:12px; font-weight:bold; white-space:nowrap; border:1px solid rgba(91,184,232,0.4); }
+        .scale-labels { display:flex; justify-content:space-between; font-size:0.72em; color:rgba(255,255,255,0.4); margin-top:5px; }
+
+        /* Flight Characteristics */
+        .flight-characteristics { margin:14px 0; padding:14px 16px; border-radius:8px; font-size:0.88em; }
+        .char-normal { background:rgba(42,122,82,0.15); border-left:3px solid #2A7A52; color:#5DD89A; }
+        .char-caution { background:rgba(245,185,66,0.12); border-left:3px solid #F5B942; color:#F5B942; }
+        .char-danger  { background:rgba(220,53,69,0.15);  border-left:3px solid #dc3545; color:#ff8090; }
+        .flight-characteristics h4 { margin-bottom:6px; font-family:'Montserrat',sans-serif; font-size:0.88em; }
+        .flight-characteristics p { margin:0; line-height:1.5; opacity:0.85; }
+
+        /* Va box */
+        .va-box { background:rgba(91,184,232,0.1); border:1px solid rgba(91,184,232,0.25); padding:14px 16px; border-radius:8px; margin-top:12px; }
+        .va-box h4 { font-family:'Montserrat',sans-serif; font-size:0.82em; font-weight:700; color:#5BB8E8; margin-bottom:6px; }
+        .va-box p { font-size:0.82em; color:rgba(255,255,255,0.5); margin:0; }
+
+        /* Disclaimer */
+        .disclaimer { background:rgba(245,185,66,0.08); border:1px solid rgba(245,185,66,0.25); border-radius:10px; padding:18px 20px; margin:16px 0; }
+        .disclaimer h4 { font-family:'Montserrat',sans-serif; font-size:0.85em; color:#F5B942; margin-bottom:8px; }
+        .disclaimer p { font-size:0.82em; color:rgba(255,255,255,0.55); line-height:1.6; margin-bottom:6px; }
+        .disclaimer p:last-child { margin-bottom:0; }
+
+        /* Footer */
+        .page-footer { border-top:1px solid rgba(255,255,255,0.06); padding:24px 28px; text-align:center; font-size:0.78em; color:rgba(255,255,255,0.3); }
+
+        @media (max-width: 768px) { .wb-content { grid-template-columns: 1fr; } .input-section { border-right:none; border-bottom:1px solid rgba(255,255,255,0.08); } }
+
+        /* ── Fuel Endurance Calculator ── */
+        .fuel-endurance {
+            background: #111820;
+            border: 1px solid rgba(245,185,66,0.22);
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+        }
+        .fuel-end-header {
+            padding: 18px 28px;
+            border-bottom: 1px solid rgba(245,185,66,0.12);
+            background: rgba(0,0,0,0.22);
+            display: flex; align-items: center; gap: 14px;
+        }
+        .fuel-end-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 3px;
+            color: rgba(245,185,66,0.7);
+            margin: 0; border: none; padding: 0;
+        }
+        .fuel-end-body {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+        }
+        .fuel-end-inputs {
+            padding: 22px 26px;
+            border-right: 1px solid rgba(255,255,255,0.07);
+            background-image:
+                linear-gradient(rgba(91,184,232,0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(91,184,232,0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-color: #111820;
+        }
+        .fuel-end-right {
+            display: flex; flex-direction: column;
+            background: #0E141C;
+        }
+        .fuel-end-readouts {
+            padding: 22px 24px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .fuel-end-readouts h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.68em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2.5px;
+            color: rgba(245,185,66,0.55);
+            margin-bottom: 12px;
+        }
+        .readout-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .readout-box {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(245,185,66,0.15);
+            border-radius: 8px; padding: 11px 13px;
+        }
+        .readout-box .r-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.62em; font-weight: 700;
+            letter-spacing: 1.8px; text-transform: uppercase;
+            color: rgba(245,185,66,0.5); margin-bottom: 3px;
+        }
+        .readout-box .r-value {
+            font-family: 'Courier New', monospace;
+            font-size: 1.18em; font-weight: bold;
+            color: #F5B942; letter-spacing: 1px;
+        }
+        .readout-box.green  { border-color: rgba(93,216,154,0.2); }
+        .readout-box.green .r-label { color: rgba(93,216,154,0.55); }
+        .readout-box.green .r-value { color: #5DD89A; }
+        .readout-box.blue   { border-color: rgba(91,184,232,0.2); }
+        .readout-box.blue .r-label  { color: rgba(91,184,232,0.55); }
+        .readout-box.blue .r-value  { color: #5BB8E8; }
+        .fuel-end-map-wrap {
+            flex: 1; position: relative; min-height: 320px;
+        }
+        #endurance-map { width: 100%; height: 100%; }
+        .map-controls {
+            position: absolute; top: 10px; right: 10px; z-index: 1000;
+            display: flex; gap: 6px;
+        }
+        .map-ctrl-btn {
+            padding: 5px 10px; border-radius: 5px;
+            border: 1px solid rgba(245,185,66,0.4);
+            background: rgba(17,24,32,0.92);
+            color: rgba(245,185,66,0.8);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.7em; font-weight: 700;
+            cursor: pointer; letter-spacing: 1px;
+            transition: background 0.15s;
+        }
+        .map-ctrl-btn.active,
+        .map-ctrl-btn:hover { background: rgba(245,185,66,0.18); color: #F5B942; }
+        .end-calc-btn {
+            width: 100%; padding: 12px; border: none; border-radius: 7px;
+            margin-top: 18px;
+            font-size: 0.88em; font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer; letter-spacing: 1px;
+            background: #D4831A; color: #fff;
+            box-shadow: 0 0 12px rgba(212,131,26,0.35);
+            transition: background 0.2s, box-shadow 0.2s;
+        }
+        .end-calc-btn:hover { background: #F5A030; box-shadow: 0 0 20px rgba(245,160,48,0.45); }
+        .end-section-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.65em; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 2px;
+            color: rgba(245,185,66,0.5);
+            margin: 14px 0 8px; border-top: 1px solid rgba(255,255,255,0.06);
+            padding-top: 12px;
+        }
+        .end-section-label:first-of-type { margin-top: 0; border-top: none; padding-top: 0; }
+        @media (max-width: 768px) {
+            .fuel-end-body { grid-template-columns: 1fr; }
+            .fuel-end-inputs { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+            .fuel-end-map-wrap { min-height: 280px; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="index.html" class="nav-logo">PNW<span>AV8R</span></a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="weather.html">Weather</a></li>
+            <li><a href="wb.html" class="active">W&amp;B</a></li>
+            <li><a href="dashboard.html" class="portal">Member Portal</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO — flight computer inspiration, no brand names -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;height:220px;overflow:hidden;position:relative;">
+        <div style="position:relative;background:#130F06;overflow:hidden;">
+            <img src="images/e6b-manual.jpg" alt="Manual flight computer" style="width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.5;" onerror="this.style.display='none'">
+            <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(245,185,66,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(245,185,66,0.05) 1px,transparent 1px);background-size:20px 20px;"></div>
+            <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(10,8,4,0.75),rgba(10,8,4,0.15));"></div>
+            <div style="position:absolute;bottom:18px;left:20px;font-family:'Courier New',monospace;font-size:0.7em;letter-spacing:2px;color:rgba(245,185,66,0.55);">CIRCULAR SLIDE RULE</div>
+        </div>
+        <div style="position:relative;background:#080A10;overflow:hidden;">
+            <img src="images/e6b-digital.jpg" alt="Digital flight computer" style="width:100%;height:100%;object-fit:cover;object-position:center top;opacity:0.45;" onerror="this.style.display='none'">
+            <div style="position:absolute;inset:0;background:linear-gradient(to left,rgba(8,10,18,0.75),rgba(8,10,18,0.15));"></div>
+            <div style="position:absolute;bottom:18px;right:20px;font-family:'Courier New',monospace;font-size:0.7em;letter-spacing:2px;color:rgba(91,184,232,0.55);text-align:right;">DIGITAL FLIGHT COMPUTER</div>
+        </div>
+        <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:10;">
+            <div style="background:rgba(8,10,14,0.88);border:1px solid rgba(245,185,66,0.22);border-radius:12px;padding:14px 32px;backdrop-filter:blur(8px);">
+                <div style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;letter-spacing:4px;color:rgba(245,185,66,0.6);margin-bottom:6px;">N2134Y · 1963 CESSNA 172D</div>
+                <div style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.5em;color:#fff;white-space:nowrap;">Weight &amp; <span style="color:#F5B942;">Balance</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page">
+        <div class="wb-calculator">
+            <div class="wb-content">
+                <div class="input-section">
+                    <h2>Load Configuration</h2>
+
+                    <div class="input-group">
+                        <label for="pilot-weight">Pilot (lbs)</label>
+                        <input type="number" id="pilot-weight" value="170" min="0" max="300" oninput="calculate()">
+                        <small>Front left seat · Station 37.0"</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="copilot-weight">Co-Pilot / Passenger (lbs)</label>
+                        <input type="number" id="copilot-weight" value="0" min="0" max="300" oninput="calculate()">
+                        <small>Front right seat · Station 37.0" · Leave 0 if solo</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="rear-weight">Rear Passengers (lbs)</label>
+                        <input type="number" id="rear-weight" value="0" min="0" max="400" oninput="calculate()">
+                        <small>Rear seats combined · Station 73.0" · Leave 0 if empty</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="baggage-weight">Baggage (lbs)</label>
+                        <input type="number" id="baggage-weight" value="0" min="0" max="120" oninput="calculate()">
+                        <small>Baggage shelf · Station 95.0" · Max 120 lbs</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="fuel-gallons">Fuel (gallons)</label>
+                        <input type="number" id="fuel-gallons" value="38" min="0" max="38" step="0.5" oninput="calculate()">
+                        <small>Max 38 gal usable · 6 lb/gal · Station 48.0" · = <span id="fuel-weight-display">228.0 lbs</span></small>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="calc-button" onclick="calculate()">Recalculate</button>
+                        <button class="print-button" onclick="window.print()">Print Sheet</button>
+                    </div>
+                </div>
+
+                <div class="results-section">
+                    <h2>W&amp;B Results</h2>
+
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Weight (lbs)</th>
+                                <th>Arm (in)</th>
+                                <th>Moment</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Empty Aircraft</td>
+                                <td id="empty-weight-display">TODO</td>
+                                <td id="empty-arm-display">TODO</td>
+                                <td id="empty-moment-display">TODO</td>
+                            </tr>
+                            <tr>
+                                <td>Pilot</td>
+                                <td id="pilot-display">170</td>
+                                <td>37.0</td>
+                                <td id="pilot-moment">6,290</td>
+                            </tr>
+                            <tr>
+                                <td>Co-Pilot / Pax</td>
+                                <td id="copilot-display">0</td>
+                                <td>37.0</td>
+                                <td id="copilot-moment">0</td>
+                            </tr>
+                            <tr>
+                                <td>Rear Passengers</td>
+                                <td id="rear-display">0</td>
+                                <td>73.0</td>
+                                <td id="rear-moment">0</td>
+                            </tr>
+                            <tr>
+                                <td>Baggage</td>
+                                <td id="baggage-display">0</td>
+                                <td>95.0</td>
+                                <td id="baggage-moment">0</td>
+                            </tr>
+                            <tr>
+                                <td>Fuel</td>
+                                <td id="fuel-display">228.0</td>
+                                <td>48.0</td>
+                                <td id="fuel-moment">10,944</td>
+                            </tr>
+                            <tr class="total-row">
+                                <td><strong>GROSS WEIGHT</strong></td>
+                                <td id="total-weight"><strong>1351.2</strong></td>
+                                <td id="total-cg"><strong>33.6"</strong></td>
+                                <td id="total-moment"><strong>45,633</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div id="status" class="status safe">WITHIN LIMITS</div>
+
+                    <div class="cg-section">
+                        <h4>CG Envelope Position</h4>
+                        <div class="cg-scale-container">
+                            <div class="cg-scale">
+                                <div class="safe-zone" id="safe-zone"></div>
+                                <div class="cg-indicator" id="cg-indicator">
+                                    <div class="cg-pointer"></div>
+                                    <span class="cg-value" id="cg-value">33.6"</span>
+                                </div>
+                            </div>
+                            <div class="scale-labels">
+                                <span id="forward-label">32.20"</span>
+                                <span>34.10"</span>
+                                <span id="aft-label">36.00"</span>
+                            </div>
+                        </div>
+                        <p id="cg-limits" style="font-size:0.82em;color:rgba(255,255,255,0.5);margin-top:8px;"></p>
+                        <p id="cg-margin" style="font-size:0.78em;color:rgba(255,255,255,0.35);margin-top:4px;"></p>
+                    </div>
+
+                    <div id="flight-characteristics" class="flight-characteristics char-normal">
+                        <h4>CG Within Limits</h4>
+                        <p>Normal flight characteristics. Predictable handling.</p>
+                    </div>
+
+                    <div class="va-box">
+                        <h4>Maneuvering Speed (Va)</h4>
+                        <p id="va-speed" style="font-size:1.2em;font-weight:700;color:#fff;margin:4px 0;">107 MPH</p>
+                        <p>Va = 106 × √(Gross Weight ÷ 1500)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ FUEL ENDURANCE RANGE CALCULATOR ══ -->
+        <div class="fuel-endurance">
+            <div class="fuel-end-header">
+                <h2>⛽ Fuel Endurance &amp; Range</h2>
+            </div>
+
+            <div class="fuel-end-body">
+                <!-- Inputs -->
+                <div class="fuel-end-inputs">
+
+                    <div class="end-section-label">Fuel &amp; Power</div>
+
+                    <div class="input-group">
+                        <label for="end-fuel">Fuel on Board (gallons)</label>
+                        <input type="number" id="end-fuel" value="22" min="0" max="22.5" step="0.5"
+                               oninput="calcEndurance()">
+                        <small>Usable: 22.5 gal max · Synced with W&amp;B above</small>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="end-power">Power Setting</label>
+                        <select id="end-power" onchange="calcEndurance()"
+                                style="width:100%;padding:11px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(245,185,66,0.2);border-radius:6px;font-size:0.95em;color:#F5B942;font-family:'Courier New',monospace;font-weight:bold;">
+                            <option value="75">75% — 6.0 GPH / 100 mph TAS</option>
+                            <option value="65">65% — 5.5 GPH / 96 mph TAS</option>
+                            <option value="55">55% — 4.5 GPH / 90 mph TAS</option>
+                        </select>
+                        <small>POH values · C150 at standard atmosphere</small>
+                    </div>
+
+                    <div class="end-section-label">Departure Airport</div>
+
+                    <div class="input-group">
+                        <label for="end-airport">Home Airport</label>
+                        <select id="end-airport" onchange="onAirportChange()"
+                                style="width:100%;padding:11px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(245,185,66,0.2);border-radius:6px;font-size:0.95em;color:#F5B942;font-family:'Courier New',monospace;font-weight:bold;">
+                            <option value="KRNT" selected>KRNT — Renton Municipal</option>
+                            <option value="KBFI">KBFI — Boeing Field, Seattle</option>
+                            <option value="KRNT">KRNT — Renton Municipal</option>
+                            <option value="KAWO">KAWO — Arlington Municipal</option>
+                        </select>
+                    </div>
+
+                    <div class="end-section-label">Wind Correction</div>
+
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                        <div class="input-group" style="margin-bottom:0">
+                            <label for="end-wind-dir">Wind From (°)</label>
+                            <input type="number" id="end-wind-dir" value="0" min="0" max="360" step="5"
+                                   oninput="calcEndurance()">
+                            <small>True degrees</small>
+                        </div>
+                        <div class="input-group" style="margin-bottom:0">
+                            <label for="end-wind-spd">Wind Speed (kts)</label>
+                            <input type="number" id="end-wind-spd" value="0" min="0" max="60" step="1"
+                                   oninput="calcEndurance()">
+                            <small>0 = no wind</small>
+                        </div>
+                    </div>
+
+                    <button class="end-calc-btn" onclick="calcEndurance()">Calculate &amp; Draw Map</button>
+                </div>
+
+                <!-- Right: readouts + map -->
+                <div class="fuel-end-right">
+                    <div class="fuel-end-readouts">
+                        <h3>Performance Readout — <span id="end-power-label">75% Power</span></h3>
+                        <div class="readout-grid">
+                            <div class="readout-box green">
+                                <div class="r-label">Safe Endurance</div>
+                                <div class="r-value" id="end-safe-time">—</div>
+                            </div>
+                            <div class="readout-box green">
+                                <div class="r-label">Safe Range</div>
+                                <div class="r-value" id="end-safe-range">—</div>
+                            </div>
+                            <div class="readout-box">
+                                <div class="r-label">Raw Endurance</div>
+                                <div class="r-value" id="end-raw-time">—</div>
+                            </div>
+                            <div class="readout-box">
+                                <div class="r-label">Raw Range</div>
+                                <div class="r-value" id="end-raw-range">—</div>
+                            </div>
+                            <div class="readout-box blue">
+                                <div class="r-label">VFR Reserve</div>
+                                <div class="r-value" id="end-reserve">—</div>
+                            </div>
+                            <div class="readout-box blue">
+                                <div class="r-label">Cruise TAS</div>
+                                <div class="r-value" id="end-tas">—</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map -->
+                    <div class="fuel-end-map-wrap">
+                        <div id="endurance-map"></div>
+                        <div class="map-controls">
+                            <button class="map-ctrl-btn active" id="btn-osm" onclick="setMapLayer('osm')">OSM</button>
+                            <button class="map-ctrl-btn" id="btn-sec" onclick="setMapLayer('sec')">Sectional</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legend -->
+            <div style="padding:10px 22px;background:rgba(0,0,0,0.18);border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:20px;flex-wrap:wrap;font-size:0.76em;color:rgba(255,255,255,0.45);">
+                <span><span style="display:inline-block;width:12px;height:12px;background:rgba(245,185,66,0.3);border:1.5px solid #F5B942;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Amber ring = safe range (30-min VFR reserve held)</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:rgba(93,216,154,0.25);border:1.5px dashed #5DD89A;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Green dashed = raw range (tanks empty)</span>
+                <span>Wind-corrected teardrop shape when wind &gt; 0</span>
+                <span>⚠ For planning only · Always apply VFR fuel minimums</span>
+            </div>
+        </div>
+
+        <div class="disclaimer">
+            <h4>⚠ Important Disclaimer</h4>
+            <p><strong style="color:rgba(255,255,255,0.75);">Designed for N2134Y — 1963 Cessna 172D. Empty weight and CG must be entered from N2134Y's actual weight &amp; balance record. Verify all values against the aircraft POH before flight.</strong></p>
+            <p>The pilot in command is solely responsible for ensuring the aircraft is loaded within approved limits before every flight.</p>
+        </div>
+    </div>
+
+    <div class="page-footer">
+        For reference only · Always verify against official POH · PIC is solely responsible for all loading decisions
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script>
+        // ── N2134Y Cessna 172D Constants ──
+        // TODO: Replace EMPTY_WEIGHT and EMPTY_MOMENT with values from N2134Y's
+        //       actual weight & balance record (aircraft maintenance records / POH supplement).
+        //       Do NOT use generic values — the actual aircraft may differ after modifications.
+        const EMPTY_WEIGHT  = null;     // TODO: lbs from W&B record
+        const EMPTY_MOMENT  = null;     // TODO: lbs·in from W&B record (weight × arm)
+        const FRONT_ARM     = 37.0;     // front seats station (aft of datum)
+        const REAR_ARM      = 73.0;     // rear seats station (aft of datum)
+        const BAGGAGE_ARM   = 95.0;     // baggage shelf station (aft of datum)
+        const FUEL_ARM      = 48.0;     // wing fuel tanks station (aft of datum)
+        const FUEL_LBS_GAL  = 6.0;      // avgas weight lbs/gal
+        const MAX_GROSS     = 2300.0;   // max gross weight lbs (Cessna 172D)
+        const MAX_BAGGAGE   = 120.0;    // max baggage lbs
+        const MAX_FUEL_GAL  = 38.0;     // usable fuel gallons (42 total − 4 unusable)
+
+        // CG limits per 172D POH / TCDS 3A12 (interpolated between weight breakpoints)
+        function interpolateCGLimits(weight) {
+            // Cessna 172D: aft limit shifts aft as weight increases
+            if (weight <= 1500) return { forward: 35.0, aft: 40.5 };
+            if (weight >= 2300) return { forward: 35.0, aft: 47.3 };
+            const ratio = (weight - 1500) / (2300 - 1500);
+            return { forward: 35.0, aft: 40.5 + ratio * (47.3 - 40.5) };
+        }
+
+        function calculate() {
+            // Guard: empty weight not yet entered (awaiting W&B record)
+            if (EMPTY_WEIGHT === null || EMPTY_MOMENT === null) {
+                document.getElementById('empty-weight-display').textContent = 'Enter actual W&B data';
+                document.getElementById('empty-arm-display').textContent    = '—';
+                document.getElementById('empty-moment-display').textContent = '—';
+                document.getElementById('total-weight').innerHTML = '<strong>—</strong>';
+                document.getElementById('total-cg').innerHTML     = '<strong>Update EMPTY_WEIGHT & EMPTY_MOMENT in wb.html</strong>';
+                document.getElementById('total-moment').innerHTML = '<strong>—</strong>';
+                return;
+            }
+
+            const pilotWt    = Math.max(0, parseFloat(document.getElementById('pilot-weight').value)   || 0);
+            const copilotWt  = Math.max(0, parseFloat(document.getElementById('copilot-weight').value) || 0);
+            const rearWt     = Math.max(0, parseFloat(document.getElementById('rear-weight').value)    || 0);
+            const baggageWt  = Math.max(0, parseFloat(document.getElementById('baggage-weight').value) || 0);
+            const fuelGal    = Math.max(0, Math.min(MAX_FUEL_GAL, parseFloat(document.getElementById('fuel-gallons').value) || 0));
+
+            const fuelWt     = fuelGal * FUEL_LBS_GAL;
+
+            // Moments
+            const pilotMom   = pilotWt   * FRONT_ARM;
+            const copilotMom = copilotWt * FRONT_ARM;
+            const rearMom    = rearWt    * REAR_ARM;
+            const baggageMom = baggageWt * BAGGAGE_ARM;
+            const fuelMom    = fuelWt    * FUEL_ARM;
+
+            const totalWeight = EMPTY_WEIGHT + pilotWt + copilotWt + rearWt + baggageWt + fuelWt;
+            const totalMoment = EMPTY_MOMENT + pilotMom + copilotMom + rearMom + baggageMom + fuelMom;
+            const totalCG     = totalMoment / totalWeight;
+
+            // ── Update table ──
+            const fmt = (n, dec=1) => n.toFixed(dec);
+            const fmtM = (n) => Math.round(n).toLocaleString();
+
+            const emptyArm = EMPTY_MOMENT / EMPTY_WEIGHT;
+            document.getElementById('empty-weight-display').textContent = EMPTY_WEIGHT.toFixed(1);
+            document.getElementById('empty-arm-display').textContent    = emptyArm.toFixed(2);
+            document.getElementById('empty-moment-display').textContent = fmtM(EMPTY_MOMENT);
+
+            document.getElementById('fuel-weight-display').textContent = fmt(fuelWt) + ' lbs';
+            document.getElementById('pilot-display').textContent   = fmt(pilotWt, 0);
+            document.getElementById('copilot-display').textContent = fmt(copilotWt, 0);
+            document.getElementById('rear-display').textContent    = fmt(rearWt, 0);
+            document.getElementById('baggage-display').textContent = fmt(baggageWt, 0);
+            document.getElementById('fuel-display').textContent    = fmt(fuelWt);
+            document.getElementById('pilot-moment').textContent    = fmtM(pilotMom);
+            document.getElementById('copilot-moment').textContent  = fmtM(copilotMom);
+            document.getElementById('rear-moment').textContent     = fmtM(rearMom);
+            document.getElementById('baggage-moment').textContent  = fmtM(baggageMom);
+            document.getElementById('fuel-moment').textContent     = fmtM(fuelMom);
+
+            const wEl = document.getElementById('total-weight');
+            const cEl = document.getElementById('total-cg');
+            const mEl = document.getElementById('total-moment');
+            wEl.innerHTML = '<strong>' + fmt(totalWeight) + '</strong>';
+            cEl.innerHTML = '<strong>' + fmt(totalCG, 2) + '"</strong>';
+            mEl.innerHTML = '<strong>' + fmtM(totalMoment) + '</strong>';
+
+            // ── CG limits & scale ──
+            const cgLimits = interpolateCGLimits(totalWeight);
+            updateCGScale(totalCG, cgLimits);
+            updateStatus(totalWeight, totalCG, cgLimits, baggageWt, fuelGal);
+            updateFlightCharacteristics(totalCG, cgLimits);
+
+            // ── Va (Cessna 172D: 112 MPH at max gross per POH) ──
+            const va = 112 * Math.sqrt(Math.min(totalWeight, MAX_GROSS) / MAX_GROSS);
+            document.getElementById('va-speed').textContent = va.toFixed(0) + ' MPH';
+
+            // ── CG info text ──
+            document.getElementById('cg-limits').innerHTML =
+                'CG Limits: <strong style="color:#F5B942">' + fmt(cgLimits.forward,2) + '"</strong> fwd &nbsp;|&nbsp; <strong style="color:#F5B942">' + fmt(cgLimits.aft,2) + '"</strong> aft';
+            const mFwd = totalCG - cgLimits.forward;
+            const mAft = cgLimits.aft - totalCG;
+            document.getElementById('cg-margin').textContent =
+                fmt(mFwd,2) + '" from forward limit · ' + fmt(mAft,2) + '" from aft limit';
+        }
+        
+        function updateCGScale(currentCG, cgLimits) {
+            const scaleMin = 33.0;   // 172D CG scale: 33" – 50"
+            const scaleMax = 50.0;
+            const scaleRange = scaleMax - scaleMin;
+            
+            const cgPercent = ((currentCG - scaleMin) / scaleRange) * 100;
+            const forwardLimitPercent = ((cgLimits.forward - scaleMin) / scaleRange) * 100;
+            const aftLimitPercent = ((cgLimits.aft - scaleMin) / scaleRange) * 100;
+            
+            const indicator = document.getElementById('cg-indicator');
+            indicator.style.left = cgPercent + '%';
+            document.getElementById('cg-value').textContent = currentCG.toFixed(2) + '"';
+            
+            const safeZone = document.getElementById('safe-zone');
+            safeZone.style.left = forwardLimitPercent + '%';
+            safeZone.style.width = (aftLimitPercent - forwardLimitPercent) + '%';
+            
+            document.getElementById('forward-label').textContent = cgLimits.forward.toFixed(2) + '"';
+            document.getElementById('aft-label').textContent = cgLimits.aft.toFixed(2) + '"';
+            
+            document.getElementById('cg-limits').innerHTML = 
+                '<strong>CG Limits:</strong> Forward: ' + cgLimits.forward.toFixed(2) + '" | Aft: ' + cgLimits.aft.toFixed(2) + '"';
+            
+            const marginFromForward = currentCG - cgLimits.forward;
+            const marginFromAft = cgLimits.aft - currentCG;
+            document.getElementById('cg-margin').textContent = 
+                marginFromForward.toFixed(2) + '" from forward, ' + marginFromAft.toFixed(2) + '" from aft';
+            
+            // Color the indicator
+            const cgPointer = document.querySelector('.cg-pointer');
+            const cgValue = document.querySelector('.cg-value');
+            
+            if (currentCG < cgLimits.forward || currentCG > cgLimits.aft) {
+                indicator.style.background = '#e74c3c';
+                cgPointer.style.borderTopColor = '#e74c3c';
+                cgValue.style.background = '#e74c3c';
+            } else {
+                indicator.style.background = '#2c3e50';
+                cgPointer.style.borderTopColor = '#2c3e50';
+                cgValue.style.background = '#2c3e50';
+            }
+        }
+        
+        function updateStatus(weight, cg, cgLimits, baggage, fuelGallons) {
+            const statusElement = document.getElementById('status');
+            
+            if (weight > 1500) {
+                statusElement.className = 'status danger';
+                statusElement.textContent = 'OVERWEIGHT - Reduce by ' + (weight - 1500).toFixed(1) + ' lbs';
+            } else if (baggage > 120) {
+                statusElement.className = 'status danger';
+                statusElement.textContent = 'BAGGAGE OVERWEIGHT - Max 120 lbs';
+            } else if (fuelGallons > 22) {
+                statusElement.className = 'status danger';
+                statusElement.textContent = 'FUEL OVERWEIGHT - Max 22 gallons';
+            } else if (cg < cgLimits.forward) {
+                statusElement.className = 'status danger';
+                statusElement.textContent = 'CG TOO FORWARD - ' + (cgLimits.forward - cg).toFixed(2) + '" beyond limit';
+            } else if (cg > cgLimits.aft) {
+                statusElement.className = 'status danger';
+                statusElement.textContent = 'CG TOO AFT - ' + (cg - cgLimits.aft).toFixed(2) + '" beyond limit';
+            } else {
+                statusElement.className = 'status safe';
+                statusElement.textContent = 'WITHIN LIMITS - Safe for flight';
+            }
+        }
+        
+        function updateFlightCharacteristics(cg, cgLimits) {
+            const characteristicsElement = document.getElementById('flight-characteristics');
+            if (cg < cgLimits.forward) {
+                characteristicsElement.className = 'flight-characteristics char-danger';
+                characteristicsElement.innerHTML = 
+                    '<h4>FORWARD CG - DANGEROUS</h4>' +
+                    '<p>Heavy nose-down forces, difficulty flaring for landing, potential inability to recover from stall. DO NOT FLY.</p>';
+            } else if (cg > cgLimits.aft) {
+                characteristicsElement.className = 'flight-characteristics char-danger';
+                characteristicsElement.innerHTML = 
+                    '<h4>AFT CG - DANGEROUS</h4>' +
+                    '<p>Light elevator forces, tendency to pitch up, difficult stall/spin recovery, reduced stability. DO NOT FLY.</p>';
+            } else {
+                characteristicsElement.className = 'flight-characteristics char-normal';
+                characteristicsElement.innerHTML =
+                    '<h4>CG Within Limits</h4>' +
+                    '<p>Aircraft is within approved CG envelope. Normal flight characteristics apply.</p>';
+            }
+        }
+        
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', calculate);
+            });
+            calculate();
+        });
+    </script>
+    <script>
+    // ═══════════════════════════════════════════════
+    //  FUEL ENDURANCE & RANGE CALCULATOR
+    //  N2134Y — 1963 Cessna 172D (Continental O-300-D, 145 HP)
+    // ═══════════════════════════════════════════════
+
+    const USABLE_FUEL_MAX = 38.0;   // Cessna 172D usable gallons (42 total − 4 unusable)
+    const KTS_TO_MPH = 1.15078;
+
+    // POH power settings (approximate — verify against actual aircraft POH)
+    const POWER = {
+        '75': { gph: 9.0, tas: 107, label: '75% Power' },
+        '65': { gph: 8.0, tas: 100, label: '65% Power' },
+        '55': { gph: 6.5, tas:  92, label: '55% Power' }
+    };
+
+    // Home airports (KRNT is primary for N2134Y / Hi-Line Flying Club)
+    const HOME_AIRPORTS = {
+        KRNT: { lat: 47.4931, lon: -122.2162, name: 'Renton Municipal' },
+        KBFI: { lat: 47.5300, lon: -122.3020, name: 'Boeing Field' },
+        KAWO: { lat: 48.1608, lon: -122.1581, name: 'Arlington Municipal' }
+    };
+
+    // PNW regional airports for map markers
+    const PNW_AIRPORTS = [
+        { icao:'KBFI', lat:47.5300, lon:-122.3020, name:'Boeing Field' },
+        { icao:'KRNT', lat:47.4931, lon:-122.2162, name:'Renton' },
+        { icao:'KAWO', lat:48.1608, lon:-122.1581, name:'Arlington' },
+        { icao:'KPAE', lat:47.9063, lon:-122.2816, name:'Paine Field' },
+        { icao:'KPWT', lat:47.4902, lon:-122.7649, name:'Bremerton' },
+        { icao:'KOLM', lat:46.9694, lon:-122.9027, name:'Olympia' },
+        { icao:'KTIW', lat:47.2679, lon:-122.5783, name:'Tacoma Narrows' },
+        { icao:'KPLU', lat:47.1039, lon:-122.2871, name:'Thun Field' },
+        { icao:'KSHN', lat:47.2336, lon:-123.1482, name:'Shelton' },
+        { icao:'KCLM', lat:48.1202, lon:-123.5004, name:'Port Angeles' },
+        { icao:'KHQM', lat:46.9712, lon:-123.9369, name:'Hoquiam' },
+        { icao:'KAST', lat:46.1579, lon:-123.8787, name:'Astoria' },
+        { icao:'KBLI', lat:48.7928, lon:-122.5375, name:'Bellingham' },
+        { icao:'KBVS', lat:48.4699, lon:-122.4208, name:'Skagit Regional' },
+        { icao:'KORS', lat:48.7082, lon:-122.9103, name:'Orcas Is.' },
+        { icao:'KFHR', lat:48.5220, lon:-123.0238, name:'Friday Harbor' },
+        { icao:'KCLW', lat:48.0536, lon:-122.6479, name:'Coupeville' },
+        { icao:'KGRF', lat:47.0792, lon:-122.5806, name:'Gray AAF' },
+        { icao:'KKLS', lat:46.1182, lon:-122.8984, name:'Kelso' },
+        { icao:'KVUO', lat:45.6207, lon:-122.6564, name:'Pearson Field' },
+        { icao:'KTTD', lat:45.5494, lon:-122.4012, name:'Troutdale' },
+        { icao:'KHIO', lat:45.5404, lon:-122.9498, name:'Hillsboro' },
+        { icao:'KUAO', lat:45.2476, lon:-122.8618, name:'Aurora State' },
+        { icao:'KSLE', lat:44.9095, lon:-123.0029, name:'Salem' },
+        { icao:'KYKM', lat:46.5682, lon:-120.5444, name:'Yakima' },
+        { icao:'KELN', lat:47.0299, lon:-120.5313, name:'Ellensburg' },
+        { icao:'KEAT', lat:47.3985, lon:-120.2077, name:'Wenatchee' },
+        { icao:'KAWO', lat:48.1608, lon:-122.1581, name:'Arlington' },
+        { icao:'CYYJ', lat:48.6469, lon:-123.4258, name:'Victoria BC' },
+        { icao:'CYXX', lat:49.0253, lon:-122.3609, name:'Abbotsford BC' }
+    ];
+
+    // ── Leaflet map state ──
+    let eMap = null;
+    let osmLayer = null;
+    let secLayer = null;
+    let activeLayerMode = 'osm';
+    let rawRing = null, safeRing = null;
+    let homeMarker = null;
+    let airportMarkerLayer = null;
+
+    function initEnduranceMap(lat, lon) {
+        if (eMap) return;
+        eMap = L.map('endurance-map', { zoomControl: true }).setView([lat, lon], 7);
+
+        osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+            maxZoom: 14
+        });
+        secLayer = L.tileLayer('https://wms.chartbundle.com/tms/1.0.0/sec/{z}/{x}/{y}.png', {
+            attribution: '© FAA / ChartBundle', tms: true, opacity: 0.88,
+            maxZoom: 12
+        });
+
+        osmLayer.addTo(eMap);
+        airportMarkerLayer = L.layerGroup().addTo(eMap);
+    }
+
+    function setMapLayer(mode) {
+        if (!eMap) return;
+        activeLayerMode = mode;
+        document.getElementById('btn-osm').classList.toggle('active', mode === 'osm');
+        document.getElementById('btn-sec').classList.toggle('active', mode === 'sec');
+
+        if (mode === 'osm') {
+            if (eMap.hasLayer(secLayer)) eMap.removeLayer(secLayer);
+            if (!eMap.hasLayer(osmLayer)) osmLayer.addTo(eMap);
+        } else {
+            if (eMap.hasLayer(osmLayer)) eMap.removeLayer(osmLayer);
+            if (!eMap.hasLayer(secLayer)) secLayer.addTo(eMap);
+        }
+    }
+
+    // Great-circle point at (bearing°, distanceMi) from origin
+    function destPoint(lat, lon, bearingDeg, distMi) {
+        const R = 3958.8;
+        const d = distMi / R;
+        const lat1 = lat * Math.PI / 180;
+        const lon1 = lon * Math.PI / 180;
+        const brng = bearingDeg * Math.PI / 180;
+        const lat2 = Math.asin(
+            Math.sin(lat1) * Math.cos(d) +
+            Math.cos(lat1) * Math.sin(d) * Math.cos(brng)
+        );
+        const lon2 = lon1 + Math.atan2(
+            Math.sin(brng) * Math.sin(d) * Math.cos(lat1),
+            Math.cos(d) - Math.sin(lat1) * Math.sin(lat2)
+        );
+        return [lat2 * 180 / Math.PI, lon2 * 180 / Math.PI];
+    }
+
+    // Build polygon points for one ring (wind-corrected teardrop)
+    function buildRingPoints(lat, lon, tasMph, enduranceHrs, windDirDeg, windMph) {
+        const pts = [];
+        for (let b = 0; b < 360; b++) {
+            // Ground speed on this bearing
+            const angleRad = (windDirDeg - b) * Math.PI / 180;
+            const gs = Math.max(0, tasMph - windMph * Math.cos(angleRad));
+            const rangeMi = gs * enduranceHrs;
+            pts.push(destPoint(lat, lon, b, rangeMi));
+        }
+        return pts;
+    }
+
+    function drawAirportMarkers(lat, lon, maxRangeMi) {
+        if (!airportMarkerLayer) return;
+        airportMarkerLayer.clearLayers();
+
+        // Custom small circle marker
+        const icon = (color, icao) => L.divIcon({
+            className: '',
+            html: `<div style="background:${color};border:2px solid rgba(255,255,255,0.7);border-radius:50%;width:9px;height:9px;box-shadow:0 0 4px rgba(0,0,0,0.6);"></div>`,
+            iconSize: [9, 9],
+            iconAnchor: [4, 4]
+        });
+
+        // Distance approx: 1° lat ≈ 69 mi
+        const latDelta = maxRangeMi / 69 * 1.15;
+        const lonDelta = maxRangeMi / (69 * Math.cos(lat * Math.PI / 180)) * 1.15;
+
+        PNW_AIRPORTS.forEach(ap => {
+            if (Math.abs(ap.lat - lat) > latDelta || Math.abs(ap.lon - lon) > lonDelta) return;
+            const isHome = (ap.icao === document.getElementById('end-airport').value);
+            const marker = L.marker([ap.lat, ap.lon], {
+                icon: icon(isHome ? '#F5B942' : '#5BB8E8', ap.icao)
+            });
+            marker.bindTooltip(`<strong>${ap.icao}</strong><br>${ap.name}`, {
+                direction: 'top', offset: [0, -6],
+                className: 'airport-tip'
+            });
+            airportMarkerLayer.addLayer(marker);
+        });
+    }
+
+    function formatHours(h) {
+        if (isNaN(h) || h <= 0) return '0:00';
+        const hh = Math.floor(h);
+        const mm = Math.round((h - hh) * 60);
+        return `${hh}h ${mm.toString().padStart(2,'0')}m`;
+    }
+
+    function calcEndurance() {
+        const fuelGal  = Math.max(0, Math.min(USABLE_FUEL_MAX, parseFloat(document.getElementById('end-fuel').value) || 0));
+        const pwrKey   = document.getElementById('end-power').value;
+        const ps       = POWER[pwrKey];
+        const apKey    = document.getElementById('end-airport').value;
+        const ap       = HOME_AIRPORTS[apKey];
+        const windDir  = parseFloat(document.getElementById('end-wind-dir').value) || 0;
+        const windKts  = Math.max(0, parseFloat(document.getElementById('end-wind-spd').value) || 0);
+        const windMph  = windKts * KTS_TO_MPH;
+
+        // 30-min VFR reserve
+        const reserveGal = ps.gph * 0.5;
+
+        // Endurance
+        const rawEnd  = fuelGal / ps.gph;                                  // hours
+        const safeEnd = Math.max(0, (fuelGal - reserveGal) / ps.gph);     // hours
+
+        // Range (zero-wind straight-line)
+        const rawRangeMi  = ps.tas * rawEnd;
+        const safeRangeMi = ps.tas * safeEnd;
+
+        // Update readouts
+        document.getElementById('end-power-label').textContent = ps.label;
+        document.getElementById('end-safe-time').textContent  = formatHours(safeEnd);
+        document.getElementById('end-safe-range').textContent = Math.round(safeRangeMi) + ' mi';
+        document.getElementById('end-raw-time').textContent   = formatHours(rawEnd);
+        document.getElementById('end-raw-range').textContent  = Math.round(rawRangeMi) + ' mi';
+        document.getElementById('end-reserve').textContent    = reserveGal.toFixed(1) + ' gal';
+        document.getElementById('end-tas').textContent        = ps.tas + ' mph';
+
+        // ── Map ──
+        initEnduranceMap(ap.lat, ap.lon);
+
+        // Remove old rings
+        if (rawRing)  { eMap.removeLayer(rawRing);  rawRing  = null; }
+        if (safeRing) { eMap.removeLayer(safeRing); safeRing = null; }
+        if (homeMarker) { eMap.removeLayer(homeMarker); homeMarker = null; }
+
+        // Draw safe ring (amber) — inner conservative ring
+        const safePts = buildRingPoints(ap.lat, ap.lon, ps.tas, safeEnd, windDir, windMph);
+        safeRing = L.polygon(safePts, {
+            color: '#F5B942', weight: 2.5, fillColor: '#F5B942', fillOpacity: 0.09
+        }).addTo(eMap);
+
+        // Draw raw ring (green) — outer absolute-max ring
+        const rawPts = buildRingPoints(ap.lat, ap.lon, ps.tas, rawEnd, windDir, windMph);
+        rawRing = L.polygon(rawPts, {
+            color: '#5DD89A', weight: 2, fillColor: '#5DD89A', fillOpacity: 0.04,
+            dashArray: '6 4'
+        }).addTo(eMap);
+
+        // Home airport marker (star-style)
+        homeMarker = L.marker([ap.lat, ap.lon], {
+            icon: L.divIcon({
+                className: '',
+                html: `<div style="background:#F5B942;border:2px solid #fff;border-radius:50%;width:12px;height:12px;box-shadow:0 0 8px rgba(245,185,66,0.7);"></div>`,
+                iconSize: [12, 12], iconAnchor: [6, 6]
+            })
+        }).addTo(eMap);
+        homeMarker.bindTooltip(`<strong>${apKey}</strong><br>${ap.name}`, { permanent: false });
+
+        // Airport markers within range
+        drawAirportMarkers(ap.lat, ap.lon, rawRangeMi);
+
+        // Fit bounds to the raw (outer) ring
+        eMap.fitBounds(rawRing.getBounds(), { padding: [20, 20] });
+    }
+
+    function onAirportChange() {
+        calcEndurance();
+    }
+
+    // Sync fuel input with W&B fuel input
+    document.addEventListener('DOMContentLoaded', function () {
+        const wbFuel = document.getElementById('fuel-gallons');
+        const endFuel = document.getElementById('end-fuel');
+
+        // On W&B fuel change, mirror value to endurance input
+        wbFuel.addEventListener('input', function () {
+            endFuel.value = this.value;
+            calcEndurance();
+        });
+
+        // Initial calc
+        calcEndurance();
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="js/theme.js?v=3"></script>
+    <style>body{visibility:hidden}</style>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: var(--body-bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        .club-nav {
+            position: sticky; top: 0; z-index: 1000;
+            background: rgba(12,31,20,0.97);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.5);
+        }
+        .club-nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            padding: 0 28px; height: 64px;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 16px;
+        }
+        .club-nav-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 1.25em;
+            color: #fff; text-decoration: none; letter-spacing: 1px;
+        }
+        .club-nav-logo span { color: #5BB8E8; }
+        .club-nav-links { display: flex; gap: 4px; align-items: center; }
+        .club-nav-links a {
+            text-decoration: none; color: rgba(255,255,255,0.7);
+            font-family: 'Montserrat', sans-serif; font-weight: 700;
+            font-size: 0.84em; padding: 7px 13px; border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .club-nav-links a:hover, .club-nav-links a.active { color: #fff; background: rgba(255,255,255,0.09); }
+        #navUser { font-size: 0.82em; color: rgba(255,255,255,0.45); font-family: 'Montserrat', sans-serif; }
+        .theme-btn { background: none; border: none; cursor: pointer; padding: 6px 8px; font-size: 1.05em; line-height: 1; opacity: 0.7; }
+        .theme-btn:hover { opacity: 1; }
+        .hamburger-btn { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+        .hamburger-btn span { display: block; width: 22px; height: 2px; background: #fff; border-radius: 2px; margin: 5px 0; }
+
+        /* ── PAGE ── */
+        .page-wrap { max-width: 1200px; margin: 0 auto; padding: 24px 24px 64px; }
+
+        #schedBanner { display: none; border-radius: 10px; padding: 12px 20px; margin-bottom: 16px; font-weight: 600; font-size: 0.9em; }
+
+        /* ── WEEK NAV ── */
+        .week-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+        .week-nav-center { display: flex; align-items: center; gap: 12px; }
+        .week-title { font-family: 'Montserrat', sans-serif; font-size: 1em; font-weight: 700; color: var(--text); min-width: 220px; text-align: center; }
+        .nav-btn {
+            padding: 7px 18px; border-radius: 6px;
+            border: 1px solid var(--border-c);
+            background: var(--surface); font-weight: 700; font-size: 0.85em; cursor: pointer;
+            color: var(--text-dim); font-family: 'Montserrat', sans-serif;
+            transition: background 0.2s;
+        }
+        .nav-btn:hover { background: var(--surface-mid); }
+        .nav-btn.today-btn { background: #2A7A52; color: #fff; border-color: transparent; }
+        .nav-btn.today-btn:hover { background: #359966; }
+        .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        /* ── LEGEND ── */
+        .legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 0.82em; color: var(--text-muted); align-items: center; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 3px; display: inline-block; margin-right: 5px; vertical-align: middle; }
+
+        /* ── CALENDAR ── */
+        .cal-outer { background: var(--surface); border: 1px solid var(--border-c); border-radius: 14px; overflow: hidden; }
+        .cal-grid { display: grid; grid-template-columns: 60px repeat(7, 1fr); }
+
+        .grid-corner { background: var(--cal-header); border-bottom: 1px solid var(--border-c); border-right: 1px solid var(--border-c); }
+
+        .day-header {
+            background: var(--cal-header);
+            border-bottom: 1px solid var(--border-sub);
+            border-right: 1px solid var(--border-dim);
+            text-align: center; padding: 10px 4px;
+        }
+        .day-header .dow { font-size: 0.68em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+        .day-header .dnum { font-size: 1.05em; font-weight: 700; color: var(--text); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 4px auto 0; border-radius: 50%; }
+        .day-header.today .dnum { background: #2A7A52; color: #fff; }
+        .day-header.today .dow { color: #5BB8E8; }
+
+        .time-label {
+            background: var(--cal-header); border-right: 1px solid var(--border-c); border-bottom: 1px solid var(--border-dim);
+            font-size: 0.68em; font-weight: 700; color: var(--text-muted);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 4px; height: 48px;
+        }
+
+        .slot-cell {
+            height: 48px; border-right: 1px solid var(--border-dim); border-bottom: 1px solid var(--border-dim);
+            position: relative; cursor: pointer; transition: background 0.1s;
+        }
+        .slot-cell:hover:not(.cell-taken):not(.cell-past):not(.cell-disabled):not(.cell-grounded) { background: var(--slot-hover); }
+        .slot-cell.cell-past    { background: var(--cal-past); cursor: default; }
+        .slot-cell.cell-disabled { background: var(--cal-past); cursor: default; }
+        .slot-cell.cell-selecting { background: var(--slot-select); }
+        .slot-cell.cell-taken  { cursor: default; }
+        .slot-cell.cell-grounded {
+            background: var(--err-bg);
+            cursor: not-allowed;
+        }
+
+        /* ── RESERVATION BLOCKS ── */
+        .res-block {
+            position: absolute; left: 2px; right: 2px; border-radius: 5px;
+            padding: 3px 6px; font-size: 0.7em; font-weight: 700;
+            overflow: hidden; z-index: 2; pointer-events: none; line-height: 1.3;
+        }
+        .res-block.other { background: rgba(91,184,232,0.22); color: var(--sky-text); border: 1px solid var(--sky-border); }
+        .res-block.mine  { background: rgba(212,67,154,0.22); color: #e06bb0; border: 1px solid rgba(212,67,154,0.38); }
+        .res-block.grounded-label {
+            background: var(--err-bg); color: var(--err-text); border: 1px solid var(--err-border);
+            font-family: 'Montserrat', sans-serif; font-size: 0.62em; letter-spacing: 1px;
+        }
+
+        /* ── BOOKING PANEL ── */
+        .book-panel { margin-top: 20px; background: var(--surface); border: 1px solid var(--border-c); border-radius: 14px; padding: 28px 32px; display: none; }
+        .book-panel h3 { font-family: 'Montserrat', sans-serif; font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 16px; }
+        .book-summary { background: var(--surface-mid); border-radius: 10px; padding: 16px; font-size: 0.95em; color: var(--text); margin-bottom: 16px; border: 1px solid var(--border-dim); line-height: 1.8; }
+        .book-summary strong { color: var(--sky-text); }
+        .book-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .book-btn { padding: 11px 28px; background: #2A7A52; color: #fff; border: none; border-radius: 8px; font-size: 0.92em; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: background 0.2s; }
+        .book-btn:hover { background: #359966; }
+        .book-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .cancel-btn { padding: 11px 20px; background: transparent; color: var(--text-dim); border: 1px solid var(--border-c); border-radius: 8px; font-size: 0.92em; font-weight: 600; cursor: pointer; }
+        .cancel-btn:hover { background: var(--hover-bg); }
+        .book-msg { font-size: 0.9em; margin-top: 10px; }
+        .book-msg.error   { color: var(--err-text); }
+        .book-msg.success { color: var(--ok-text); }
+
+        /* ── MOBILE ── */
+        @media(max-width: 680px) {
+            .hamburger-btn { display: block; }
+            .club-nav-inner { position: relative; }
+            .club-nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; background: rgba(12,31,20,0.99); padding: 12px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 999; }
+            .club-nav-links.nav-open { display: flex; }
+            .club-nav-links a { padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; font-size: 1em; width: 100%; }
+            .cal-outer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .cal-grid { min-width: 640px; }
+            .slot-cell { height: 44px; } .time-label { height: 44px; }
+            .week-nav { flex-direction: column; align-items: stretch; gap: 10px; }
+            .week-nav-center { justify-content: space-between; }
+            .book-panel { padding: 20px; }
+            .book-actions { flex-direction: column; }
+            .book-btn, .cancel-btn { width: 100%; text-align: center; padding: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="club-nav">
+        <div class="club-nav-inner">
+            <a href="dashboard.html" class="club-nav-logo">PNW<span>AV8R</span></a>
+            <div id="navLinks" class="club-nav-links">
+                <a href="dashboard.html">Dashboard</a>
+                <a href="schedule.html" class="active">Schedule</a>
+                <a href="squawks.html">Squawks</a>
+                <a href="post-flight.html">Post-Flight</a>
+                <a href="directory.html">Directory</a>
+                <span id="adminLink" style="display:none"><a href="admin.html">Admin</a></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px">
+                <div id="navUser"></div>
+            </div>
+            <button class="hamburger-btn" onclick="toggleNav()" aria-label="Menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="page-wrap">
+        <div id="schedBanner"></div>
+
+        <div class="week-nav">
+            <div class="legend">
+                <span><span class="legend-dot" style="background:rgba(91,184,232,0.5);border:1px solid #5BB8E8"></span>Other member</span>
+                <span><span class="legend-dot" style="background:rgba(212,67,154,0.5);border:1px solid #D4439A"></span>Your reservation</span>
+                <span><span class="legend-dot" style="background:rgba(42,122,82,0.3);border:1px solid #2A7A52"></span>Selecting</span>
+                <span><span class="legend-dot" style="background:rgba(220,53,69,0.25);border:1px solid rgba(220,53,69,0.5)"></span>Maintenance</span>
+            </div>
+            <div class="week-nav-center">
+                <button class="nav-btn" id="prevBtn" onclick="shiftWeek(-1)">← Prev</button>
+                <div class="week-title" id="weekTitle"></div>
+                <button class="nav-btn" id="nextBtn" onclick="shiftWeek(1)">Next →</button>
+            </div>
+            <button class="nav-btn today-btn" onclick="goToday()">Today</button>
+        </div>
+
+        <div class="cal-outer">
+            <div class="cal-grid" id="calGrid"></div>
+        </div>
+
+        <div class="book-panel" id="bookPanel">
+            <h3>Confirm Reservation</h3>
+            <div class="book-summary" id="bookSummary"></div>
+            <div class="book-actions">
+                <button class="book-btn" id="bookBtn" onclick="confirmBooking()">Confirm Reservation</button>
+                <button class="cancel-btn" onclick="clearSelection()">Cancel</button>
+            </div>
+            <div class="book-msg" id="bookMsg"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/club-config.js?v=3"></script>
+    <script src="js/supabase-client.js?v=3"></script>
+    <script src="js/utils.js?v=3"></script>
+    <script src="js/auth.js?v=3"></script>
+    <script>
+        const SLOT_HRS  = Array.from({length:24},(_,i)=>i);
+        const MIN_SLOTS = 2;
+        const MAX_SLOTS = 48;
+        const DAYS      = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+        let weekStart    = getWeekStart(new Date());
+        let reservations = [];
+        let airplaneId   = null;
+        let currentMember= null;
+        let planeGrounded= false;
+        let groundedFrom = null;   // Date | null — start of maintenance window
+        let groundedUntil= null;   // Date | null — expected return
+        let selecting    = { start: null, end: null };
+
+        const TODAY    = new Date(); TODAY.setHours(0,0,0,0);
+        const MAX_DATE = new Date(TODAY); MAX_DATE.setMonth(MAX_DATE.getMonth() + 3);
+
+        // Failsafe: never leave page blank more than 8 seconds
+        setTimeout(() => { document.body.style.visibility = 'visible'; }, 8000);
+
+        document.addEventListener('DOMContentLoaded', async () => {
+          try {
+            const session = await requireAuth();
+            if (!session) return;
+            currentMember = await getCurrentMember();
+            renderNavUser(currentMember);
+            if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
+
+            // Fetch plane including maintenance window
+            // Note: add grounded_from + grounded_until columns to airplanes table:
+            //   ALTER TABLE airplanes ADD COLUMN IF NOT EXISTS grounded_from timestamptz;
+            //   ALTER TABLE airplanes ADD COLUMN IF NOT EXISTS grounded_until timestamptz;
+            const { data: plane } = await _supabase.from('airplanes')
+                .select('id, status, grounded_from, grounded_until')
+                .eq('tail_number', AIRPLANE_TAIL).single();
+            airplaneId    = plane?.id;
+            planeGrounded = plane?.status === 'squawk' || plane?.status === 'maintenance';
+            groundedFrom  = plane?.grounded_from  ? new Date(plane.grounded_from)  : null;
+            groundedUntil = plane?.grounded_until ? new Date(plane.grounded_until) : null;
+
+            if (planeGrounded) {
+                let msg = 'Aircraft is currently grounded — booking disabled.';
+                if (groundedFrom && groundedUntil) {
+                    msg = `Aircraft in maintenance ${fmtDateTime(groundedFrom)} → ${fmtDateTime(groundedUntil)}. Booking disabled during this period.`;
+                } else if (groundedUntil) {
+                    msg = `Aircraft grounded — expected return ${fmtDateTime(groundedUntil)}.`;
+                }
+                if (!isAdminOrAP(currentMember)) showBanner(msg, 'danger');
+                else showBanner('ADMIN/A&P VIEW — ' + msg, 'warning');
+            }
+
+            await loadReservations();
+            renderWeek();
+
+            const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
+            _supabase.channel('res-live')
+                .on('postgres_changes', { event:'*', schema:'public', table:'reservations' },
+                    debounce(async () => { await loadReservations(); renderWeek(); }, 500))
+                .subscribe();
+          } catch (err) {
+            console.error('[schedule] init error:', err?.message || err);
+            document.body.style.visibility = 'visible';
+          }
+        });
+
+        function getWeekStart(d) {
+            const s = new Date(d); s.setHours(0,0,0,0);
+            s.setDate(s.getDate() - s.getDay());
+            return s;
+        }
+
+        function shiftWeek(dir) {
+            const n = new Date(weekStart);
+            n.setDate(n.getDate() + dir * 7);
+            const minWeek = getWeekStart(TODAY);
+            const maxWeek = getWeekStart(MAX_DATE);
+            if (n < minWeek || n > maxWeek) return;
+            weekStart = n; clearSelection(); renderWeek();
+        }
+
+        function goToday() { weekStart = getWeekStart(TODAY); clearSelection(); renderWeek(); }
+
+        async function loadReservations() {
+            const from = new Date(weekStart); from.setDate(from.getDate() - 7);
+            const { data } = await _supabase.from('reservations')
+                .select('*, members(name)')
+                .gte('end_time', from.toISOString())
+                .lte('start_time', new Date(MAX_DATE).toISOString())
+                .neq('status', 'cancelled');
+            reservations = data || [];
+        }
+
+        // Returns true if this slot falls within the maintenance window
+        function isGroundedSlot(slotStart) {
+            if (!planeGrounded) return false;
+            const gStart = groundedFrom || new Date(0); // if no start, from epoch
+            const gEnd   = groundedUntil;               // null = indefinite
+            if (slotStart < gStart) return false;
+            if (gEnd && slotStart >= gEnd) return false;
+            return true;
+        }
+
+        function renderWeek() {
+            const grid = document.getElementById('calGrid');
+            grid.innerHTML = '';
+
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekEnd.getDate() + 6);
+
+            const opts = { month:'short', day:'numeric' };
+            document.getElementById('weekTitle').textContent =
+                weekStart.toLocaleDateString('en-US', opts) + ' – ' +
+                weekEnd.toLocaleDateString('en-US', { ...opts, year:'numeric' });
+
+            document.getElementById('prevBtn').disabled = weekStart <= getWeekStart(TODAY);
+            document.getElementById('nextBtn').disabled = weekStart >= getWeekStart(MAX_DATE);
+
+            // Corner
+            const corner = document.createElement('div'); corner.className = 'grid-corner'; grid.appendChild(corner);
+
+            // Day headers
+            for (let c = 0; c < 7; c++) {
+                const day = new Date(weekStart); day.setDate(day.getDate() + c);
+                const isToday = day.toDateString() === TODAY.toDateString();
+                const hdr = document.createElement('div');
+                hdr.className = 'day-header' + (isToday ? ' today' : '');
+                hdr.innerHTML = `<div class="dow">${DAYS[day.getDay()]}</div><div class="dnum">${day.getDate()}</div>`;
+                grid.appendChild(hdr);
+            }
+
+            const now = new Date();
+
+            SLOT_HRS.forEach(h => {
+                const lbl = document.createElement('div');
+                lbl.className = 'time-label';
+                lbl.textContent = fmtHour(h);
+                grid.appendChild(lbl);
+
+                for (let c = 0; c < 7; c++) {
+                    const day = new Date(weekStart); day.setDate(day.getDate() + c);
+                    const slotStart = new Date(day); slotStart.setHours(h, 0, 0, 0);
+                    const slotEnd   = new Date(day); slotEnd.setHours(h + 1, 0, 0, 0);
+
+                    const isPast     = slotStart < now;
+                    const isDisabled = day < TODAY || day > MAX_DATE;
+                    const isGrounded = isGroundedSlot(slotStart);
+                    const isSelecting = !isGrounded && selecting.start && (
+                        selecting.end
+                            ? slotStart >= selecting.start && slotStart < selecting.end
+                            : slotStart.getTime() === selecting.start.getTime()
+                    );
+
+                    const res = reservations.find(r => {
+                        const rs = new Date(r.start_time), re = new Date(r.end_time);
+                        return rs < slotEnd && re > slotStart;
+                    });
+
+                    const cell = document.createElement('div');
+                    let cls = 'slot-cell';
+                    if (isGrounded) cls += ' cell-grounded';
+                    else if (isPast || isDisabled) cls += isPast ? ' cell-past' : ' cell-disabled';
+                    else if (res) cls += ' cell-taken';
+                    else if (isSelecting) cls += ' cell-selecting';
+                    cell.className = cls;
+                    cell.dataset.col = c; cell.dataset.hour = h;
+
+                    // Regular reservation block
+                    if (res && !isGrounded) {
+                        const rs = new Date(res.start_time);
+                        if (rs.getHours() === h && rs.toDateString() === day.toDateString()) {
+                            const re = new Date(res.end_time);
+                            const isMe = res.member_id === currentMember?.id;
+                            const block = document.createElement('div');
+                            block.className = 'res-block ' + (isMe ? 'mine' : 'other');
+                            block.style.top = '2px';
+                            block.style.height = ((re - rs) / 3600000 * 48 - 4) + 'px';
+                            const name = isMe ? 'You' : (res.members?.name?.split(' ')[0] || 'Member');
+                            block.innerHTML = `<div>${escapeHtml(name)}</div><div style="font-weight:400;opacity:0.8">${fmtTime(rs)}–${fmtTime(re)}</div>`;
+                            cell.appendChild(block);
+                        }
+                    }
+
+                    // Grounding label block — shown at first grounded hour of each day
+                    if (isGrounded) {
+                        cell.title = groundedUntil
+                            ? `Maintenance until ${fmtDateTime(groundedUntil)}`
+                            : 'Aircraft is grounded';
+
+                        // Determine first grounded hour for this day
+                        const dayStart = new Date(day); dayStart.setHours(0,0,0,0);
+                        const firstGroundedH = (groundedFrom && groundedFrom > dayStart)
+                            ? groundedFrom.getHours() : 0;
+                        const isFirstGroundedHour = (h === firstGroundedH);
+
+                        if (isFirstGroundedHour) {
+                            // How many hours of grounding remain on this day?
+                            const dayEndTs = new Date(day); dayEndTs.setHours(23,59,0,0);
+                            const gEndTs = groundedUntil && groundedUntil < dayEndTs ? groundedUntil : dayEndTs;
+                            const durHrs = Math.max(1, (gEndTs - slotStart) / 3600000);
+
+                            const block = document.createElement('div');
+                            block.className = 'res-block grounded-label';
+                            block.style.top = '2px';
+                            block.style.height = Math.min(durHrs * 48 - 4, (24 - h) * 48 - 4) + 'px';
+                            block.innerHTML = `<div>MAINTENANCE</div>`;
+                            if (groundedUntil) {
+                                block.innerHTML += `<div style="font-weight:400;opacity:0.7;font-size:0.9em">${fmtTime(groundedUntil)}</div>`;
+                            }
+                            cell.appendChild(block);
+                        }
+                    }
+
+                    // Click handler only for available, non-grounded slots
+                    if (!isGrounded && !isPast && !isDisabled && !res) {
+                        if (planeGrounded && !isAdminOrAP(currentMember)) {
+                            cell.title = 'Aircraft is grounded — booking disabled';
+                            cell.style.cursor = 'not-allowed';
+                        } else {
+                            cell.onclick = () => toggleCell(slotStart);
+                        }
+                    }
+
+                    grid.appendChild(cell);
+                }
+            });
+        }
+
+        function toggleCell(slotStart) {
+            if (!selecting.start || (selecting.start && selecting.end)) {
+                selecting = { start: slotStart, end: null };
+            } else {
+                const end = new Date(slotStart); end.setHours(end.getHours() + 1);
+                if (end <= selecting.start) { selecting = { start: slotStart, end: null }; }
+                else {
+                    const hrs = (end - selecting.start) / 3600000;
+                    if (hrs > MAX_SLOTS) {
+                        document.getElementById('bookMsg').className = 'book-msg error';
+                        document.getElementById('bookMsg').textContent = `Maximum booking is ${MAX_SLOTS} hours.`;
+                        document.getElementById('bookPanel').style.display = 'block';
+                        return;
+                    }
+                    selecting.end = end;
+                }
+            }
+            renderWeek(); updateBookPanel();
+        }
+
+        function updateBookPanel() {
+            const panel = document.getElementById('bookPanel');
+            const msg   = document.getElementById('bookMsg');
+            msg.textContent = ''; msg.className = 'book-msg';
+            if (!selecting.start) { panel.style.display = 'none'; return; }
+
+            if (!selecting.end) {
+                document.getElementById('bookSummary').innerHTML =
+                    `<strong>Start:</strong> ${fmtDateTime(selecting.start)}<br>
+                     <span style="color:var(--text-muted);font-size:0.9em">Now click the end time (min 2 hrs, max 48 hrs)</span>`;
+                panel.style.display = 'block';
+                document.getElementById('bookBtn').style.display = 'none';
+                return;
+            }
+
+            const hrs = (selecting.end - selecting.start) / 3600000;
+            if (hrs < MIN_SLOTS) {
+                document.getElementById('bookSummary').innerHTML =
+                    `<span style="color:var(--err-text)">Minimum booking is ${MIN_SLOTS} hours. Please select a later end time.</span>`;
+                panel.style.display = 'block';
+                document.getElementById('bookBtn').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('bookBtn').style.display = '';
+            document.getElementById('bookSummary').innerHTML =
+                `<strong>N2134Y</strong><br>
+                 ${fmtDateTime(selecting.start)} – ${fmtDateTime(selecting.end)}<br>
+                 <strong style="color:var(--sky-text)">${hrs} hour${hrs !== 1 ? 's' : ''}</strong>`;
+            panel.style.display = 'block';
+        }
+
+        function clearSelection(rerender = true) {
+            selecting = { start: null, end: null };
+            document.getElementById('bookPanel').style.display = 'none';
+            document.getElementById('bookMsg').textContent = '';
+            const btn = document.getElementById('bookBtn');
+            if (btn) btn.style.display = '';
+            if (rerender) renderWeek();
+        }
+
+        async function confirmBooking() {
+            if (!selecting.start || !selecting.end) return;
+            const start = selecting.start, end = selecting.end;
+            const btn = document.getElementById('bookBtn');
+            const msg = document.getElementById('bookMsg');
+            btn.disabled = true; btn.textContent = 'Booking…';
+
+            const conflict = reservations.some(r => {
+                if (r.status === 'cancelled') return false;
+                const rs = new Date(r.start_time), re = new Date(r.end_time);
+                return rs < end && re > start;
+            });
+
+            if (conflict) {
+                msg.className = 'book-msg error';
+                msg.textContent = 'That time was just taken — please pick another slot.';
+                btn.disabled = false; btn.textContent = 'Confirm Reservation';
+                await loadReservations(); renderWeek(); return;
+            }
+
+            const { error } = await _supabase.from('reservations').insert({
+                airplane_id: airplaneId, member_id: currentMember.id,
+                start_time: start.toISOString(), end_time: end.toISOString(), status: 'scheduled'
+            });
+
+            btn.disabled = false; btn.textContent = 'Confirm Reservation';
+            if (error) {
+                console.error('[confirmBooking]', error?.message || error);
+                msg.className = 'book-msg error';
+                msg.textContent = 'Booking failed. Please try again or refresh.';
+            } else {
+                clearSelection(false); await loadReservations(); renderWeek();
+            }
+        }
+
+        function showBanner(msg, type) {
+            const el = document.getElementById('schedBanner');
+            const styles = {
+                warning: 'background:var(--warn-bg);color:var(--warn-text);border:1px solid var(--warn-border)',
+                danger:  'background:var(--err-bg);color:var(--err-text);border:1px solid var(--err-border)'
+            };
+            el.style.cssText = `${styles[type]};border-radius:10px;padding:12px 20px;margin-bottom:16px;font-weight:600;font-size:0.9em`;
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+
+        function fmtTime(d)     { return d.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}); }
+        function fmtHour(h)     { const d = new Date(); d.setHours(h,0,0,0); return d.toLocaleString('en-US',{hour:'numeric',hour12:true}); }
+        function fmtDateTime(d) { return d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}); }
+        function toggleNav()    { document.getElementById('navLinks').classList.toggle('nav-open'); }
+    </script>
+</body>
+</html>
