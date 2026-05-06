@@ -205,10 +205,10 @@ CREATE POLICY "wl_member_all"  ON waitlist FOR ALL    USING (member_id = auth.ui
 CREATE POLICY "wl_admin_read"  ON waitlist FOR SELECT USING (get_role() IN ('admin','ap'));
 
 -- ═══════════════════════════════════════════════════════════════
---  SEED — N7798E + standard inspections
+--  SEED — N2134Y + standard inspections
 -- ═══════════════════════════════════════════════════════════════
 INSERT INTO airplanes (tail_number, type, year, status, current_tach)
-VALUES ('N7798E', 'Cessna 150', 1959, 'available', 0)
+VALUES ('N2134Y', 'Cessna 172D', 1963, 'available', 0)
 ON CONFLICT (tail_number) DO NOTHING;
 
 INSERT INTO inspections (airplane_id, name, interval_days)
@@ -220,5 +220,5 @@ CROSS JOIN (VALUES
   ('Transponder',   730),
   ('Pitot/Static',  730)
 ) AS t(name, days)
-WHERE tail_number = 'N7798E'
+WHERE tail_number = 'N2134Y'
 ON CONFLICT DO NOTHING;
