@@ -29,7 +29,7 @@
             justify-content: space-between;
             padding: 0 36px;
             height: 64px;
-            background: rgba(12,31,20,0.97);
+            background: rgba(14,17,26,0.98);
             box-shadow: 0 2px 16px rgba(0,0,0,0.4);
         }
         .nav-logo {
@@ -54,11 +54,11 @@
         }
         .nav-links a:hover, .nav-links a.active { color: #fff; background: rgba(255,255,255,0.08); }
         .nav-links .portal {
-            background: #2A7A52;
+            background: #E8A030;
             color: #fff !important;
-            box-shadow: 0 0 12px rgba(42,122,82,0.35);
+            box-shadow: 0 0 12px rgba(232,160,48,0.35);
         }
-        .nav-links .portal:hover { background: #359966; }
+        .nav-links .portal:hover { background: #F0B84A; }
 
         /* PAGE */
         .page { max-width: 860px; margin: 0 auto; padding: 48px 28px 64px; }
@@ -106,7 +106,7 @@
             box-shadow: 0 0 0 3px rgba(91,184,232,0.15);
         }
         .wx-search-row button {
-            background: #2A7A52;
+            background: #E8A030;
             color: white;
             border: none;
             padding: 13px 32px;
@@ -117,7 +117,7 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.15s;
         }
-        .wx-search-row button:hover { background: #359966; transform: translateY(-2px); }
+        .wx-search-row button:hover { background: #F0B84A; transform: translateY(-2px); }
         .quick-airports {
             display: flex;
             flex-wrap: wrap;
@@ -462,7 +462,7 @@
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
             <li><a href="weather.html" class="active">Weather</a></li>
-            <li><a href="wb.html">W&amp;B</a></li>
+            
             <li><a href="dashboard.html" class="portal">Member Portal</a></li>
         </ul>
     </nav>
@@ -470,7 +470,7 @@
     <!-- HERO BANNER -->
     <div style="position:relative;height:220px;overflow:hidden;background:linear-gradient(135deg,#0C1F14,#0D2B3A);">
         <img src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?w=1400&q=80" alt="Clouds" style="width:100%;height:100%;object-fit:cover;opacity:0.35;">
-        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(12,31,20,0.85) 0%,rgba(12,31,20,0.4) 100%);display:flex;align-items:center;padding:0 52px;">
+        <div style="position:absolute;inset:0;background:linear-gradient(to right,rgba(14,17,26,0.85) 0%,rgba(12,31,20,0.4) 100%);display:flex;align-items:center;padding:0 52px;">
             <div>
                 <div style="font-family:'Montserrat',sans-serif;font-size:0.72em;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#5BB8E8;margin-bottom:8px;">Hi-Line · KRNT</div>
                 <h1 style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:2em;line-height:1.1;">Aviation <span style="color:#5BB8E8;">Weather</span></h1>
@@ -489,7 +489,7 @@
             </div>
             <div class="quick-airports">
                 <button class="airport-btn" onclick="lookupWeather('KRNT')">KRNT</button>
-                <button class="airport-btn" onclick="lookupWeather('KRNT')">KRNT</button>
+                <button class="airport-btn" onclick="lookupWeather('KBFI')">KBFI</button>
                 <button class="airport-btn" onclick="lookupWeather('KSEA')">KSEA</button>
                 <button class="airport-btn" onclick="lookupWeather('KPAE')">KPAE</button>
                 <button class="airport-btn" onclick="lookupWeather('KAWO')">KAWO</button>
@@ -534,7 +534,7 @@
 
                 if (!res.ok || data.error) { showError(icao, data.error || 'Failed to fetch weather data.'); return; }
                 if (!data.metar || !data.metar.length) {
-                    showError(icao, `No weather data found for <strong>${icao}</strong>. Small airports often don't have an ASOS/AWOS. Try a nearby reporting airport — e.g. <strong>KRNT</strong>, <strong>KRNT</strong>, or <strong>KSEA</strong>.`);
+                    showError(icao, `No weather data found for <strong>${icao}</strong>. Small airports often don't have an ASOS/AWOS. Try a nearby reporting airport — e.g. <strong>KRNT</strong>, <strong>KBFI</strong>, or <strong>KSEA</strong>.`);
                     return;
                 }
 

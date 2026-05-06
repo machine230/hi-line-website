@@ -24,7 +24,7 @@
         /* ── NAV ── */
         .club-nav {
             position: sticky; top: 0; z-index: 1000;
-            background: rgba(12,31,20,0.97);
+            background: rgba(14,17,26,0.98);
             box-shadow: 0 2px 16px rgba(0,0,0,0.5);
         }
         .club-nav-inner {
@@ -70,8 +70,8 @@
             transition: background 0.2s;
         }
         .nav-btn:hover { background: var(--surface-mid); }
-        .nav-btn.today-btn { background: #2A7A52; color: #fff; border-color: transparent; }
-        .nav-btn.today-btn:hover { background: #359966; }
+        .nav-btn.today-btn { background: #E8A030; color: #fff; border-color: transparent; }
+        .nav-btn.today-btn:hover { background: #F0B84A; }
         .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
         /* ── LEGEND ── */
@@ -92,7 +92,7 @@
         }
         .day-header .dow { font-size: 0.68em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
         .day-header .dnum { font-size: 1.05em; font-weight: 700; color: var(--text); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin: 4px auto 0; border-radius: 50%; }
-        .day-header.today .dnum { background: #2A7A52; color: #fff; }
+        .day-header.today .dnum { background: #E8A030; color: #fff; }
         .day-header.today .dow { color: #5BB8E8; }
 
         .time-label {
@@ -135,8 +135,8 @@
         .book-summary { background: var(--surface-mid); border-radius: 10px; padding: 16px; font-size: 0.95em; color: var(--text); margin-bottom: 16px; border: 1px solid var(--border-dim); line-height: 1.8; }
         .book-summary strong { color: var(--sky-text); }
         .book-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
-        .book-btn { padding: 11px 28px; background: #2A7A52; color: #fff; border: none; border-radius: 8px; font-size: 0.92em; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: background 0.2s; }
-        .book-btn:hover { background: #359966; }
+        .book-btn { padding: 11px 28px; background: #E8A030; color: #fff; border: none; border-radius: 8px; font-size: 0.92em; font-weight: 700; cursor: pointer; font-family: 'Montserrat', sans-serif; transition: background 0.2s; }
+        .book-btn:hover { background: #F0B84A; }
         .book-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .cancel-btn { padding: 11px 20px; background: transparent; color: var(--text-dim); border: 1px solid var(--border-c); border-radius: 8px; font-size: 0.92em; font-weight: 600; cursor: pointer; }
         .cancel-btn:hover { background: var(--hover-bg); }
@@ -148,7 +148,7 @@
         @media(max-width: 680px) {
             .hamburger-btn { display: block; }
             .club-nav-inner { position: relative; }
-            .club-nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; background: rgba(12,31,20,0.99); padding: 12px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 999; }
+            .club-nav-links { display: none; position: absolute; top: 64px; left: 0; right: 0; flex-direction: column; background: rgba(14,17,26,0.98); padding: 12px 24px 24px; border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 999; }
             .club-nav-links.nav-open { display: flex; }
             .club-nav-links a { padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; font-size: 1em; width: 100%; }
             .cal-outer { overflow-x: auto; -webkit-overflow-scrolling: touch; }
@@ -165,7 +165,7 @@
 <body>
     <nav class="club-nav">
         <div class="club-nav-inner">
-            <a href="dashboard.html" class="club-nav-logo">PNW<span>AV8R</span></a>
+            <a href="dashboard.html" class="club-nav-logo">Hi-Line<span> FC</span></a>
             <div id="navLinks" class="club-nav-links">
                 <a href="dashboard.html">Dashboard</a>
                 <a href="schedule.html" class="active">Schedule</a>
@@ -190,7 +190,7 @@
             <div class="legend">
                 <span><span class="legend-dot" style="background:rgba(91,184,232,0.5);border:1px solid #5BB8E8"></span>Other member</span>
                 <span><span class="legend-dot" style="background:rgba(212,67,154,0.5);border:1px solid #D4439A"></span>Your reservation</span>
-                <span><span class="legend-dot" style="background:rgba(42,122,82,0.3);border:1px solid #2A7A52"></span>Selecting</span>
+                <span><span class="legend-dot" style="background:rgba(232,160,48,0.3);border:1px solid #E8A030"></span>Selecting</span>
                 <span><span class="legend-dot" style="background:rgba(220,53,69,0.25);border:1px solid rgba(220,53,69,0.5)"></span>Maintenance</span>
             </div>
             <div class="week-nav-center">

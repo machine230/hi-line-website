@@ -24,7 +24,7 @@
         /* ── NAV ── */
         .club-nav {
             position: sticky; top: 0; z-index: 1000;
-            background: rgba(12,31,20,0.97);
+            background: rgba(14,17,26,0.98);
             box-shadow: 0 2px 16px rgba(0,0,0,0.5);
         }
         .club-nav-inner {
@@ -111,7 +111,7 @@
 
         /* ── BADGES ── */
         .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72em; font-weight: 700; }
-        .badge-green  { background: rgba(42,122,82,0.2);   color: #5DD89A; border: 1px solid rgba(42,122,82,0.35); }
+        .badge-green  { background: rgba(42,122,82,0.2);   color: #5DD89A; border: 1px solid rgba(232,160,48,0.35); }
         .badge-red    { background: rgba(220,53,69,0.15);  color: #ff8090; border: 1px solid rgba(220,53,69,0.3); }
         .badge-blue   { background: rgba(91,184,232,0.15); color: #5BB8E8; border: 1px solid rgba(91,184,232,0.3); }
         .badge-grey   { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.12); }
@@ -126,9 +126,9 @@
         }
         .tbl-btn:hover { opacity: 0.82; }
         .tbl-btn + .tbl-btn { margin-left: 5px; }
-        .tbl-btn-primary { background: #2A7A52; color: #fff; }
+        .tbl-btn-primary { background: #E8A030; color: #fff; }
         .tbl-btn-danger  { background: rgba(220,53,69,0.18); color: #ff8090; border: 1px solid rgba(220,53,69,0.3); }
-        .tbl-btn-success { background: rgba(42,122,82,0.2);  color: #5DD89A; border: 1px solid rgba(42,122,82,0.35); }
+        .tbl-btn-success { background: rgba(42,122,82,0.2);  color: #5DD89A; border: 1px solid rgba(232,160,48,0.35); }
         .tbl-btn-warn    { background: rgba(245,185,66,0.15); color: #F5B942; border: 1px solid rgba(245,185,66,0.3); }
 
         /* ── ADD MEMBER FORM ── */
@@ -159,12 +159,12 @@
         }
         .form-field input::placeholder { color: rgba(255,255,255,0.22); }
         .form-submit {
-            padding: 9px 20px; background: #2A7A52; color: #fff;
+            padding: 9px 20px; background: #E8A030; color: #fff;
             border: none; border-radius: 7px; font-weight: 700; cursor: pointer;
             font-family: 'Montserrat', sans-serif; font-size: 0.88em; white-space: nowrap;
             transition: background 0.2s;
         }
-        .form-submit:hover { background: #359966; }
+        .form-submit:hover { background: #F0B84A; }
 
         /* ── AIRCRAFT STATUS ── */
         .status-options { display: flex; gap: 8px; flex-wrap: wrap; }
@@ -202,8 +202,8 @@
         .ff { flex: 1; min-width: 140px; }
         .ff-narrow { flex: 0 0 auto; }
         .filter-btn { padding: 8px 16px; border-radius: 7px; font-size: 0.84em; font-weight: 700; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; }
-        .filter-btn-apply { background: #2A7A52; color: #fff; }
-        .filter-btn-apply:hover { background: #359966; }
+        .filter-btn-apply { background: #E8A030; color: #fff; }
+        .filter-btn-apply:hover { background: #F0B84A; }
         .filter-btn-clear { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.65); }
 
         /* ── SECTION LABELS (within card bodies) ── */
@@ -250,8 +250,8 @@
         .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
         .modal-actions button { flex: 1; padding: 11px; border-radius: 8px; font-size: 0.92em; font-weight: 700; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; }
         .modal-cancel { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.12) !important; }
-        .modal-save   { background: #2A7A52; color: #fff; }
-        .modal-save:hover { background: #359966; }
+        .modal-save   { background: #E8A030; color: #fff; }
+        .modal-save:hover { background: #F0B84A; }
 
         /* ── ADMIN CARD BODY PADDING ── */
         .card-body-pad { padding: 24px; }
@@ -283,7 +283,7 @@
             .club-nav-inner { position: relative; }
             .club-nav-links {
                 display: none; position: absolute; top: 64px; left: 0; right: 0;
-                flex-direction: column; background: rgba(12,31,20,0.99);
+                flex-direction: column; background: rgba(14,17,26,0.98);
                 padding: 12px 24px 24px;
                 border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 999;
             }
@@ -303,7 +303,7 @@
 <body>
     <nav class="club-nav">
         <div class="club-nav-inner">
-            <a href="dashboard.html" class="club-nav-logo">PNW<span>AV8R</span></a>
+            <a href="dashboard.html" class="club-nav-logo">Hi-Line<span> FC</span></a>
             <div id="navLinks" class="club-nav-links">
                 <a href="dashboard.html">Dashboard</a>
                 <a href="schedule.html">Schedule</a>
@@ -1125,7 +1125,7 @@
             }).join('');
 
             document.getElementById('flightTableFoot').innerHTML = `
-                <tr style="background:rgba(42,122,82,0.1);border-top:1px solid rgba(42,122,82,0.3)">
+                <tr style="background:rgba(42,122,82,0.1);border-top:1px solid rgba(232,160,48,0.3)">
                     <td colspan="4" style="padding:12px 18px;font-family:'Montserrat',sans-serif;font-size:0.72em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.35)">
                         TOTALS — ${data.length} flight${data.length !== 1 ? 's' : ''}
                     </td>

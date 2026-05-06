@@ -24,7 +24,7 @@
         /* ── NAV ── */
         .club-nav {
             position: sticky; top: 0; z-index: 1000;
-            background: rgba(12,31,20,0.97);
+            background: rgba(14,17,26,0.98);
             box-shadow: 0 2px 16px rgba(0,0,0,0.5);
         }
         .club-nav-inner {
@@ -65,7 +65,7 @@
         }
         .pf-card-header {
             background: rgba(42,122,82,0.2);
-            border-bottom: 1px solid rgba(42,122,82,0.3);
+            border-bottom: 1px solid rgba(232,160,48,0.3);
             padding: 22px 28px;
         }
         .pf-card-header h2 { font-family: 'Montserrat', sans-serif; font-size: 1.15em; font-weight: 700; color: #fff; margin: 0; }
@@ -100,8 +100,8 @@
         /* ── FLIGHT COST BOX ── */
         #flightCostBox {
             display: none; margin-top: 18px;
-            background: rgba(42,122,82,0.15);
-            border: 1px solid rgba(42,122,82,0.3);
+            background: rgba(61,153,112,0.15);
+            border: 1px solid rgba(232,160,48,0.3);
             border-radius: 12px; padding: 18px 24px;
         }
         .cost-row { display: flex; align-items: stretch; justify-content: space-around; width: 100%; flex-wrap: wrap; gap: 8px; }
@@ -140,7 +140,7 @@
 
         /* ── SQUAWK TOGGLE ── */
         .squawk-toggle { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; cursor: pointer; }
-        .squawk-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #2A7A52; }
+        .squawk-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #E8A030; }
         .squawk-toggle span { font-weight: 600; color: rgba(255,255,255,0.8); }
         #squawkFields { display: none; }
         .squawk-item-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
@@ -175,15 +175,15 @@
         /* ── SUBMIT ── */
         .pf-submit {
             width: 100%; padding: 14px;
-            background: #2A7A52; color: #fff;
+            background: #E8A030; color: #fff;
             border: none; border-radius: 10px;
             font-family: 'Montserrat', sans-serif; font-size: 0.95em; font-weight: 700;
             cursor: pointer; transition: background 0.2s;
         }
-        .pf-submit:hover { background: #359966; }
+        .pf-submit:hover { background: #F0B84A; }
         .pf-submit:disabled { opacity: 0.5; cursor: not-allowed; }
         .pf-msg { margin-top: 14px; padding: 14px; border-radius: 10px; font-size: 0.9em; display: none; }
-        .pf-msg.success { background: rgba(42,122,82,0.15); color: #5DD89A; border: 1px solid rgba(42,122,82,0.35); display: block; }
+        .pf-msg.success { background: rgba(61,153,112,0.15); color: #5DD89A; border: 1px solid rgba(232,160,48,0.35); display: block; }
         .pf-msg.error   { background: rgba(220,53,69,0.12); color: #ff8090;  border: 1px solid rgba(220,53,69,0.3);  display: block; }
 
         /* ── MOBILE ── */
@@ -192,7 +192,7 @@
             .club-nav-inner { position: relative; }
             .club-nav-links {
                 display: none; position: absolute; top: 64px; left: 0; right: 0;
-                flex-direction: column; background: rgba(12,31,20,0.99);
+                flex-direction: column; background: rgba(14,17,26,0.98);
                 padding: 12px 24px 24px;
                 border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 999;
             }
@@ -210,7 +210,7 @@
 <body>
     <nav class="club-nav">
         <div class="club-nav-inner">
-            <a href="dashboard.html" class="club-nav-logo">PNW<span>AV8R</span></a>
+            <a href="dashboard.html" class="club-nav-logo">Hi-Line<span> FC</span></a>
             <div id="navLinks" class="club-nav-links">
                 <a href="dashboard.html">Dashboard</a>
                 <a href="schedule.html">Schedule</a>
