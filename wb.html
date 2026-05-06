@@ -355,7 +355,7 @@
 
                     <div class="input-group">
                         <label for="fuel-gallons">Fuel (gallons)</label>
-                        <input type="number" id="fuel-gallons" value="38" min="0" max="38" step="0.5" oninput="calculate()">
+                        <input type="number" id="fuel-gallons" value="36" min="0" max="36" step="0.5" oninput="calculate()">
                         <small>Max 38 gal usable · 6 lb/gal · Station 48.0" · = <span id="fuel-weight-display">228.0 lbs</span></small>
                     </div>
 
@@ -473,9 +473,9 @@
 
                     <div class="input-group">
                         <label for="end-fuel">Fuel on Board (gallons)</label>
-                        <input type="number" id="end-fuel" value="22" min="0" max="22.5" step="0.5"
+                        <input type="number" id="end-fuel" value="22" min="0" max="36" step="0.5"
                                oninput="calcEndurance()">
-                        <small>Usable: 22.5 gal max · Synced with W&amp;B above</small>
+                        <small>Usable: 36 gal max · Synced with W&amp;B above</small>
                     </div>
 
                     <div class="input-group">
@@ -588,19 +588,17 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
         // ── N2134Y Cessna 172D Constants ──
-        // TODO: Replace EMPTY_WEIGHT and EMPTY_MOMENT with values from N2134Y's
-        //       actual weight & balance record (aircraft maintenance records / POH supplement).
-        //       Do NOT use generic values — the actual aircraft may differ after modifications.
-        const EMPTY_WEIGHT  = null;     // TODO: lbs from W&B record
-        const EMPTY_MOMENT  = null;     // TODO: lbs·in from W&B record (weight × arm)
-        const FRONT_ARM     = 37.0;     // front seats station (aft of datum)
-        const REAR_ARM      = 73.0;     // rear seats station (aft of datum)
+        // Source: ACE Aviation W&B Computation, dated 2018 (aircraft maintenance records)
+        const EMPTY_WEIGHT  = 1502.92;  // lbs (actual empty weight from W&B record)
+        const EMPTY_MOMENT  = 53533.58; // lbs·in (actual empty moment from W&B record)
+        const FRONT_ARM     = 36.0;     // front seats station (aft of datum) — Station 36
+        const REAR_ARM      = 70.0;     // rear seats station (aft of datum)  — Station 70
         const BAGGAGE_ARM   = 95.0;     // baggage shelf station (aft of datum)
         const FUEL_ARM      = 48.0;     // wing fuel tanks station (aft of datum)
         const FUEL_LBS_GAL  = 6.0;      // avgas weight lbs/gal
         const MAX_GROSS     = 2300.0;   // max gross weight lbs (Cessna 172D)
         const MAX_BAGGAGE   = 120.0;    // max baggage lbs
-        const MAX_FUEL_GAL  = 38.0;     // usable fuel gallons (42 total − 4 unusable)
+        const MAX_FUEL_GAL  = 36.0;     // usable fuel gallons (40 total − 4 unusable)
 
         // CG limits per 172D POH / TCDS 3A12 (interpolated between weight breakpoints)
         function interpolateCGLimits(weight) {
@@ -612,17 +610,6 @@
         }
 
         function calculate() {
-            // Guard: empty weight not yet entered (awaiting W&B record)
-            if (EMPTY_WEIGHT === null || EMPTY_MOMENT === null) {
-                document.getElementById('empty-weight-display').textContent = 'Enter actual W&B data';
-                document.getElementById('empty-arm-display').textContent    = '—';
-                document.getElementById('empty-moment-display').textContent = '—';
-                document.getElementById('total-weight').innerHTML = '<strong>—</strong>';
-                document.getElementById('total-cg').innerHTML     = '<strong>Update EMPTY_WEIGHT & EMPTY_MOMENT in wb.html</strong>';
-                document.getElementById('total-moment').innerHTML = '<strong>—</strong>';
-                return;
-            }
-
             const pilotWt    = Math.max(0, parseFloat(document.getElementById('pilot-weight').value)   || 0);
             const copilotWt  = Math.max(0, parseFloat(document.getElementById('copilot-weight').value) || 0);
             const rearWt     = Math.max(0, parseFloat(document.getElementById('rear-weight').value)    || 0);
@@ -791,7 +778,7 @@
     //  N2134Y — 1963 Cessna 172D (Continental O-300-D, 145 HP)
     // ═══════════════════════════════════════════════
 
-    const USABLE_FUEL_MAX = 38.0;   // Cessna 172D usable gallons (42 total − 4 unusable)
+    const USABLE_FUEL_MAX = 36.0;   // N2134Y usable gallons (40 total − 4 unusable)
     const KTS_TO_MPH = 1.15078;
 
     // POH power settings (approximate — verify against actual aircraft POH)
