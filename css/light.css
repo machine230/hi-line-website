@@ -117,10 +117,13 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 5. Dashboard ────────────────────────────────────────────── */
 .dash-card {
-  background: #F5F7FA !important;
-  border-color: rgba(0,0,0,0.10) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+  background: #FFFFFF !important;
+  border: 1px solid rgba(0,0,0,0.10) !important;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08) !important;
 }
+
+/* Section title labels ("THIS WEEK — N2134Y AVAILABILITY" etc.) */
+.dash-card-title { color: #2A7AAA !important; }
 
 /* Doc tiles */
 .doc-tile {
@@ -133,13 +136,30 @@ select option { background: #FFFFFF; color: #1E293B; }
   background: linear-gradient(135deg,rgba(74,158,204,0.12),rgba(74,158,204,0.06)) !important;
   color: #1E293B !important;
 }
+.doc-label { color: #2A7AAA !important; opacity: 1 !important; }
 
-/* Mini week calendar slots */
-.wc-slot.free  { background: rgba(232,160,48,0.20) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.40) !important; }
-.wc-slot.mine  { background: rgba(212,67,154,0.15) !important; color: #A03070 !important; border-color: rgba(212,67,154,0.35) !important; }
-.wc-slot.taken { background: rgba(74,158,204,0.15) !important; color: #2A7AAA !important; border-color: rgba(74,158,204,0.35) !important; }
+/* ── Mini week calendar ───────────────────────── */
+/* Column headers & date numbers */
+.week-cal th              { color: #475569 !important; border-bottom-color: rgba(0,0,0,0.10) !important; }
+.week-cal th .wc-num      { color: #1E293B !important; }
+.week-cal th.today-col    { color: #2A7AAA !important; }
+/* Today bubble stays magenta — readable on any bg */
 
-/* Airworthy banner */
+/* Time gutter */
+.wc-time-col { color: #94A3B8 !important; }
+
+/* Slot colors — solid enough to see on white cards */
+.wc-slot.free  { background: rgba(232,160,48,0.28) !important; color: #8B5800 !important; border: 1px solid rgba(232,160,48,0.55) !important; }
+.wc-slot.mine  { background: rgba(212,67,154,0.22) !important; color: #861E63 !important; border: 1px solid rgba(212,67,154,0.45) !important; }
+.wc-slot.taken { background: rgba(74,158,204,0.22) !important; color: #1A5F84 !important; border: 1px solid rgba(74,158,204,0.45) !important; }
+.wc-slot.past  { background: rgba(0,0,0,0.05)      !important; color: #94A3B8 !important; border: 1px solid transparent !important; }
+
+/* Week nav title & buttons */
+.wk-title { color: #1E293B !important; }
+.wk-btn   { color: #2A7AAA !important; border-color: rgba(74,158,204,0.30) !important; background: rgba(74,158,204,0.06) !important; }
+.wk-btn:hover { background: rgba(74,158,204,0.14) !important; border-color: rgba(74,158,204,0.45) !important; color: #1E293B !important; }
+
+/* ── Airworthy banner ─────────────────────────── */
 .aw-banner.airworthy     { background: rgba(61,153,112,0.12) !important; color: #1A7A52 !important; border-color: rgba(61,153,112,0.30) !important; }
 .aw-banner.not-airworthy { background: rgba(192,57,43,0.10)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.28) !important; }
 .aw-banner.unknown       { background: rgba(232,160,48,0.12) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.28) !important; }
@@ -147,33 +167,67 @@ select option { background: #FFFFFF; color: #1E293B; }
 .aw-banner.not-airworthy .aw-dot { background: #C0392B !important; }
 .aw-banner.unknown .aw-dot       { background: #B8780A !important; }
 
+/* ── FAA Inspection items ─────────────────────── */
+.insp-item  { border-bottom-color: rgba(0,0,0,0.07) !important; }
+.insp-name  { color: #1E293B !important; }
+.insp-meta  { color: #64748B !important; }
+.insp-edit  { color: #94A3B8 !important; border-color: rgba(0,0,0,0.15) !important; }
+.insp-edit:hover { color: #1E293B !important; border-color: rgba(0,0,0,0.30) !important; }
+
 /* Inspection badges */
-.insp-badge.current  { background: rgba(61,153,112,0.12) !important; color: #1A7A52 !important; border-color: rgba(61,153,112,0.30) !important; }
-.insp-badge.due-soon { background: rgba(232,160,48,0.12) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.28) !important; }
-.insp-badge.overdue  { background: rgba(192,57,43,0.10)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.28) !important; }
+.insp-badge.current  { background: rgba(61,153,112,0.14) !important; color: #1A7A52 !important; border-color: rgba(61,153,112,0.35) !important; }
+.insp-badge.due-soon { background: rgba(232,160,48,0.15) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.35) !important; }
+.insp-badge.overdue  { background: rgba(192,57,43,0.12)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.35) !important; }
+.insp-badge.unknown  { background: rgba(0,0,0,0.06)      !important; color: #64748B !important; border-color: rgba(0,0,0,0.15)      !important; }
 
-/* Squawk alert on dashboard */
-.squawk-alert-title   { color: #C0392B !important; }
-.squawk-alert-link    { color: #2A7AAA !important; }
-.squawk-alert-link:hover { color: var(--amber) !important; }
+/* ── Open Squawks mini list (dashboard) ───────── */
+.squawk-item  { border-bottom-color: rgba(0,0,0,0.07) !important; }
+.squawk-dot   { box-shadow: 0 0 5px rgba(192,57,43,0.4) !important; }
+.squawk-text  { color: #1E293B !important; }
+.squawk-meta  { color: #64748B !important; }
 
-/* Squawk go/caution/no-go cards */
-.sq-alert-badge.no_go   { background: rgba(192,57,43,0.12)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.28) !important; }
-.sq-alert-badge.caution { background: rgba(232,160,48,0.12) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.28) !important; }
+/* ── Squawk alert section (no-go/caution/go cards) */
+.squawk-alert-title       { color: #C0392B !important; }
+.squawk-alert-title::before { background: #C0392B !important; }
+.squawk-alert-link        { color: #2A7AAA !important; }
+.squawk-alert-link:hover  { color: #B8780A !important; }
+
+.sq-alert-card {
+  background: #F8FAFC !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+.sq-alert-num   { color: #94A3B8 !important; }
+.sq-alert-desc  { color: #1E293B !important; }
+.sq-alert-meta  { color: #64748B !important; }
+
+.sq-alert-badge.no_go   { background: rgba(192,57,43,0.12)  !important; color: #C0392B !important; border-color: rgba(192,57,43,0.30) !important; }
+.sq-alert-badge.caution { background: rgba(232,160,48,0.14) !important; color: #B8780A !important; border-color: rgba(232,160,48,0.32) !important; }
 .sq-alert-badge.go      { background: rgba(61,153,112,0.12) !important; color: #1A7A52 !important; border-color: rgba(61,153,112,0.28) !important; }
 
-/* Reservation list */
-.res-date-box { background: rgba(212,67,154,0.12) !important; color: #A03070 !important; border-color: rgba(212,67,154,0.30) !important; }
+/* ── Reservation list ─────────────────────────── */
+.res-item     { border-bottom-color: rgba(0,0,0,0.07) !important; }
+.res-date-box { background: rgba(212,67,154,0.14) !important; color: #861E63 !important; border-color: rgba(212,67,154,0.32) !important; }
+.res-time     { color: #1E293B !important; }
+.res-who      { color: #64748B !important; }
 .res-cancel-btn { color: #C0392B !important; border-color: rgba(192,57,43,0.30) !important; }
-.res-cancel-btn:hover { background: rgba(192,57,43,0.08) !important; }
+.res-cancel-btn:hover { background: rgba(192,57,43,0.07) !important; }
 
-/* Week nav button */
-.wk-btn:hover { background: rgba(74,158,204,0.10) !important; border-color: rgba(74,158,204,0.35) !important; color: #1E293B !important; }
+/* ── Empty states ─────────────────────────────── */
+.empty-state { color: #94A3B8 !important; }
+
+/* ── Flight log ───────────────────────────────── */
+.log-item  { border-bottom-color: rgba(0,0,0,0.07) !important; }
+.log-date  { color: #64748B !important; }
+.log-route { color: #1E293B !important; }
+.log-hours { color: #2A7AAA !important; }
 
 /* Modal */
 .modal-overlay { background: rgba(0,0,0,0.35) !important; }
-.modal-box { background: #F5F7FA !important; box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important; }
+.modal-box { background: #FFFFFF !important; box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important; border-color: rgba(0,0,0,0.10) !important; }
 .modal-box h2 { color: #1E293B !important; }
+.form-label { color: #475569 !important; }
+.form-input { background: #F8FAFC !important; border-color: rgba(0,0,0,0.15) !important; color: #1E293B !important; }
+.form-input:focus { border-color: #4A9ECC !important; box-shadow: 0 0 0 3px rgba(74,158,204,0.15) !important; }
 
 /* Profile / save button already amber — no change needed */
 
