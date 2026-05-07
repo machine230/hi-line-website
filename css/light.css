@@ -6,17 +6,17 @@
 
 /* ── 1. CSS Variable overrides ──────────────────────────────── */
 :root {
-  --body-bg:      #F1F4F8;
-  --nav-bg:       rgba(255, 255, 255, 0.98);
-  --surface:      #FFFFFF;
-  --surface-mid:  rgba(0, 0, 0, 0.04);
-  --surface-hi:   rgba(0, 0, 0, 0.07);
-  --modal-bg:     #FFFFFF;
+  --body-bg:      #E8ECF1;          /* soft blue-gray — not glaring white  */
+  --nav-bg:       rgba(255, 255, 255, 0.97);
+  --surface:      #F5F7FA;          /* cards: off-white, easy on the eyes  */
+  --surface-mid:  rgba(0, 0, 0, 0.05);
+  --surface-hi:   rgba(0, 0, 0, 0.09);
+  --modal-bg:     #F5F7FA;
 
-  --border:       rgba(0, 0, 0, 0.10);
-  --border-c:     rgba(0, 0, 0, 0.10);
-  --border-dim:   rgba(0, 0, 0, 0.06);
-  --border-sub:   rgba(0, 0, 0, 0.06);
+  --border:       rgba(0, 0, 0, 0.12);
+  --border-c:     rgba(0, 0, 0, 0.12);
+  --border-dim:   rgba(0, 0, 0, 0.09);  /* calendar grid lines — visible  */
+  --border-sub:   rgba(0, 0, 0, 0.07);
 
   --text:         #1E293B;
   --text-dim:     #475569;
@@ -31,10 +31,10 @@
   --hover-bg:     rgba(0, 0, 0, 0.04);
 
   /* Calendar */
-  --cal-header:   #EEF1F6;
-  --cal-past:     rgba(0, 0, 0, 0.04);
-  --slot-hover:   rgba(74, 158, 204, 0.10);
-  --slot-select:  rgba(232, 160, 48, 0.20);
+  --cal-header:   #DFE5EE;          /* column/row headers — clearly distinct */
+  --cal-past:     rgba(0, 0, 0, 0.06);
+  --slot-hover:   rgba(74, 158, 204, 0.12);
+  --slot-select:  rgba(232, 160, 48, 0.25);
 
   --sky-text:     #2A7AAA;
   --sky-border:   rgba(74, 158, 204, 0.28);
@@ -50,7 +50,7 @@
 
 /* ── 2. Body ─────────────────────────────────────────────────── */
 body {
-  background: #F1F4F8 !important;
+  background: #E8ECF1 !important;
   background-image: none !important;
 }
 
@@ -99,7 +99,7 @@ nav,
 
 /* Mobile dropdown */
 .club-nav-links {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-bottom: 1px solid rgba(0,0,0,0.08) !important;
 }
 .club-nav-links a {
@@ -117,9 +117,9 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 5. Dashboard ────────────────────────────────────────────── */
 .dash-card {
-  background: #FFFFFF !important;
-  border-color: rgba(0,0,0,0.08) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+  background: #F5F7FA !important;
+  border-color: rgba(0,0,0,0.10) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
 }
 
 /* Doc tiles */
@@ -172,14 +172,14 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* Modal */
 .modal-overlay { background: rgba(0,0,0,0.35) !important; }
-.modal-box { background: #FFFFFF !important; box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important; }
+.modal-box { background: #F5F7FA !important; box-shadow: 0 8px 32px rgba(0,0,0,0.15) !important; }
 .modal-box h2 { color: #1E293B !important; }
 
 /* Profile / save button already amber — no change needed */
 
 /* ── 6. Schedule (Calendar) ──────────────────────────────────── */
-.cal-outer  { background: #FFFFFF !important; border-color: rgba(0,0,0,0.10) !important; }
-.book-panel { background: #FFFFFF !important; border-color: rgba(0,0,0,0.10) !important; }
+.cal-outer  { background: #F5F7FA !important; border-color: rgba(0,0,0,0.10) !important; }
+.book-panel { background: #F5F7FA !important; border-color: rgba(0,0,0,0.10) !important; }
 .book-summary {
   background: #F4F7FB !important;
   border-color: rgba(0,0,0,0.06) !important;
@@ -187,19 +187,19 @@ select option { background: #FFFFFF; color: #1E293B; }
 }
 
 /* Mobile nav dropdown in schedule */
-.club-nav-links[style] { background: #FFFFFF !important; }
+.club-nav-links[style] { background: #F5F7FA !important; }
 
 /* ── 7. Directory ────────────────────────────────────────────── */
 /* Table wrapper */
 .dir-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
 }
 
 /* Search box */
 .search-input {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.12) !important;
   color: #1E293B !important;
 }
@@ -245,12 +245,12 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 8. Squawks page ─────────────────────────────────────────── */
 .sq-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
 .filter-tab {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   color: #475569 !important;
   border-color: rgba(0,0,0,0.12) !important;
 }
@@ -259,7 +259,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 9. Post-flight ──────────────────────────────────────────── */
 .pf-card, .pf-section {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
@@ -271,7 +271,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 10. Admin ───────────────────────────────────────────────── */
 .admin-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
@@ -314,7 +314,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 11. Login / Auth ────────────────────────────────────────── */
 .login-card, .auth-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 8px 32px rgba(0,0,0,0.10) !important;
 }
@@ -331,7 +331,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 .page-sub { color: #64748B !important; }
 
 .wx-search-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
 }
@@ -354,7 +354,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 }
 
 .wx-airport-header {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
@@ -362,7 +362,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 .wx-obs-time     { color: #94A3B8 !important; }
 
 .wx-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
@@ -409,7 +409,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 14. Squawks page ────────────────────────────────────────── */
 .squawk-card, .sq-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
@@ -427,7 +427,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 .maintenance .status-label { color: #B8780A !important; }
 .flying .status-label      { color: #2A7AAA !important; }
 
-.filter-tab         { background: #FFFFFF !important; color: #475569 !important; border-color: rgba(0,0,0,0.12) !important; }
+.filter-tab         { background: #F5F7FA !important; color: #475569 !important; border-color: rgba(0,0,0,0.12) !important; }
 .filter-tab:hover   { background: rgba(0,0,0,0.04) !important; color: #1E293B !important; }
 
 .squawk-meta, .sq-meta { color: #64748B !important; }
@@ -436,7 +436,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 
 /* ── 15. Post-flight page ────────────────────────────────────── */
 .pf-card {
-  background: #FFFFFF !important;
+  background: #F5F7FA !important;
   border-color: rgba(0,0,0,0.08) !important;
   box-shadow: 0 4px 16px rgba(0,0,0,0.07) !important;
 }
