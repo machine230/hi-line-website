@@ -96,15 +96,16 @@ function renderNavUser(member) {
   wrap.style.cssText = 'display:flex;align-items:center;gap:8px;white-space:nowrap';
 
   const nm = document.createElement('span');
-  nm.style.cssText = 'font-weight:600;color:rgba(255,255,255,0.9);font-size:0.85em;max-width:140px;overflow:hidden;text-overflow:ellipsis';
+  nm.className = 'nav-user-name';
   nm.textContent = member.name || member.email;
 
   const badge = document.createElement('span');
+  badge.className = 'nav-role-badge';
   badge.style.cssText = `${roleStyle[member.role] || roleStyle.member};color:#fff;font-size:0.68em;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.5px;text-transform:uppercase;font-family:'Montserrat',sans-serif`;
   badge.textContent = roleLabel[member.role] || 'Member';
 
   const btn = document.createElement('button');
-  btn.style.cssText = 'background:none;border:1px solid rgba(255,255,255,0.22);padding:4px 12px;border-radius:20px;cursor:pointer;font-size:0.8em;color:rgba(255,255,255,0.55);white-space:nowrap';
+  btn.className = 'nav-signout-btn';
   btn.textContent = 'Sign out';
   btn.onclick = signOut;
 

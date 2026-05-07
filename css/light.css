@@ -91,8 +91,30 @@ nav,
   background: var(--amber-lt) !important;
 }
 
-/* User name pill in nav */
-#navUser { color: #94A3B8 !important; }
+/* User name pill in nav — JS-injected elements need classes */
+#navUser { color: #475569 !important; }
+.nav-user-name {
+  font-weight: 600;
+  color: #1E293B !important;
+  font-size: 0.85em;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nav-signout-btn {
+  background: none !important;
+  border: 1px solid rgba(0,0,0,0.18) !important;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.8em;
+  color: #475569 !important;
+  white-space: nowrap;
+}
+.nav-signout-btn:hover {
+  background: rgba(0,0,0,0.05) !important;
+  color: #1E293B !important;
+}
 
 /* Hamburger icon */
 .hamburger-btn span { background: #1E293B !important; }

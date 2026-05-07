@@ -149,17 +149,32 @@ export const handler = async (event) => {
             body: JSON.stringify({ error: 'Could not resolve auth account for this email' }) };
     }
 
-    // ── Step 2: Upsert member record using the real auth UUID ──
-    // id = authUserId satisfies the members.id → auth.users.id FK constraint.
-    // On email conflict (member already exists) Supabase updates the row and keeps the existing id.
-    const { error: dbErr } = await admin.from('members').upsert(
-        { id: authUserId, name, email, phone, role, membership_active: true, pic_status: false },
-        { onConflict: 'email' }
-    );
-    if (dbErr) {
-        console.error('[inviteMember] DB upsert error:', dbErr);
-        return { statusCode: 500, headers: cors,
-            body: JSON.stringify({ error: 'Failed to save member: ' + dbErr.message }) };
+    // ── Step 2: Insert or update member record ──
+    // Avoid upsert(onConflict:'email') which requires a unique index on email.
+    // Instead: check if a row exists by email, then UPDATE or INSERT.
+    const { data: existingRows } = await admin
+        .from('members').select('id').eq('email', email).limit(1);
+
+    if (existingRows?.length) {
+        // Member row already exists — update it (keep existing id/pk intact)
+        const { error: updErr } = await admin.from('members')
+            .update({ name, phone, role, membership_active: true })
+            .eq('email', email);
+        if (updErr) {
+            console.error('[inviteMember] DB update error:', updErr);
+            return { statusCode: 500, headers: cors,
+                body: JSON.stringify({ error: 'Failed to update member: ' + updErr.message }) };
+        }
+    } else {
+        // New member — insert with the auth UUID as primary key
+        const { error: insErr } = await admin.from('members').insert(
+            { id: authUserId, name, email, phone, role, membership_active: true, pic_status: false }
+        );
+        if (insErr) {
+            console.error('[inviteMember] DB insert error:', insErr);
+            return { statusCode: 500, headers: cors,
+                body: JSON.stringify({ error: 'Failed to save member: ' + insErr.message }) };
+        }
     }
 
     if (alreadyExists) {
