@@ -1046,16 +1046,22 @@
                 }
             }
 
-            // Save profile fields
-            const { error } = await _supabase.from('members').update({
-                name, phone, profile_completed: true,
-                date_of_birth: dob, bfr_date: bfrDate,
-                medical_class: medClass, medical_date: medDate
-            }).eq('id', currentMember.id);
+            // Save profile fields — build update object dynamically
+            // so missing optional columns don't kill the whole save
+            const profileUpdate = { name, phone, profile_completed: true };
+            if (dob      !== undefined) profileUpdate.date_of_birth = dob;
+            if (bfrDate  !== undefined) profileUpdate.bfr_date      = bfrDate;
+            if (medClass !== undefined) profileUpdate.medical_class  = medClass;
+            if (medDate  !== undefined) profileUpdate.medical_date   = medDate;
+
+            const { error } = await _supabase.from('members')
+                .update(profileUpdate)
+                .eq('id', currentMember.id);
 
             if (error) {
                 console.error('[saveProfile]', error?.message || error);
-                msg.className = 'profile-msg error'; msg.textContent = 'Save failed. Please try again.';
+                msg.className = 'profile-msg error';
+                msg.textContent = 'Save failed: ' + (error.message || 'Please try again.');
                 return;
             }
 
