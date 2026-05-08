@@ -251,7 +251,7 @@
         .modal-field input::placeholder, .modal-field textarea::placeholder { color: rgba(255,255,255,0.22); }
         .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
         .modal-actions button { flex: 1; padding: 11px; border-radius: 8px; font-size: 0.92em; font-weight: 700; cursor: pointer; border: none; font-family: 'Montserrat', sans-serif; }
-        .modal-cancel { background: rgba(255,255,255,0.07); color: rgba(255,255,255,0.65); border: 1px solid rgba(255,255,255,0.12) !important; }
+        .modal-cancel { background: var(--surface-mid,rgba(255,255,255,0.07)); color: var(--text-dim,rgba(255,255,255,0.65)); border: 1px solid var(--border,rgba(255,255,255,0.15)) !important; }
         .modal-save   { background: #E8A030; color: #fff; }
         .modal-save:hover { background: #F0B84A; }
 
@@ -546,17 +546,25 @@
 
     <!-- Member edit modal -->
     <div class="modal-bg" id="memberEditModal">
-        <div class="modal-box" style="max-width:520px;max-height:90vh;overflow-y:auto">
+        <div class="modal-box" style="max-width:480px">
             <h2>Edit Member — <span id="meModalName" style="color:#5BB8E8"></span></h2>
 
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div class="modal-field" style="margin-bottom:0">
+                    <label>Role</label>
+                    <select id="meRole" style="width:100%;padding:11px 14px;border:1px solid var(--border,rgba(255,255,255,0.12));border-radius:8px;background:var(--input-bg,rgba(255,255,255,0.07));color:var(--text,rgba(255,255,255,0.9));font-family:inherit;font-size:0.92em">
+                        <option value="member">Member</option>
+                        <option value="ap">A&amp;P</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
                 <div class="modal-field" style="margin-bottom:0">
                     <label>BFR Date</label>
                     <input type="date" id="meBfrDate" style="color-scheme:dark">
                 </div>
                 <div class="modal-field" style="margin-bottom:0">
                     <label>Medical Class</label>
-                    <select id="meMedClass" style="width:100%;padding:11px 14px;border:1px solid rgba(255,255,255,0.12);border-radius:8px;background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.9);font-family:inherit;font-size:0.92em">
+                    <select id="meMedClass" style="width:100%;padding:11px 14px;border:1px solid var(--border,rgba(255,255,255,0.12));border-radius:8px;background:var(--input-bg,rgba(255,255,255,0.07));color:var(--text,rgba(255,255,255,0.9));font-family:inherit;font-size:0.92em">
                         <option value="">— not set —</option>
                         <option value="1">1st Class</option>
                         <option value="2">2nd Class</option>
@@ -568,36 +576,12 @@
                     <label>Medical Issue Date</label>
                     <input type="date" id="meMedDate" style="color-scheme:dark">
                 </div>
-                <div class="modal-field" style="margin-bottom:0">
-                    <label>Date of Birth <span style="font-size:0.85em;opacity:0.5">(medical expiry)</span></label>
-                    <input type="date" id="meDob" style="color-scheme:dark">
-                </div>
             </div>
 
             <div id="meMsg" style="font-size:0.85em;margin-top:10px"></div>
             <div class="modal-actions">
                 <button class="modal-cancel" onclick="closeMemberEdit()">Cancel</button>
                 <button class="modal-save" onclick="saveMemberEdit()">Save Changes</button>
-            </div>
-
-            <!-- Document upload section -->
-            <div class="doc-section">
-                <h4>Member Documents</h4>
-                <div class="doc-upload-row">
-                    <select id="meDocType">
-                        <option value="medical">Medical Certificate</option>
-                        <option value="rating">Rating Certificate</option>
-                        <option value="endorsement">Endorsement</option>
-                        <option value="other">Other</option>
-                    </select>
-                    <input type="text" id="meDocLabel" placeholder="Label, e.g. PPL Certificate — Dec 2024" maxlength="120">
-                    <input type="file" id="meDocFile" accept=".pdf,.jpg,.jpeg,.png">
-                    <button class="form-submit" onclick="uploadMemberDoc()" id="meUploadBtn">Upload Document</button>
-                </div>
-                <div id="meDocMsg" style="font-size:0.82em;margin-top:6px"></div>
-                <div class="doc-list" id="meDocList">
-                    <div style="color:rgba(255,255,255,0.3);font-size:0.85em;padding:8px 0">No documents on file.</div>
-                </div>
             </div>
         </div>
     </div>
@@ -811,21 +795,17 @@
             editMemberId = id;
             const { data: m } = await _supabase
                 .from('members')
-                .select('name, bfr_date, medical_class, medical_date, date_of_birth')
+                .select('name, role, bfr_date, medical_class, medical_date')
                 .eq('id', id).single();
             if (!m) { alert('Could not load member data.'); return; }
 
             document.getElementById('meModalName').textContent = m.name || '—';
+            document.getElementById('meRole').value    = m.role || 'member';
             document.getElementById('meBfrDate').value  = m.bfr_date  || '';
             document.getElementById('meMedClass').value = m.medical_class || '';
             document.getElementById('meMedDate').value  = m.medical_date  || '';
-            document.getElementById('meDob').value      = m.date_of_birth || '';
             document.getElementById('meMsg').textContent = '';
-            document.getElementById('meDocMsg').textContent = '';
-            document.getElementById('meDocLabel').value = '';
-            document.getElementById('meDocFile').value  = '';
 
-            await loadMemberDocs(id);
             document.getElementById('memberEditModal').classList.add('open');
         }
 
@@ -835,17 +815,17 @@
         }
 
         async function saveMemberEdit() {
+            const role     = document.getElementById('meRole').value;
             const bfrDate  = document.getElementById('meBfrDate').value  || null;
             const medClass = parseInt(document.getElementById('meMedClass').value) || null;
             const medDate  = document.getElementById('meMedDate').value  || null;
-            const dob      = document.getElementById('meDob').value      || null;
             const msg      = document.getElementById('meMsg');
 
             const { error } = await _supabase.from('members').update({
+                role,
                 bfr_date:      bfrDate,
                 medical_class: medClass,
-                medical_date:  medDate,
-                date_of_birth: dob
+                medical_date:  medDate
             }).eq('id', editMemberId);
 
             if (error) {
@@ -853,7 +833,7 @@
                 msg.className = 'msg-err'; msg.textContent = 'Save failed. ' + (error.message || '');
             } else {
                 msg.className = 'msg-ok'; msg.textContent = 'Saved!';
-                setTimeout(() => { msg.textContent = ''; }, 2000);
+                setTimeout(() => { closeMemberEdit(); loadMembers(); }, 1200);
             }
         }
 
