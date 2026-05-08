@@ -379,7 +379,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Licensed Empty Wt <small style="color:rgba(255,255,255,0.35)">(incl. oil)</small></td>
+                                <td>Licensed Empty Wt <small style="color:rgba(255,255,255,0.35)">(ACE WO-1725 · incl. oil)</small></td>
                                 <td id="empty-weight-display">—</td>
                                 <td id="empty-arm-display">—</td>
                                 <td id="empty-moment-display">—</td>
@@ -424,6 +424,11 @@
                     </table>
 
                     <div id="status" class="status safe">WITHIN LIMITS</div>
+                    <div id="useful-load-bar" style="display:flex;justify-content:space-between;align-items:center;padding:7px 11px;background:rgba(0,0,0,0.25);border-radius:6px;margin:8px 0;font-family:'Courier New',monospace;font-size:0.82em;">
+                        <span style="color:rgba(255,255,255,0.4);">Useful load used: <span id="ul-used" style="color:rgba(245,185,66,0.8);">—</span></span>
+                        <span style="color:rgba(255,255,255,0.4);">Remaining: <span id="ul-remaining" style="color:#5DD89A;font-weight:700;">—</span></span>
+                        <span style="color:rgba(255,255,255,0.4);">Total: 797.1 lbs</span>
+                    </div>
 
                     <div class="cg-section">
                         <h4>CG Envelope Position</h4>
@@ -648,15 +653,25 @@
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
     <script>
-        // ── N2134Y Cessna 172D Constants ──
-        // Source: ACE Aviation W&B Computation, dated 2018 (aircraft maintenance records)
-        // Station arms confirmed from 172 POH Sample Loading Problem (page 4-5):
-        //   Front seats: 340 lbs × arm = 12,200 lb·in  → arm = 35.88" ≈ 36.0"
-        //   Rear seats:  340 lbs × arm = 23,800 lb·in  → arm = 70.00"
-        //   Fuel:        216 lbs × arm = 10,400 lb·in  → arm = 48.15" ≈ 48.0"
-        //   Baggage:      65 lbs × arm =  6,200 lb·in  → arm = 95.38" ≈ 95.0"
-        const EMPTY_WEIGHT  = 1502.92;  // lbs — ACE Aviation 2018 (includes engine oil)
-        const EMPTY_MOMENT  = 53533.58; // lb·in — ACE Aviation 2018 → arm = 35.62"
+        // ── N2134Y — 1963 Cessna 172D — Serial 17249634 ──
+        // Source: ACE Aviation, Inc. — Work Order 1725 — 5/30/2018
+        //   Prior empty wt (8/16/2017): 1503.00 lbs, moment 53534.2 lb·in
+        //   Change: GTX327 removed (−3.30 lbs @ 7.75", −25.58 lb·in)
+        //           GTX345 installed (+3.22 lbs @ 7.75", +24.96 lb·in)
+        //   Net change: −0.08 lbs
+        //   NEW EMPTY WEIGHT:  1502.92 lbs  (includes full engine oil)
+        //   NEW EMPTY MOMENT:  53533.58 lb·in  →  CG arm = 35.62" aft of datum
+        //   MAX GROSS WEIGHT:  2300 lbs
+        //   USEFUL LOAD:       797.08 lbs  (2300 − 1502.92)
+        //
+        // Station arms — confirmed from 172 POH Sample Loading Problem (p. 4-5):
+        //   Front seats: 340 lbs → 12,200 lb·in  → 35.88" ≈ 36.0"
+        //   Rear seats:  340 lbs → 23,800 lb·in  → 70.00"
+        //   Fuel:        216 lbs → 10,400 lb·in  → 48.15" ≈ 48.0"
+        //   Baggage:      65 lbs →  6,200 lb·in  → 95.38" ≈ 95.0"
+        const EMPTY_WEIGHT  = 1502.92;  // lbs — ACE Aviation WO-1725 (incl. engine oil)
+        const EMPTY_MOMENT  = 53533.58; // lb·in — ACE Aviation WO-1725 → arm = 35.62"
+        const USEFUL_LOAD   = 797.08;   // lbs = MAX_GROSS − EMPTY_WEIGHT
         const FRONT_ARM     = 36.0;     // Station 36 — front seats (POH confirmed)
         const REAR_ARM      = 70.0;     // Station 70 — rear seats  (POH confirmed)
         const BAGGAGE_ARM   = 95.0;     // Station 95 — baggage shelf
@@ -725,6 +740,17 @@
             wEl.innerHTML = '<strong>' + fmt(totalWeight, 1) + '</strong>';
             cEl.innerHTML = '<strong>' + fmt(totalCG, 2) + '"</strong>';
             mEl.innerHTML = '<strong>' + fmtM(totalMoment) + '</strong>';
+
+            // ── Useful load bar ──
+            const variableWt = pilotWt + copilotWt + rearWt + baggageWt + fuelWt;
+            const ulRemaining = USEFUL_LOAD - variableWt;
+            const ulUsedEl = document.getElementById('ul-used');
+            const ulRemEl  = document.getElementById('ul-remaining');
+            if (ulUsedEl) ulUsedEl.textContent = variableWt.toFixed(1) + ' lbs';
+            if (ulRemEl)  {
+                ulRemEl.textContent = ulRemaining.toFixed(1) + ' lbs';
+                ulRemEl.style.color = ulRemaining >= 0 ? '#5DD89A' : '#ff8090';
+            }
 
             // ── CG limits & scale ──
             const cgLimits = interpolateCGLimits(totalWeight);
