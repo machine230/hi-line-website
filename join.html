@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join the Waitlist · Hi-Line Flying Club</title>
+    <meta name="description" content="Interested in joining Hi-Line Flying Club? Submit your information and we'll be in touch when a membership spot opens up.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+    <script src="js/theme.js?v=3"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background: #0C1620;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 36px;
+            height: 64px;
+            background: rgba(12, 22, 32, 0.95);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+        }
+        .logo {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.25em;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+        .logo span { color: #5BB8E8; }
+        .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
+        .nav-links a {
+            color: rgba(255,255,255,0.75);
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.85em;
+            padding: 7px 14px;
+            border-radius: 6px;
+            transition: color 0.2s, background 0.2s;
+        }
+        .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav-links .portal {
+            background: #E8A030;
+            color: #fff !important;
+        }
+        .nav-links .portal:hover { background: #F0B84A; }
+
+        /* PAGE LAYOUT */
+        .page-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 24px 60px;
+        }
+
+        .join-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px;
+            width: 100%;
+            max-width: 560px;
+            overflow: hidden;
+        }
+
+        .join-header {
+            background: linear-gradient(135deg, #1A2A3A, #0F1923);
+            padding: 36px 40px 32px;
+            border-bottom: 3px solid #E8A030;
+        }
+        .join-header .eyebrow {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72em;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            color: #E8A030;
+            margin-bottom: 8px;
+        }
+        .join-header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.9em;
+            line-height: 1.15;
+            color: #fff;
+        }
+        .join-header h1 em { font-style: normal; color: #5BB8E8; }
+        .join-header p {
+            margin-top: 12px;
+            font-size: 0.88em;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.65;
+        }
+
+        .join-body { padding: 32px 40px 36px; }
+
+        .form-row { margin-bottom: 20px; }
+        .form-row label {
+            display: block;
+            font-size: 0.78em;
+            font-weight: 600;
+            color: rgba(255,255,255,0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 7px;
+        }
+        .form-row label .req { color: #E8A030; margin-left: 2px; }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-size: 0.92em;
+            color: #fff;
+            font-family: 'Open Sans', sans-serif;
+            transition: border-color 0.2s, background 0.2s;
+            outline: none;
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: rgba(255,255,255,0.25); }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            border-color: #5BB8E8;
+            background: rgba(91,184,232,0.06);
+        }
+        .form-select option { background: #1A2A3A; color: #fff; }
+        .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* Honeypot — hidden from humans */
+        .hp-field { position: absolute; left: -9999px; opacity: 0; height: 0; }
+
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #E8A030;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.95em;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            margin-top: 8px;
+            transition: background 0.2s, transform 0.15s;
+            letter-spacing: 0.3px;
+        }
+        .submit-btn:hover:not(:disabled) { background: #F0B84A; transform: translateY(-1px); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .form-msg {
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 7px;
+            font-size: 0.87em;
+            display: none;
+        }
+        .form-msg.success {
+            display: block;
+            background: rgba(46,160,67,0.15);
+            border: 1px solid rgba(46,160,67,0.35);
+            color: #5fbe7a;
+        }
+        .form-msg.error {
+            display: block;
+            background: rgba(220,53,69,0.12);
+            border: 1px solid rgba(220,53,69,0.3);
+            color: #f07080;
+        }
+
+        /* SUCCESS STATE */
+        .success-state {
+            display: none;
+            text-align: center;
+            padding: 48px 40px;
+        }
+        .success-state .icon { font-size: 2.8em; margin-bottom: 16px; }
+        .success-state h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900;
+            font-size: 1.5em;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .success-state p { color: rgba(255,255,255,0.55); font-size: 0.9em; line-height: 1.65; }
+        .success-state a {
+            display: inline-block;
+            margin-top: 24px;
+            color: #5BB8E8;
+            text-decoration: none;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            font-size: 0.88em;
+        }
+        .success-state a:hover { text-decoration: underline; }
+
+        /* FOOTER */
+        footer {
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 20px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.28);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        footer a { color: rgba(255,255,255,0.28); text-decoration: none; }
+        footer a:hover { color: rgba(255,255,255,0.6); }
+
+        @media (max-width: 600px) {
+            nav { padding: 0 20px; }
+            .nav-links { display: none; }
+            .join-header { padding: 28px 24px 24px; }
+            .join-body { padding: 24px 24px 28px; }
+            .form-row-2 { grid-template-columns: 1fr; }
+            .success-state { padding: 36px 24px; }
+            footer { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html" class="logo">Hi-Line<span> ✈</span></a>
+        <ul class="nav-links">
+            <li><a href="weather.html">Weather</a></li>
+            <li><a href="join.html">Join Us</a></li>
+            <li><a href="dashboard.html" class="portal">Member Portal</a></li>
+        </ul>
+    </nav>
+
+    <div class="page-wrap">
+        <div class="join-card">
+
+            <div class="join-header">
+                <div class="eyebrow">Hi-Line Flying Club · KRNT</div>
+                <h1>Join Our<br><em>Waitlist</em></h1>
+                <p>We're a small club sharing a 1963 Cessna 172D at Renton Municipal Airport. Fill out the form below and we'll reach out when a membership spot opens up.</p>
+            </div>
+
+            <div class="join-body" id="formWrap">
+                <form id="joinForm" novalidate>
+
+                    <!-- Honeypot (hidden from real users) -->
+                    <div class="hp-field" aria-hidden="true">
+                        <input type="text" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+
+                    <div class="form-row">
+                        <label>Full Name <span class="req">*</span></label>
+                        <input class="form-input" type="text" id="jName" placeholder="Jane Smith" maxlength="100" required>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-row" style="margin-bottom:0">
+                            <label>Email <span class="req">*</span></label>
+                            <input class="form-input" type="email" id="jEmail" placeholder="jane@example.com" maxlength="200" required>
+                        </div>
+                        <div class="form-row" style="margin-bottom:0">
+                            <label>Phone</label>
+                            <input class="form-input" type="tel" id="jPhone" placeholder="(206) 555-0100" maxlength="30">
+                        </div>
+                    </div>
+
+                    <div class="form-row" style="margin-top:20px">
+                        <div class="form-row-2">
+                            <div class="form-row" style="margin-bottom:0">
+                                <label>Pilot Certificate</label>
+                                <select class="form-select" id="jCert">
+                                    <option value="">Select…</option>
+                                    <option value="None / Student">None / Student</option>
+                                    <option value="Sport Pilot">Sport Pilot</option>
+                                    <option value="Private Pilot">Private Pilot</option>
+                                    <option value="Instrument Rating">Instrument Rating</option>
+                                    <option value="Commercial Pilot">Commercial Pilot</option>
+                                    <option value="ATP">ATP</option>
+                                    <option value="CFI">CFI</option>
+                                </select>
+                            </div>
+                            <div class="form-row" style="margin-bottom:0">
+                                <label>Total Flight Hours</label>
+                                <input class="form-input" type="text" id="jHours" placeholder="e.g. 150 hrs" maxlength="40">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <label>Tell us about yourself</label>
+                        <textarea class="form-textarea" id="jMessage" placeholder="A bit about your flying background, goals, or why you're interested in joining Hi-Line Flying Club…" maxlength="2000"></textarea>
+                    </div>
+
+                    <div id="formMsg" class="form-msg"></div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">Send Application →</button>
+                </form>
+            </div>
+
+            <!-- Success state (shown after submit) -->
+            <div class="success-state" id="successState">
+                <div class="icon">✈️</div>
+                <h2>You're on the list!</h2>
+                <p>Thanks for your interest in Hi-Line Flying Club. We'll review your application and reach out when a spot opens up.</p>
+                <a href="index.html">← Back to Homepage</a>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        <span>© 2026 Hi-Line Flying Club · KRNT</span>
+        <span><a href="https://flightboard.app" target="_blank" rel="noopener">Powered by FlightBoard</a></span>
+    </footer>
+
+    <script>
+        document.getElementById('joinForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('submitBtn');
+            const msg = document.getElementById('formMsg');
+
+            const name    = document.getElementById('jName').value.trim();
+            const email   = document.getElementById('jEmail').value.trim();
+            const phone   = document.getElementById('jPhone').value.trim();
+            const cert    = document.getElementById('jCert').value;
+            const hours   = document.getElementById('jHours').value.trim();
+            const message = document.getElementById('jMessage').value.trim();
+            const website = document.querySelector('input[name="website"]').value; // honeypot
+
+            // Basic client-side validation
+            if (!name || name.length < 2) {
+                showMsg('Please enter your full name.', 'error'); return;
+            }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showMsg('Please enter a valid email address.', 'error'); return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = 'Sending…';
+            msg.style.display = 'none';
+
+            try {
+                const res = await fetch('/.netlify/functions/joinWaitlist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, phone, cert, hours, message, website })
+                });
+
+                const data = await res.json();
+                if (res.ok && data.ok) {
+                    // Show success state
+                    document.getElementById('formWrap').style.display = 'none';
+                    document.getElementById('successState').style.display = 'block';
+                } else {
+                    showMsg(data.error || 'Something went wrong. Please try again.', 'error');
+                    btn.disabled = false;
+                    btn.textContent = 'Send Application →';
+                }
+            } catch {
+                showMsg('Network error — please check your connection and try again.', 'error');
+                btn.disabled = false;
+                btn.textContent = 'Send Application →';
+            }
+
+            function showMsg(text, type) {
+                msg.textContent = text;
+                msg.className = 'form-msg ' + type;
+            }
+        });
+    </script>
+</body>
+</html>
