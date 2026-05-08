@@ -311,7 +311,9 @@
                 <a href="schedule.html">Schedule</a>
                 <a href="squawks.html">Squawks</a>
                 <a href="post-flight.html">Post-Flight</a>
+                <a href="weather.html">Weather</a>
                 <a href="directory.html">Directory</a>
+                <a href="dashboard.html#profile">Profile</a>
                 <a href="admin.html" class="active">Admin</a>
             </div>
             <div id="navUser"></div>
@@ -1282,5 +1284,29 @@
         <span>© 2026 Hi-Line Flying Club · KRNT</span>
         <a href="https://flightboard.app/" target="_blank" rel="noopener" class="portal-footer-fb">Powered by FlightBoard →</a>
     </footer>
+
+    <!-- Mobile bottom app bar — hidden on desktop via CSS -->
+    <nav class="bottom-app-bar" aria-label="Quick actions">
+        <a href="schedule.html" class="bar-book">
+            <span class="bar-icon">✈️</span>
+            <span class="bar-label">Book</span>
+        </a>
+        <a href="post-flight.html">
+            <span class="bar-icon">📋</span>
+            <span class="bar-label">Log</span>
+        </a>
+        <a href="weather.html">
+            <span class="bar-icon">🌤</span>
+            <span class="bar-label">Weather</span>
+        </a>
+        <a href="squawks.html">
+            <span class="bar-icon">🔧</span>
+            <span class="bar-label">Squawks</span>
+        </a>
+        <a href="admin.html" class="bar-active" data-bar-last>
+            <span class="bar-icon">⚙️</span>
+            <span class="bar-label">Admin</span>
+        </a>
+    </nav>
 </body>
 </html>

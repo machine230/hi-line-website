@@ -274,8 +274,8 @@
         .currency-item.lapsed  { background:rgba(220,53,69,0.10); border-color:rgba(220,53,69,0.3); }
         .currency-item.missing { background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.1); }
         .currency-icon { font-size:1.2rem; flex-shrink:0; line-height:1; }
-        .currency-label { font-weight:700; font-size:0.88em; color:rgba(255,255,255,0.88); }
-        .currency-detail { font-size:0.75em; color:rgba(255,255,255,0.4); margin-top:2px; }
+        .currency-label { font-weight:700; font-size:0.88em; color:var(--text); }
+        .currency-detail { font-size:0.75em; color:var(--text-muted); margin-top:2px; }
 
         /* ── WAITLIST BANNER ── */
         .waitlist-banner { border-radius:10px; padding:14px 20px; margin-bottom:18px; display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:rgba(245,185,66,0.09); border:1px solid rgba(245,185,66,0.3); color:rgba(255,255,255,0.85); font-size:0.88em; }
@@ -338,6 +338,7 @@
                 <a href="schedule.html">Schedule</a>
                 <a href="squawks.html">Squawks</a>
                 <a href="post-flight.html">Post-Flight</a>
+                <a href="weather.html">Weather</a>
                 <a href="directory.html">Directory</a>
                 <a href="#" onclick="openProfile(); return false;">Profile</a>
                 <span id="adminLink" style="display:none"><a href="admin.html">Admin</a></span>
@@ -636,6 +637,7 @@
 
             renderNavUser(currentMember);
             if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
+            updateBottomBarForRole(currentMember);
 
             // Make nav username clickable to open profile modal
             const navName = document.querySelector('.nav-user-name');
@@ -1341,6 +1343,23 @@
         function fmtHour(h)  { const d = new Date(); d.setHours(h,0,0,0); return d.toLocaleString('en-US',{hour:'numeric',hour12:true}); }
         function fmtDate(iso){ return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
         function toggleNav() { document.getElementById('navLinks').classList.toggle('nav-open'); }
+
+        function updateBottomBarForRole(m) {
+            const bar = document.querySelector('.bottom-app-bar');
+            if (!bar) return;
+            if (isAdmin(m)) {
+                const last = bar.querySelector('[data-bar-last]');
+                if (last) {
+                    last.href = 'admin.html';
+                    last.querySelector('.bar-icon').textContent = '⚙️';
+                    last.querySelector('.bar-label').textContent = 'Admin';
+                    last.classList.remove('bar-active');
+                }
+            } else if (m?.role === 'ap') {
+                const sq = bar.querySelector('a[href="squawks.html"]');
+                if (sq) sq.classList.add('bar-book');
+            }
+        }
     </script>
     <footer class="portal-footer">
         <span>© 2026 Hi-Line Flying Club · KRNT</span>
@@ -1351,23 +1370,23 @@
     <nav class="bottom-app-bar" aria-label="Quick actions">
         <a href="schedule.html" class="bar-book">
             <span class="bar-icon">✈️</span>
-            <span>Book</span>
+            <span class="bar-label">Book</span>
         </a>
         <a href="post-flight.html">
             <span class="bar-icon">📋</span>
-            <span>Log</span>
+            <span class="bar-label">Log</span>
         </a>
         <a href="weather.html">
             <span class="bar-icon">🌤</span>
-            <span>Weather</span>
+            <span class="bar-label">Weather</span>
         </a>
         <a href="squawks.html">
             <span class="bar-icon">🔧</span>
-            <span>Squawks</span>
+            <span class="bar-label">Squawks</span>
         </a>
-        <a href="#" onclick="openProfile();return false;">
+        <a href="#" onclick="openProfile();return false;" data-bar-last>
             <span class="bar-icon">👤</span>
-            <span>Profile</span>
+            <span class="bar-label">Profile</span>
         </a>
     </nav>
 </body>

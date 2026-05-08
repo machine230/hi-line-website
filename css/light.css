@@ -573,3 +573,30 @@ select option { background: #FFFFFF; color: #1E293B; }
   transition: color 0.2s;
 }
 .portal-footer-fb:hover { color: #E8A030; }
+
+/* ── Modal cancel button — light theme ── */
+.modal-cancel { background: #F0F2F5 !important; color: #475569 !important; border: 1px solid rgba(0,0,0,0.15) !important; }
+.modal-cancel:hover { background: #E2E6EA !important; color: #1E293B !important; }
+
+/* ── 17. Pilot Currency card — fix hardcoded white text ── */
+/* dashboard.html uses rgba(255,255,255,...) directly; override here */
+.currency-label  { color: var(--text)       !important; }
+.currency-detail { color: var(--text-muted) !important; }
+.currency-item         { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.10) !important; }
+.currency-item.current { background: rgba(42,122,82,0.09)  !important; border-color: rgba(42,122,82,0.25)  !important; }
+.currency-item.lapsed  { background: rgba(192,57,43,0.08)  !important; border-color: rgba(192,57,43,0.22)  !important; }
+.currency-item.missing { background: rgba(0,0,0,0.03)      !important; border-color: rgba(0,0,0,0.08)      !important; }
+
+/* ── 18. Bottom app bar — light theme ── */
+.bottom-app-bar {
+  background: rgba(255,255,255,0.97) !important;
+  border-top: 1px solid rgba(0,0,0,0.10) !important;
+  box-shadow: 0 -2px 16px rgba(0,0,0,0.08) !important;
+}
+.bottom-app-bar a { color: #94A3B8 !important; }
+.bottom-app-bar a.bar-active,
+.bottom-app-bar a.bar-book { color: #B8780A !important; }
+.bottom-app-bar a.bar-book .bar-icon {
+  background: rgba(232,160,48,0.12) !important;
+  border-color: rgba(232,160,48,0.30) !important;
+}

@@ -173,6 +173,7 @@
                 <a href="schedule.html" class="active">Schedule</a>
                 <a href="squawks.html">Squawks</a>
                 <a href="post-flight.html">Post-Flight</a>
+                <a href="weather.html">Weather</a>
                 <a href="directory.html">Directory</a>
                 <span id="adminLink" style="display:none"><a href="admin.html">Admin</a></span>
             </div>
@@ -251,6 +252,7 @@
             currentMember = await getCurrentMember();
             renderNavUser(currentMember);
             if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
+            updateBottomBarForRole(currentMember);
 
             // Fetch plane including maintenance window
             // Note: add grounded_from + grounded_until columns to airplanes table:
@@ -562,6 +564,23 @@
         function fmtHour(h)     { const d = new Date(); d.setHours(h,0,0,0); return d.toLocaleString('en-US',{hour:'numeric',hour12:true}); }
         function fmtDateTime(d) { return d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}); }
         function toggleNav()    { document.getElementById('navLinks').classList.toggle('nav-open'); }
+
+        function updateBottomBarForRole(m) {
+            const bar = document.querySelector('.bottom-app-bar');
+            if (!bar) return;
+            if (isAdmin(m)) {
+                const last = bar.querySelector('[data-bar-last]');
+                if (last) {
+                    last.href = 'admin.html';
+                    last.querySelector('.bar-icon').textContent = '⚙️';
+                    last.querySelector('.bar-label').textContent = 'Admin';
+                    last.classList.remove('bar-active');
+                }
+            } else if (m?.role === 'ap') {
+                const sq = bar.querySelector('a[href="squawks.html"]');
+                if (sq) sq.classList.add('bar-book');
+            }
+        }
     </script>
     <footer class="portal-footer">
         <span>© 2026 Hi-Line Flying Club · KRNT</span>
@@ -570,23 +589,23 @@
     <nav class="bottom-app-bar" aria-label="Quick actions">
         <a href="schedule.html" class="bar-book bar-active">
             <span class="bar-icon">✈️</span>
-            <span>Book</span>
+            <span class="bar-label">Book</span>
         </a>
         <a href="post-flight.html">
             <span class="bar-icon">📋</span>
-            <span>Log</span>
+            <span class="bar-label">Log</span>
         </a>
         <a href="weather.html">
             <span class="bar-icon">🌤</span>
-            <span>Weather</span>
+            <span class="bar-label">Weather</span>
         </a>
         <a href="squawks.html">
             <span class="bar-icon">🔧</span>
-            <span>Squawks</span>
+            <span class="bar-label">Squawks</span>
         </a>
-        <a href="dashboard.html">
+        <a href="dashboard.html" data-bar-last>
             <span class="bar-icon">🏠</span>
-            <span>Home</span>
+            <span class="bar-label">Home</span>
         </a>
     </nav>
 </body>
