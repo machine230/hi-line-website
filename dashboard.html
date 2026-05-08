@@ -326,6 +326,19 @@
     </nav>
 
     <div class="page-wrap">
+
+        <!-- Welcome banner (new users only) is injected here by JS -->
+
+        <!-- Profile shortcut bar — always visible -->
+        <div style="display:flex;justify-content:flex-end;margin-bottom:16px">
+            <button onclick="openProfile()"
+                style="background:none;border:1px solid var(--border);border-radius:8px;padding:7px 16px;font-size:0.82em;font-weight:700;color:var(--text-dim);cursor:pointer;font-family:'Montserrat',sans-serif;display:flex;align-items:center;gap:6px;transition:all 0.2s"
+                onmouseover="this.style.borderColor='var(--sky)';this.style.color='var(--sky)'"
+                onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">
+                👤 My Profile &amp; Password
+            </button>
+        </div>
+
         <!-- Airplane status -->
         <div id="airplaneCard" class="airplane-card available">
             <div>
@@ -597,6 +610,14 @@
 
             renderNavUser(currentMember);
             if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
+
+            // Make nav username clickable to open profile modal
+            const navName = document.querySelector('.nav-user-name');
+            if (navName) {
+                navName.style.cursor = 'pointer';
+                navName.title = 'Edit profile & change password';
+                navName.onclick = openProfile;
+            }
 
             // Show welcome banner for new members who haven't completed their profile
             if (!currentMember.profile_completed) {
