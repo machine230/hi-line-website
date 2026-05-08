@@ -199,7 +199,8 @@
             }
             .club-nav-links.nav-open { display: flex; }
             .club-nav-links a { padding: 12px 8px; border-bottom: 1px solid rgba(255,255,255,0.08); border-radius: 0; font-size: 1em; width: 100%; }
-            .page-wrap { padding: 16px; }
+            .page-wrap { padding: 16px 16px 96px; }
+            .hamburger-btn { min-width: 44px; min-height: 44px; display: flex !important; flex-direction: column; justify-content: center; align-items: center; }
             .pf-body { padding: 20px; }
             .pf-row { grid-template-columns: 1fr; }
             .fuel-options { grid-template-columns: 1fr; }
@@ -637,5 +638,27 @@
         <span>© 2026 Hi-Line Flying Club · KRNT</span>
         <a href="https://flightboard.app/" target="_blank" rel="noopener" class="portal-footer-fb">Powered by FlightBoard →</a>
     </footer>
+    <nav class="bottom-app-bar" aria-label="Quick actions">
+        <a href="schedule.html" class="bar-book">
+            <span class="bar-icon">✈️</span>
+            <span>Book</span>
+        </a>
+        <a href="post-flight.html" class="bar-active">
+            <span class="bar-icon">📋</span>
+            <span>Log</span>
+        </a>
+        <a href="weather.html">
+            <span class="bar-icon">🌤</span>
+            <span>Weather</span>
+        </a>
+        <a href="squawks.html">
+            <span class="bar-icon">🔧</span>
+            <span>Squawks</span>
+        </a>
+        <a href="dashboard.html">
+            <span class="bar-icon">🏠</span>
+            <span>Home</span>
+        </a>
+    </nav>
 </body>
 </html>

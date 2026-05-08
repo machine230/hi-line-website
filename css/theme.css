@@ -94,3 +94,57 @@ input:focus, select:focus, textarea:focus {
   border-color: rgba(74, 158, 204, 0.5);
 }
 select option { background: #141824; color: rgba(255,255,255,0.9); }
+
+/* ── Mobile Bottom App Bar ─────────────────────────────── */
+/* Shared across all portal pages. Pages add the HTML;
+   CSS here handles display, sizing, and safe-area offsets. */
+.bottom-app-bar {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 1100;
+  background: rgba(11,17,26,0.97);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255,255,255,0.10);
+  box-shadow: 0 -4px 24px rgba(0,0,0,0.45);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.bottom-app-bar a {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px 9px;
+  text-decoration: none;
+  color: rgba(255,255,255,0.40);
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.6em;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.bottom-app-bar a:active { opacity: 0.65; }
+.bottom-app-bar a.bar-active { color: #E8A030; }
+.bottom-app-bar a .bar-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+/* Book button always highlighted in amber */
+.bottom-app-bar a.bar-book { color: #E8A030; }
+.bottom-app-bar a.bar-book .bar-icon {
+  background: rgba(232,160,48,0.15);
+  border: 1px solid rgba(232,160,48,0.35);
+  border-radius: 10px;
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.25rem;
+  margin-bottom: 1px;
+}
+@media (max-width: 680px) {
+  .bottom-app-bar { display: flex; }
+}
