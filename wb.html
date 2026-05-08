@@ -245,9 +245,9 @@
         .readout-box.blue .r-label  { color: rgba(91,184,232,0.55); }
         .readout-box.blue .r-value  { color: #5BB8E8; }
         .fuel-end-map-wrap {
-            flex: 1; position: relative; min-height: 320px;
+            flex: 1; position: relative; min-height: 360px;
         }
-        #endurance-map { width: 100%; height: 100%; }
+        #endurance-map { width: 100%; height: 360px; min-height: 360px; }
         .map-controls {
             position: absolute; top: 10px; right: 10px; z-index: 1000;
             display: flex; gap: 6px;
@@ -633,10 +633,10 @@
 
             <!-- Legend -->
             <div style="padding:10px 22px;background:rgba(0,0,0,0.18);border-top:1px solid rgba(255,255,255,0.05);display:flex;gap:20px;flex-wrap:wrap;font-size:0.76em;color:rgba(255,255,255,0.45);">
-                <span><span style="display:inline-block;width:12px;height:12px;background:rgba(245,185,66,0.3);border:1.5px solid #F5B942;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Amber ring = safe range (30-min VFR reserve held)</span>
-                <span><span style="display:inline-block;width:12px;height:12px;background:rgba(93,216,154,0.25);border:1.5px dashed #5DD89A;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Green dashed = raw range (tanks empty)</span>
-                <span>Wind-corrected teardrop shape when wind &gt; 0</span>
-                <span>⚠ For planning only · Always apply VFR fuel minimums</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:rgba(245,185,66,0.3);border:1.5px solid #F5B942;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Amber = safe range (30-min VFR reserve per FAR 91.151)</span>
+                <span><span style="display:inline-block;width:12px;height:12px;background:rgba(93,216,154,0.25);border:1.5px dashed #5DD89A;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Green dashed = absolute max (tanks dry)</span>
+                <span>Distances in nautical miles · Wind-corrected teardrop when wind &gt; 0</span>
+                <span>⚠ Planning tool only · PIC responsible for fuel reserves</span>
             </div>
         </div>
 
@@ -878,7 +878,8 @@
     //  N2134Y — 1963 Cessna 172D (Continental O-300-D, 145 HP)
     // ═══════════════════════════════════════════════
 
-    const USABLE_FUEL_MAX = 38.0;   // N2134Y usable gallons (42 total − 4 unusable) — per GTN 650
+    const USABLE_FUEL_MAX = 38.0;   // N2134Y usable gallons (42 total − 4 unusable) — per GTN 650 ⚠ verify vs POH
+    const MI_TO_NM = 0.868976;      // statute miles → nautical miles
     const KTS_TO_MPH = 1.15078;
 
     // N2134Y power settings — from aircraft checklist/supplement
@@ -893,7 +894,8 @@
     const HOME_AIRPORTS = {
         KRNT: { lat: 47.4931, lon: -122.2162, name: 'Renton Municipal' },
         KBFI: { lat: 47.5300, lon: -122.3020, name: 'Boeing Field' },
-        KAWO: { lat: 48.1608, lon: -122.1581, name: 'Arlington Municipal' }
+        KAWO: { lat: 48.1608, lon: -122.1581, name: 'Arlington Municipal' },
+        KPAE: { lat: 47.9063, lon: -122.2816, name: 'Paine Field, Everett' }
     };
 
     // PNW regional airports for map markers
@@ -938,22 +940,32 @@
     let rawRing = null, safeRing = null;
     let homeMarker = null;
     let airportMarkerLayer = null;
+    let distRingLayer = null;
 
     function initEnduranceMap(lat, lon) {
-        if (eMap) return;
+        if (eMap) {
+            // Map already exists — just re-center and invalidate
+            eMap.setView([lat, lon], 7);
+            eMap.invalidateSize();
+            return;
+        }
         eMap = L.map('endurance-map', { zoomControl: true }).setView([lat, lon], 7);
 
         osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
             maxZoom: 14
         });
-        secLayer = L.tileLayer('https://wms.chartbundle.com/tms/1.0.0/sec/{z}/{x}/{y}.png', {
-            attribution: '© FAA / ChartBundle', tms: true, opacity: 0.88,
-            maxZoom: 12
+        // FAA Sectional via open tile proxy (free, no API key)
+        secLayer = L.tileLayer('https://vfrmap.com/20231207/tiles/vfrc/{z}/{y}/{x}.jpg', {
+            attribution: '© FAA · VFRMap', opacity: 0.92, maxZoom: 11, tms: true
         });
 
         osmLayer.addTo(eMap);
         airportMarkerLayer = L.layerGroup().addTo(eMap);
+        distRingLayer     = L.layerGroup().addTo(eMap);
+
+        // Force Leaflet to measure container after it's rendered
+        setTimeout(() => eMap.invalidateSize(), 200);
     }
 
     function setMapLayer(mode) {
@@ -1024,7 +1036,12 @@
             const marker = L.marker([ap.lat, ap.lon], {
                 icon: icon(isHome ? '#F5B942' : '#5BB8E8', ap.icao)
             });
-            marker.bindTooltip(`<strong>${ap.icao}</strong><br>${ap.name}`, {
+            // Approximate nm distance from home
+            const dLat = (ap.lat - lat) * Math.PI / 180;
+            const dLon = (ap.lon - lon) * Math.PI / 180;
+            const a = Math.sin(dLat/2)**2 + Math.cos(lat*Math.PI/180)*Math.cos(ap.lat*Math.PI/180)*Math.sin(dLon/2)**2;
+            const distNm = Math.round(2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)) * 3440.065);
+            marker.bindTooltip(`<strong>${ap.icao}</strong> · ${ap.name}<br>${distNm} nm`, {
                 direction: 'top', offset: [0, -6],
                 className: 'airport-tip'
             });
@@ -1040,71 +1057,101 @@
     }
 
     function calcEndurance() {
-        const fuelGal  = Math.max(0, Math.min(USABLE_FUEL_MAX, parseFloat(document.getElementById('end-fuel').value) || 0));
-        const pwrKey   = document.getElementById('end-power').value;
-        const ps       = POWER[pwrKey];
-        const apKey    = document.getElementById('end-airport').value;
-        const ap       = HOME_AIRPORTS[apKey];
-        const windDir  = parseFloat(document.getElementById('end-wind-dir').value) || 0;
-        const windKts  = Math.max(0, parseFloat(document.getElementById('end-wind-spd').value) || 0);
-        const windMph  = windKts * KTS_TO_MPH;
+        const fuelGal = Math.max(0, Math.min(USABLE_FUEL_MAX, parseFloat(document.getElementById('end-fuel').value) || 0));
+        const pwrKey  = document.getElementById('end-power').value;
+        const ps      = POWER[pwrKey];
+        const apKey   = document.getElementById('end-airport').value;
+        const ap      = HOME_AIRPORTS[apKey];
+        if (!ap) return; // guard against unknown airport
 
-        // 30-min VFR reserve
+        const windDir = parseFloat(document.getElementById('end-wind-dir').value) || 0;
+        const windKts = Math.max(0, parseFloat(document.getElementById('end-wind-spd').value) || 0);
+        const windMph = windKts * KTS_TO_MPH;
+
+        // ── Range math (per POH/checklist fuel & GPH) ──
+        // VFR day reserve: 30 min at cruise power (FAR 91.151)
         const reserveGal = ps.gph * 0.5;
+        const rawEnd     = fuelGal / ps.gph;                               // hrs — tanks dry
+        const safeEnd    = Math.max(0, (fuelGal - reserveGal) / ps.gph);  // hrs — 30-min VFR reserve held
 
-        // Endurance
-        const rawEnd  = fuelGal / ps.gph;                                  // hours
-        const safeEnd = Math.max(0, (fuelGal - reserveGal) / ps.gph);     // hours
-
-        // Range (zero-wind straight-line)
+        // Statute miles (TAS in mph), then convert to nm
         const rawRangeMi  = ps.tas * rawEnd;
         const safeRangeMi = ps.tas * safeEnd;
+        const rawRangeNm  = rawRangeMi  * MI_TO_NM;
+        const safeRangeNm = safeRangeMi * MI_TO_NM;
 
-        // Update readouts
+        // ── Update readouts ──
         document.getElementById('end-power-label').textContent = ps.label;
-        document.getElementById('end-safe-time').textContent  = formatHours(safeEnd);
-        document.getElementById('end-safe-range').textContent = Math.round(safeRangeMi) + ' mi';
-        document.getElementById('end-raw-time').textContent   = formatHours(rawEnd);
-        document.getElementById('end-raw-range').textContent  = Math.round(rawRangeMi) + ' mi';
-        document.getElementById('end-reserve').textContent    = reserveGal.toFixed(1) + ' gal';
-        document.getElementById('end-tas').textContent        = ps.tas + ' mph';
+        document.getElementById('end-safe-time').textContent   = formatHours(safeEnd);
+        document.getElementById('end-safe-range').textContent  = Math.round(safeRangeNm) + ' nm';
+        document.getElementById('end-raw-time').textContent    = formatHours(rawEnd);
+        document.getElementById('end-raw-range').textContent   = Math.round(rawRangeNm)  + ' nm';
+        document.getElementById('end-reserve').textContent     = reserveGal.toFixed(1) + ' gal';
+        document.getElementById('end-tas').textContent         = ps.tas + ' mph';
 
         // ── Map ──
         initEnduranceMap(ap.lat, ap.lon);
 
-        // Remove old rings
+        // Clear old layers
         if (rawRing)  { eMap.removeLayer(rawRing);  rawRing  = null; }
         if (safeRing) { eMap.removeLayer(safeRing); safeRing = null; }
         if (homeMarker) { eMap.removeLayer(homeMarker); homeMarker = null; }
+        if (distRingLayer) distRingLayer.clearLayers();
 
-        // Draw safe ring (amber) — inner conservative ring
+        // ── Distance reference rings (50, 100, 150 nm) ──
+        const nmRings = [50, 100, 150, 200];
+        nmRings.forEach(nm => {
+            const mi = nm / MI_TO_NM;
+            if (mi > rawRangeMi * 1.15) return; // skip rings beyond max range
+            const pts = [];
+            for (let b = 0; b < 360; b += 2) pts.push(destPoint(ap.lat, ap.lon, b, mi));
+            L.polyline([...pts, pts[0]], {
+                color: 'rgba(255,255,255,0.18)', weight: 1, dashArray: '3 5'
+            }).addTo(distRingLayer);
+            // Label at north
+            const labelPt = destPoint(ap.lat, ap.lon, 0, mi);
+            L.marker(labelPt, {
+                icon: L.divIcon({
+                    className: '',
+                    html: `<span style="font-size:10px;color:rgba(255,255,255,0.4);font-family:monospace;white-space:nowrap;">${nm} nm</span>`,
+                    iconAnchor: [16, 0]
+                })
+            }).addTo(distRingLayer);
+        });
+
+        // ── Safe ring — amber (30-min VFR reserve held) ──
         const safePts = buildRingPoints(ap.lat, ap.lon, ps.tas, safeEnd, windDir, windMph);
         safeRing = L.polygon(safePts, {
-            color: '#F5B942', weight: 2.5, fillColor: '#F5B942', fillOpacity: 0.09
+            color: '#F5B942', weight: 2.5, fillColor: '#F5B942', fillOpacity: 0.10
         }).addTo(eMap);
 
-        // Draw raw ring (green) — outer absolute-max ring
+        // ── Raw ring — green dashed (tanks dry) ──
         const rawPts = buildRingPoints(ap.lat, ap.lon, ps.tas, rawEnd, windDir, windMph);
         rawRing = L.polygon(rawPts, {
-            color: '#5DD89A', weight: 2, fillColor: '#5DD89A', fillOpacity: 0.04,
+            color: '#5DD89A', weight: 1.8, fillColor: '#5DD89A', fillOpacity: 0.04,
             dashArray: '6 4'
         }).addTo(eMap);
 
-        // Home airport marker (star-style)
+        // ── Home airport marker ──
         homeMarker = L.marker([ap.lat, ap.lon], {
             icon: L.divIcon({
                 className: '',
-                html: `<div style="background:#F5B942;border:2px solid #fff;border-radius:50%;width:12px;height:12px;box-shadow:0 0 8px rgba(245,185,66,0.7);"></div>`,
-                iconSize: [12, 12], iconAnchor: [6, 6]
+                html: `<div style="background:#F5B942;border:2px solid #fff;border-radius:50%;width:13px;height:13px;box-shadow:0 0 10px rgba(245,185,66,0.8);"></div>`,
+                iconSize: [13, 13], iconAnchor: [6, 6]
             })
         }).addTo(eMap);
-        homeMarker.bindTooltip(`<strong>${apKey}</strong><br>${ap.name}`, { permanent: false });
+        homeMarker.bindTooltip(
+            `<strong>${apKey}</strong> — ${ap.name}<br>` +
+            `Safe range: ${Math.round(safeRangeNm)} nm &nbsp;|&nbsp; Raw: ${Math.round(rawRangeNm)} nm`,
+            { permanent: false, direction: 'top' }
+        );
 
-        // Airport markers within range
+        // ── Airport markers with nm distance ──
         drawAirportMarkers(ap.lat, ap.lon, rawRangeMi);
 
-        // Fit bounds to the raw (outer) ring
-        eMap.fitBounds(rawRing.getBounds(), { padding: [20, 20] });
+        // ── Fit view to safe ring (not raw — less wasted space) ──
+        eMap.fitBounds(safeRing.getBounds(), { padding: [30, 30] });
+        eMap.invalidateSize();
     }
 
     function onAirportChange() {
