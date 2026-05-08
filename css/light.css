@@ -549,3 +549,27 @@ select option { background: #FFFFFF; color: #1E293B; }
   color: #B8780A !important;
   border-color: rgba(232,160,48,0.30) !important;
 }
+
+/* ── 16. Portal Footer ───────────────────────────────────────── */
+.portal-footer {
+  border-top: 1px solid rgba(0,0,0,0.08);
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 0.78em;
+  color: #94A3B8;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.portal-footer-fb {
+  color: #2A7AAA;
+  text-decoration: none;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.95em;
+  transition: color 0.2s;
+}
+.portal-footer-fb:hover { color: #E8A030; }

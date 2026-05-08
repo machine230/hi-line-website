@@ -136,28 +136,28 @@
         /* ── ADD MEMBER FORM ── */
         .add-member-form {
             padding: 20px 24px;
-            background: rgba(255,255,255,0.03);
-            border-top: 1px solid rgba(255,255,255,0.08);
+            background: var(--surface-mid);
+            border-top: 1px solid var(--border-dim);
         }
         .add-member-form h4 {
             font-family: 'Montserrat', sans-serif; font-size: 0.7em; font-weight: 700;
             text-transform: uppercase; letter-spacing: 2px;
-            color: rgba(255,255,255,0.35); margin: 0 0 14px;
+            color: var(--text-muted); margin: 0 0 14px;
         }
         .form-row { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 12px; align-items: end; }
         .form-field label {
             display: block; font-size: 0.75em; font-weight: 700;
-            color: rgba(255,255,255,0.4); text-transform: uppercase;
+            color: var(--text-dim); text-transform: uppercase;
             letter-spacing: 0.5px; margin-bottom: 5px;
         }
         .form-field input, .form-field select {
             width: 100%; padding: 9px 12px;
-            border: 1px solid rgba(255,255,255,0.12); border-radius: 7px;
+            border: 1px solid var(--input-border); border-radius: 7px;
             font-size: 0.9em; font-family: inherit;
-            background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9);
+            background: var(--input-bg); color: var(--text);
         }
         .form-field input:focus, .form-field select:focus {
-            outline: none; border-color: #5BB8E8;
+            outline: none; border-color: var(--sky);
         }
         .form-field input::placeholder { color: rgba(255,255,255,0.22); }
         .form-submit {
@@ -1298,5 +1298,9 @@
         function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
         function toggleNav()  { document.getElementById('navLinks').classList.toggle('nav-open'); }
     </script>
+    <footer class="portal-footer">
+        <span>© 2026 Hi-Line Flying Club · KRNT</span>
+        <a href="https://flightboard.app/" target="_blank" rel="noopener" class="portal-footer-fb">Powered by FlightBoard →</a>
+    </footer>
 </body>
 </html>
