@@ -293,7 +293,7 @@
 </head>
 <body>
     <nav>
-        <a href="index.html" class="nav-logo">PNW<span>AV8R</span></a>
+        <a href="index.html" class="nav-logo">Hi-Line<span> ✈</span></a>
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
             <li><a href="weather.html">Weather</a></li>
@@ -332,19 +332,19 @@
                     <div class="input-group">
                         <label for="pilot-weight">Pilot (lbs)</label>
                         <input type="number" id="pilot-weight" value="170" min="0" max="300" oninput="calculate()">
-                        <small>Front left seat · Station 37.0"</small>
+                        <small>Front left seat · Station 36.0" (POH)</small>
                     </div>
 
                     <div class="input-group">
                         <label for="copilot-weight">Co-Pilot / Passenger (lbs)</label>
                         <input type="number" id="copilot-weight" value="0" min="0" max="300" oninput="calculate()">
-                        <small>Front right seat · Station 37.0" · Leave 0 if solo</small>
+                        <small>Front right seat · Station 36.0" · Leave 0 if solo</small>
                     </div>
 
                     <div class="input-group">
                         <label for="rear-weight">Rear Passengers (lbs)</label>
                         <input type="number" id="rear-weight" value="0" min="0" max="400" oninput="calculate()">
-                        <small>Rear seats combined · Station 73.0" · Leave 0 if empty</small>
+                        <small>Rear seats combined · Station 70.0" · Leave 0 if empty</small>
                     </div>
 
                     <div class="input-group">
@@ -356,7 +356,7 @@
                     <div class="input-group">
                         <label for="fuel-gallons">Fuel (gallons)</label>
                         <input type="number" id="fuel-gallons" value="36" min="0" max="36" step="0.5" oninput="calculate()">
-                        <small>Max 38 gal usable · 6 lb/gal · Station 48.0" · = <span id="fuel-weight-display">228.0 lbs</span></small>
+                        <small>Max 36 gal usable · 6 lb/gal · Station 48.0" · = <span id="fuel-weight-display">216.0 lbs</span></small>
                     </div>
 
                     <div class="button-group">
@@ -374,51 +374,51 @@
                                 <th>Item</th>
                                 <th>Weight (lbs)</th>
                                 <th>Arm (in)</th>
-                                <th>Moment</th>
+                                <th>Mom/1000</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>Empty Aircraft</td>
-                                <td id="empty-weight-display">TODO</td>
-                                <td id="empty-arm-display">TODO</td>
-                                <td id="empty-moment-display">TODO</td>
+                                <td>Licensed Empty Wt <small style="color:rgba(255,255,255,0.35)">(incl. oil)</small></td>
+                                <td id="empty-weight-display">—</td>
+                                <td id="empty-arm-display">—</td>
+                                <td id="empty-moment-display">—</td>
                             </tr>
                             <tr>
                                 <td>Pilot</td>
                                 <td id="pilot-display">170</td>
-                                <td>37.0</td>
-                                <td id="pilot-moment">6,290</td>
+                                <td>36.0</td>
+                                <td id="pilot-moment">6.12</td>
                             </tr>
                             <tr>
                                 <td>Co-Pilot / Pax</td>
                                 <td id="copilot-display">0</td>
-                                <td>37.0</td>
-                                <td id="copilot-moment">0</td>
+                                <td>36.0</td>
+                                <td id="copilot-moment">0.00</td>
                             </tr>
                             <tr>
                                 <td>Rear Passengers</td>
                                 <td id="rear-display">0</td>
-                                <td>73.0</td>
-                                <td id="rear-moment">0</td>
+                                <td>70.0</td>
+                                <td id="rear-moment">0.00</td>
                             </tr>
                             <tr>
                                 <td>Baggage</td>
                                 <td id="baggage-display">0</td>
                                 <td>95.0</td>
-                                <td id="baggage-moment">0</td>
+                                <td id="baggage-moment">0.00</td>
                             </tr>
                             <tr>
                                 <td>Fuel</td>
-                                <td id="fuel-display">228.0</td>
+                                <td id="fuel-display">216.0</td>
                                 <td>48.0</td>
-                                <td id="fuel-moment">10,944</td>
+                                <td id="fuel-moment">10.37</td>
                             </tr>
                             <tr class="total-row">
                                 <td><strong>GROSS WEIGHT</strong></td>
-                                <td id="total-weight"><strong>1351.2</strong></td>
-                                <td id="total-cg"><strong>33.6"</strong></td>
-                                <td id="total-moment"><strong>45,633</strong></td>
+                                <td id="total-weight"><strong>—</strong></td>
+                                <td id="total-cg"><strong>—</strong></td>
+                                <td id="total-moment"><strong>—</strong></td>
                             </tr>
                         </tbody>
                     </table>
@@ -486,7 +486,7 @@
                             <option value="65">65% — 5.5 GPH / 96 mph TAS</option>
                             <option value="55">55% — 4.5 GPH / 90 mph TAS</option>
                         </select>
-                        <small>POH values · C150 at standard atmosphere</small>
+                        <small>N2134Y · C172D / O-300-D · Standard atmosphere · Verify against POH</small>
                     </div>
 
                     <div class="end-section-label">Departure Airport</div>
@@ -497,8 +497,8 @@
                                 style="width:100%;padding:11px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(245,185,66,0.2);border-radius:6px;font-size:0.95em;color:#F5B942;font-family:'Courier New',monospace;font-weight:bold;">
                             <option value="KRNT" selected>KRNT — Renton Municipal</option>
                             <option value="KBFI">KBFI — Boeing Field, Seattle</option>
-                            <option value="KRNT">KRNT — Renton Municipal</option>
                             <option value="KAWO">KAWO — Arlington Municipal</option>
+                            <option value="KPAE">KPAE — Paine Field, Everett</option>
                         </select>
                     </div>
 
@@ -589,20 +589,27 @@
     <script>
         // ── N2134Y Cessna 172D Constants ──
         // Source: ACE Aviation W&B Computation, dated 2018 (aircraft maintenance records)
-        const EMPTY_WEIGHT  = 1502.92;  // lbs (actual empty weight from W&B record)
-        const EMPTY_MOMENT  = 53533.58; // lbs·in (actual empty moment from W&B record)
-        const FRONT_ARM     = 36.0;     // front seats station (aft of datum) — Station 36
-        const REAR_ARM      = 70.0;     // rear seats station (aft of datum)  — Station 70
-        const BAGGAGE_ARM   = 95.0;     // baggage shelf station (aft of datum)
-        const FUEL_ARM      = 48.0;     // wing fuel tanks station (aft of datum)
-        const FUEL_LBS_GAL  = 6.0;      // avgas weight lbs/gal
-        const MAX_GROSS     = 2300.0;   // max gross weight lbs (Cessna 172D)
+        // Station arms confirmed from 172 POH Sample Loading Problem (page 4-5):
+        //   Front seats: 340 lbs × arm = 12,200 lb·in  → arm = 35.88" ≈ 36.0"
+        //   Rear seats:  340 lbs × arm = 23,800 lb·in  → arm = 70.00"
+        //   Fuel:        216 lbs × arm = 10,400 lb·in  → arm = 48.15" ≈ 48.0"
+        //   Baggage:      65 lbs × arm =  6,200 lb·in  → arm = 95.38" ≈ 95.0"
+        const EMPTY_WEIGHT  = 1502.92;  // lbs — ACE Aviation 2018 (includes engine oil)
+        const EMPTY_MOMENT  = 53533.58; // lb·in — ACE Aviation 2018 → arm = 35.62"
+        const FRONT_ARM     = 36.0;     // Station 36 — front seats (POH confirmed)
+        const REAR_ARM      = 70.0;     // Station 70 — rear seats  (POH confirmed)
+        const BAGGAGE_ARM   = 95.0;     // Station 95 — baggage shelf
+        const FUEL_ARM      = 48.0;     // Station 48 — wing fuel tanks
+        const FUEL_LBS_GAL  = 6.0;      // avgas: 6.0 lbs/gal
+        const MAX_GROSS     = 2300.0;   // max gross weight lbs — 172D (POH Step 7)
         const MAX_BAGGAGE   = 120.0;    // max baggage lbs
-        const MAX_FUEL_GAL  = 36.0;     // usable fuel gallons (40 total − 4 unusable)
+        const MAX_FUEL_GAL  = 36.0;     // usable fuel: 36 gal (40 total − 4 unusable)
 
-        // CG limits per 172D POH / TCDS 3A12 (interpolated between weight breakpoints)
+        // CG limits per Cessna 172 POH / TCDS 3A12 — Normal Category
+        // Forward limit: constant 35.0" at all weights
+        // Aft limit: interpolated from envelope chart
+        //   At 1500 lbs: aft = 40.5"  |  At 2300 lbs: aft = 47.3"
         function interpolateCGLimits(weight) {
-            // Cessna 172D: aft limit shifts aft as weight increases
             if (weight <= 1500) return { forward: 35.0, aft: 40.5 };
             if (weight >= 2300) return { forward: 35.0, aft: 47.3 };
             const ratio = (weight - 1500) / (2300 - 1500);
@@ -630,8 +637,9 @@
             const totalCG     = totalMoment / totalWeight;
 
             // ── Update table ──
-            const fmt = (n, dec=1) => n.toFixed(dec);
-            const fmtM = (n) => Math.round(n).toLocaleString();
+            // Moment column shows Mom/1000 (lb·in ÷ 1000) — matches POH loading problem format
+            const fmt  = (n, dec=1) => n.toFixed(dec);
+            const fmtM = (n) => (n / 1000).toFixed(2);   // Mom/1000 to 2 decimal places
 
             const emptyArm = EMPTY_MOMENT / EMPTY_WEIGHT;
             document.getElementById('empty-weight-display').textContent = EMPTY_WEIGHT.toFixed(1);
@@ -643,7 +651,7 @@
             document.getElementById('copilot-display').textContent = fmt(copilotWt, 0);
             document.getElementById('rear-display').textContent    = fmt(rearWt, 0);
             document.getElementById('baggage-display').textContent = fmt(baggageWt, 0);
-            document.getElementById('fuel-display').textContent    = fmt(fuelWt);
+            document.getElementById('fuel-display').textContent    = fmt(fuelWt, 1);
             document.getElementById('pilot-moment').textContent    = fmtM(pilotMom);
             document.getElementById('copilot-moment').textContent  = fmtM(copilotMom);
             document.getElementById('rear-moment').textContent     = fmtM(rearMom);
@@ -653,7 +661,7 @@
             const wEl = document.getElementById('total-weight');
             const cEl = document.getElementById('total-cg');
             const mEl = document.getElementById('total-moment');
-            wEl.innerHTML = '<strong>' + fmt(totalWeight) + '</strong>';
+            wEl.innerHTML = '<strong>' + fmt(totalWeight, 1) + '</strong>';
             cEl.innerHTML = '<strong>' + fmt(totalCG, 2) + '"</strong>';
             mEl.innerHTML = '<strong>' + fmtM(totalMoment) + '</strong>';
 
@@ -663,7 +671,8 @@
             updateStatus(totalWeight, totalCG, cgLimits, baggageWt, fuelGal);
             updateFlightCharacteristics(totalCG, cgLimits);
 
-            // ── Va (Cessna 172D: 112 MPH at max gross per POH) ──
+            // ── Va — Cessna 172D: 112 MPH at max gross (2300 lbs) per POH ──
+            // Va scales with sqrt of weight ratio (FAR 23 / standard method)
             const va = 112 * Math.sqrt(Math.min(totalWeight, MAX_GROSS) / MAX_GROSS);
             document.getElementById('va-speed').textContent = va.toFixed(0) + ' MPH';
 
@@ -721,16 +730,16 @@
         
         function updateStatus(weight, cg, cgLimits, baggage, fuelGallons) {
             const statusElement = document.getElementById('status');
-            
-            if (weight > 1500) {
+
+            if (weight > MAX_GROSS) {
                 statusElement.className = 'status danger';
-                statusElement.textContent = 'OVERWEIGHT - Reduce by ' + (weight - 1500).toFixed(1) + ' lbs';
-            } else if (baggage > 120) {
+                statusElement.textContent = 'OVERWEIGHT — Reduce by ' + (weight - MAX_GROSS).toFixed(1) + ' lbs (Max ' + MAX_GROSS + ' lbs)';
+            } else if (baggage > MAX_BAGGAGE) {
                 statusElement.className = 'status danger';
-                statusElement.textContent = 'BAGGAGE OVERWEIGHT - Max 120 lbs';
-            } else if (fuelGallons > 22) {
+                statusElement.textContent = 'BAGGAGE OVERWEIGHT — Max ' + MAX_BAGGAGE + ' lbs on shelf';
+            } else if (fuelGallons > MAX_FUEL_GAL) {
                 statusElement.className = 'status danger';
-                statusElement.textContent = 'FUEL OVERWEIGHT - Max 22 gallons';
+                statusElement.textContent = 'FUEL EXCEEDS MAX — ' + MAX_FUEL_GAL + ' gal usable limit';
             } else if (cg < cgLimits.forward) {
                 statusElement.className = 'status danger';
                 statusElement.textContent = 'CG TOO FORWARD - ' + (cgLimits.forward - cg).toFixed(2) + '" beyond limit';
@@ -738,8 +747,9 @@
                 statusElement.className = 'status danger';
                 statusElement.textContent = 'CG TOO AFT - ' + (cg - cgLimits.aft).toFixed(2) + '" beyond limit';
             } else {
+                const remaining = MAX_GROSS - weight;
                 statusElement.className = 'status safe';
-                statusElement.textContent = 'WITHIN LIMITS - Safe for flight';
+                statusElement.textContent = 'WITHIN LIMITS — ' + remaining.toFixed(1) + ' lbs under max gross';
             }
         }
         
