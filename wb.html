@@ -452,9 +452,70 @@
 
                     <div class="va-box">
                         <h4>Maneuvering Speed (Va)</h4>
-                        <p id="va-speed" style="font-size:1.2em;font-weight:700;color:#fff;margin:4px 0;">107 MPH</p>
-                        <p>Va = 106 × √(Gross Weight ÷ 1500)</p>
+                        <p id="va-speed" style="font-size:1.2em;font-weight:700;color:#fff;margin:4px 0;">122 MPH</p>
+                        <p>Va = 122 × √(Gross Wt ÷ 2300) · Reduces with lighter loads</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══ V-SPEEDS REFERENCE ══ -->
+        <div style="background:#111820;border:1px solid rgba(245,185,66,0.22);border-radius:16px;overflow:hidden;margin-bottom:24px;box-shadow:0 8px 32px rgba(0,0,0,0.5);">
+            <div style="padding:14px 24px;border-bottom:1px solid rgba(245,185,66,0.12);background:rgba(0,0,0,0.22);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+                <h2 style="font-family:'Montserrat',sans-serif;font-size:0.72em;font-weight:700;text-transform:uppercase;letter-spacing:3px;color:rgba(245,185,66,0.7);margin:0;">V-Speeds · N2134Y <span style="color:rgba(255,255,255,0.3);font-weight:400;letter-spacing:0">— All speeds at 2,300 lbs gross</span></h2>
+                <span id="va-ref-badge" style="font-family:'Courier New',monospace;font-size:0.82em;font-weight:700;color:#5BB8E8;">Va at current wt: <span id="va-current">—</span></span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0;">
+                <!-- Row 1 -->
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">Vr — Rotation</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">60 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">Vx — Best Angle</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">65 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">Vy — Best Rate</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">80 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(91,184,232,0.7);letter-spacing:1.5px;text-transform:uppercase;">Va — Maneuvering</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#5BB8E8;margin-top:2px;">122 MPH <span style="font-size:0.72em;color:rgba(91,184,232,0.5)">(2300 lbs)</span></span>
+                </div>
+                <!-- Row 2 -->
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">Vfe — Max Flaps</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">100 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">Vno — Max Structural</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">140 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(220,53,69,0.8);letter-spacing:1.5px;text-transform:uppercase;">Vne — Never Exceed</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#ff8090;margin-top:2px;">174 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">VGlide — Best Glide</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">80 MPH</span>
+                </div>
+                <!-- Row 3 -->
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">Vs1 — Stall Clean</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">57 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(245,185,66,0.55);letter-spacing:1.5px;text-transform:uppercase;">Vso — Stall Dirty</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#F5B942;margin-top:2px;">49 MPH</span>
+                </div>
+                <div style="padding:11px 20px;border-right:1px solid rgba(255,255,255,0.05);">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(93,216,154,0.7);letter-spacing:1.5px;text-transform:uppercase;">Fuel — Usable</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#5DD89A;margin-top:2px;">36 gal · 216 lbs</span>
+                </div>
+                <div style="padding:11px 20px;">
+                    <span style="font-family:'Montserrat',sans-serif;font-size:0.65em;font-weight:700;color:rgba(93,216,154,0.7);letter-spacing:1.5px;text-transform:uppercase;">Fuel — Total Cap.</span>
+                    <span style="display:block;font-family:'Courier New',monospace;font-size:1.1em;font-weight:700;color:#5DD89A;margin-top:2px;">42 gal · 252 lbs</span>
                 </div>
             </div>
         </div>
@@ -482,9 +543,9 @@
                         <label for="end-power">Power Setting</label>
                         <select id="end-power" onchange="calcEndurance()"
                                 style="width:100%;padding:11px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(245,185,66,0.2);border-radius:6px;font-size:0.95em;color:#F5B942;font-family:'Courier New',monospace;font-weight:bold;">
-                            <option value="75">75% — 6.0 GPH / 100 mph TAS</option>
-                            <option value="65">65% — 5.5 GPH / 96 mph TAS</option>
-                            <option value="55">55% — 4.5 GPH / 90 mph TAS</option>
+                            <option value="75">75% (~135 HP) — 10.0 GPH / ~107 mph TAS</option>
+                            <option value="65">65% (~117 HP) — 8.8 GPH / ~100 mph TAS</option>
+                            <option value="55">55% (~99 HP) — 7.4 GPH / ~90 mph TAS</option>
                         </select>
                         <small>N2134Y · C172D / O-300-D · Standard atmosphere · Verify against POH</small>
                     </div>
@@ -671,10 +732,12 @@
             updateStatus(totalWeight, totalCG, cgLimits, baggageWt, fuelGal);
             updateFlightCharacteristics(totalCG, cgLimits);
 
-            // ── Va — Cessna 172D: 112 MPH at max gross (2300 lbs) per POH ──
-            // Va scales with sqrt of weight ratio (FAR 23 / standard method)
-            const va = 112 * Math.sqrt(Math.min(totalWeight, MAX_GROSS) / MAX_GROSS);
+            // ── Va — Cessna 172D: 122 MPH at max gross (2300 lbs) per N2134Y checklist ──
+            // Va scales with sqrt of weight ratio (standard method)
+            const va = 122 * Math.sqrt(Math.min(totalWeight, MAX_GROSS) / MAX_GROSS);
             document.getElementById('va-speed').textContent = va.toFixed(0) + ' MPH';
+            const vaCurrentEl = document.getElementById('va-current');
+            if (vaCurrentEl) vaCurrentEl.textContent = va.toFixed(0) + ' MPH';
 
             // ── CG info text ──
             document.getElementById('cg-limits').innerHTML =
@@ -791,11 +854,12 @@
     const USABLE_FUEL_MAX = 36.0;   // N2134Y usable gallons (40 total − 4 unusable)
     const KTS_TO_MPH = 1.15078;
 
-    // POH power settings (approximate — verify against actual aircraft POH)
+    // N2134Y power settings — from aircraft checklist/supplement
+    // 75% ~135 HP → ~10 GPH  |  65% ~117 HP → ~8.8 GPH  |  55% ~99 HP → ~7.4 GPH
     const POWER = {
-        '75': { gph: 9.0, tas: 107, label: '75% Power' },
-        '65': { gph: 8.0, tas: 100, label: '65% Power' },
-        '55': { gph: 6.5, tas:  92, label: '55% Power' }
+        '75': { gph: 10.0, tas: 107, label: '75% Power (~135 HP)' },
+        '65': { gph:  8.8, tas: 100, label: '65% Power (~117 HP)' },
+        '55': { gph:  7.4, tas:  90, label: '55% Power (~99 HP)'  }
     };
 
     // Home airports (KRNT is primary for N2134Y / Hi-Line Flying Club)
