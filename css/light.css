@@ -587,7 +587,18 @@ select option { background: #FFFFFF; color: #1E293B; }
 .currency-item.lapsed  { background: rgba(192,57,43,0.08)  !important; border-color: rgba(192,57,43,0.22)  !important; }
 .currency-item.missing { background: rgba(0,0,0,0.03)      !important; border-color: rgba(0,0,0,0.08)      !important; }
 
-/* ── 18. Bottom app bar — light theme ── */
+/* ── 18. Flight log rows — light theme ── */
+.flog-row  { border-bottom-color: rgba(0,0,0,0.07) !important; }
+.flog-total { color: #64748B !important; }
+.currency-edit-link { color: #2A7A9B !important; border-color: rgba(42,122,155,0.3) !important; }
+.mc-day       { color: #374151 !important; }
+.mc-day.past  { color: #9CA3AF !important; }
+.mc-day.other-mo { color: #D1D5DB !important; }
+.cal-view-btn { background: rgba(0,0,0,0.05) !important; border-color: rgba(0,0,0,0.12) !important; color: #64748B !important; }
+.cal-view-btn.active { background: rgba(184,120,10,0.10) !important; border-color: rgba(184,120,10,0.35) !important; color: #B8780A !important; }
+#calSubtitle { color: #64748B !important; }
+
+/* ── 19. Bottom app bar — light theme ── */
 .bottom-app-bar {
   background: rgba(255,255,255,0.97) !important;
   border-top: 1px solid rgba(0,0,0,0.10) !important;

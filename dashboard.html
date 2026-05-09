@@ -276,6 +276,32 @@
         .currency-icon { font-size:1.2rem; flex-shrink:0; line-height:1; }
         .currency-label { font-weight:700; font-size:0.88em; color:var(--text); }
         .currency-detail { font-size:0.75em; color:var(--text-muted); margin-top:2px; }
+        .currency-edit-link { font-size:0.76em; color:var(--sky-text); text-decoration:none; font-weight:700; font-family:'Montserrat',sans-serif; padding:4px 10px; border:1px solid var(--sky-border); border-radius:20px; cursor:pointer; background:none; transition:background 0.15s; white-space:nowrap; }
+        .currency-edit-link:hover { background:rgba(74,158,204,0.12); }
+
+        /* ── FLIGHT LOG ROWS ── */
+        .flog-row  { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-dim); gap:12px; flex-wrap:wrap; }
+        .flog-row:last-child { border-bottom:none; }
+        .flog-date { font-size:0.85em; color:var(--text-muted); min-width:80px; }
+        .flog-notes { flex:1; font-size:0.88em; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .flog-hrs  { font-weight:700; color:var(--text); text-align:right; flex-shrink:0; font-family:'Courier New',monospace; }
+        .flog-total { font-size:0.82em; color:var(--text-muted); font-weight:600; margin-top:10px; }
+
+        /* ── CALENDAR VIEW TOGGLE ── */
+        .cal-view-toggle { display:flex; gap:4px; }
+        .cal-view-btn { background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.12); color:var(--text-muted); font-size:0.74em; font-weight:700; padding:4px 11px; border-radius:20px; cursor:pointer; font-family:'Montserrat',sans-serif; transition:all 0.15s; }
+        .cal-view-btn.active { background:rgba(232,160,48,0.16); border-color:rgba(232,160,48,0.38); color:#E8A030; }
+
+        /* ── MONTH CALENDAR ── */
+        .month-cal table { width:100%; border-collapse:collapse; font-size:0.82em; }
+        .month-cal th { text-align:center; padding:5px 2px; color:var(--text-dim); font-weight:700; font-size:0.8em; font-family:'Montserrat',sans-serif; border-bottom:1px solid var(--border-dim); }
+        .month-cal td { padding:3px 2px; text-align:center; }
+        .mc-day { width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto; font-size:0.88em; cursor:default; color:var(--text-dim); }
+        .mc-day.today { background:#D4439A; color:#fff !important; font-weight:700; box-shadow:0 0 8px rgba(212,67,154,0.5); }
+        .mc-day.has-mine { background:rgba(42,122,82,0.28); color:#5DD89A !important; font-weight:700; border:1px solid rgba(42,122,82,0.4); }
+        .mc-day.has-res  { background:rgba(220,53,69,0.16); color:#ff8090 !important; }
+        .mc-day.past     { color:var(--text-faint); }
+        .mc-day.other-mo { color:var(--text-faint); opacity:0.5; }
 
         /* ── WAITLIST BANNER ── */
         .waitlist-banner { border-radius:10px; padding:14px 20px; margin-bottom:18px; display:none; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:rgba(245,185,66,0.09); border:1px solid rgba(245,185,66,0.3); color:rgba(255,255,255,0.85); font-size:0.88em; }
@@ -455,7 +481,10 @@
 
         <!-- Pilot Currency -->
         <div class="dash-card" id="currencyCard" style="display:none;margin-bottom:24px">
-            <div class="dash-card-title">Pilot Currency</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+                <div class="dash-card-title" style="margin-bottom:0">Pilot Currency</div>
+                <button class="currency-edit-link" onclick="openProfile()">✏️ Update BFR / Medical</button>
+            </div>
             <div class="currency-row" id="currencyRow"></div>
         </div>
 
@@ -463,26 +492,36 @@
         <div class="dash-card" style="margin-bottom:24px">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
                 <div class="dash-card-title" style="margin-bottom:0">My Flight Log</div>
-                <div id="myFlightLogTotal" style="font-size:0.82em;color:rgba(255,255,255,0.4);font-weight:600"></div>
             </div>
             <div id="myFlightLog">
-                <div style="color:rgba(255,255,255,0.35);font-size:0.9em;text-align:center;padding:20px 0">No flights logged yet.</div>
+                <div class="flog-date" style="text-align:center;padding:20px 0">No flights logged yet.</div>
             </div>
+            <div id="myFlightLogTotal" class="flog-total"></div>
         </div>
 
         <div class="dash-grid">
             <div>
-                <!-- This week availability (hidden on mobile — too wide) -->
+                <!-- Availability calendar (hidden on mobile — too wide) -->
                 <div class="week-cal-wrap">
                 <div class="dash-card">
                     <div class="week-nav-row">
-                        <div class="dash-card-title" style="margin-bottom:0">This Week — N2134Y Availability</div>
-                        <div style="display:flex;gap:6px;">
-                            <button class="wk-btn" onclick="shiftMiniWeek(-1)">&#8592;</button>
-                            <button class="wk-btn" onclick="shiftMiniWeek(1)">&#8594;</button>
+                        <div>
+                            <div class="dash-card-title" style="margin-bottom:2px" id="calTitle">N2134Y Availability</div>
+                            <div style="font-size:0.75em;color:var(--text-muted)" id="calSubtitle"></div>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+                            <div class="cal-view-toggle">
+                                <button class="cal-view-btn active" data-view="week" onclick="switchCalView('week')">7-Day</button>
+                                <button class="cal-view-btn" data-view="month" onclick="switchCalView('month')">Month</button>
+                            </div>
+                            <div style="display:flex;gap:4px">
+                                <button class="wk-btn" onclick="shiftCal(-1)">&#8592;</button>
+                                <button class="wk-btn" onclick="shiftCal(1)">&#8594;</button>
+                            </div>
                         </div>
                     </div>
                     <div class="week-cal" id="miniCal"></div>
+                    <div class="month-cal" id="monthCal" style="display:none"></div>
                 </div>
                 </div>
 
@@ -619,7 +658,10 @@
         let currentMember = null;
         let airplaneId    = null;
         let reservations  = [];
-        let miniWeekStart = getWeekStart(new Date());
+        // Rolling calendar — start from yesterday so you can see the last flight
+        let miniWeekStart = (() => { const t = new Date(); t.setDate(t.getDate() - 1); t.setHours(0,0,0,0); return t; })();
+        let calMonthStart = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
+        let calView       = localStorage.getItem('hlfc_calView') || 'week';
 
         // Failsafe: never leave page blank more than 8 seconds
         setTimeout(() => { document.body.style.visibility = 'visible'; }, 8000);
@@ -672,13 +714,32 @@
             return s;
         }
 
-        function shiftMiniWeek(dir) {
-            const n = new Date(miniWeekStart);
-            n.setDate(n.getDate() + dir * 7);
-            const today = new Date(); today.setHours(0,0,0,0);
-            if (n < getWeekStart(today)) return;
-            miniWeekStart = n;
-            renderMiniCal();
+        // Unified nav: shift 7-day window or month
+        function shiftCal(dir) {
+            if (calView === 'week') {
+                const n = new Date(miniWeekStart);
+                n.setDate(n.getDate() + dir * 7);
+                miniWeekStart = n;
+                renderMiniCal();
+            } else {
+                calMonthStart = new Date(calMonthStart.getFullYear(), calMonthStart.getMonth() + dir, 1);
+                renderMonthCal();
+            }
+        }
+
+        // Legacy alias kept in case other code calls it
+        function shiftMiniWeek(dir) { shiftCal(dir); }
+
+        function switchCalView(v) {
+            calView = v;
+            localStorage.setItem('hlfc_calView', v);
+            document.querySelectorAll('.cal-view-btn').forEach(function(b) {
+                b.classList.toggle('active', b.dataset.view === v);
+            });
+            document.getElementById('miniCal').style.display  = v === 'week'  ? '' : 'none';
+            document.getElementById('monthCal').style.display = v === 'month' ? '' : 'none';
+            if (v === 'week')  renderMiniCal();
+            if (v === 'month') renderMonthCal();
         }
 
         async function loadAirplane() {
@@ -791,15 +852,11 @@
                 const hrs  = f.flight_hours != null ? f.flight_hours
                            : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10
                            : null;
-                const cost = f.flight_cost  != null ? f.flight_cost
-                           : hrs != null ? Math.round(hrs * 65 * 100) / 100 : null;
                 const date = new Date(f.completed_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-                return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(91,184,232,0.12);gap:12px;flex-wrap:wrap">
-                    <div style="font-size:0.85em;color:rgba(255,255,255,0.55);min-width:80px">${date}</div>
-                    <div style="flex:1;font-size:0.88em;color:rgba(255,255,255,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(f.notes) || '—'}</div>
-                    <div style="text-align:right;flex-shrink:0">
-                        <span style="font-weight:700;color:#fff">${hrs != null ? hrs.toFixed(1) + ' hr' : '—'}</span>
-                    </div>
+                return `<div class="flog-row">
+                    <div class="flog-date">${date}</div>
+                    <div class="flog-notes">${escapeHtml(f.notes) || '—'}</div>
+                    <div class="flog-hrs">${hrs != null ? hrs.toFixed(1) + ' hr' : '—'}</div>
                 </div>`;
             }).join('');
 
@@ -840,21 +897,30 @@
                 </div>`;
             }).join('');
 
-            renderMiniCal();
+            // Apply saved calendar view preference
+            switchCalView(calView);
         }
 
         function renderMiniCal() {
             const el  = document.getElementById('miniCal');
+            if (!el) return;
             const now = new Date();
             const today = new Date(); today.setHours(0,0,0,0);
 
-            // Build header
+            // Update subtitle with rolling date range
+            const dayEnd = new Date(miniWeekStart); dayEnd.setDate(dayEnd.getDate() + 6);
+            const fmtShort = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+            const subtitle = document.getElementById('calSubtitle');
+            if (subtitle) subtitle.textContent = fmtShort(miniWeekStart) + ' – ' + fmtShort(dayEnd);
+
+            // Build header with full day-of-week + date
+            const DAYS_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
             let html = '<table><thead><tr><th class="wc-time-col"></th>';
             for (let c = 0; c < 7; c++) {
                 const day = new Date(miniWeekStart); day.setDate(day.getDate() + c);
                 const isToday = day.toDateString() === today.toDateString();
                 html += `<th class="${isToday ? 'today-col' : ''}">
-                    <div style="font-size:0.8em;color:rgba(255,255,255,0.4)">${DAYS_SHORT[day.getDay()]}</div>
+                    <div style="font-size:0.75em">${DAYS_SHORT[day.getDay()]}</div>
                     <div class="wc-num">${day.getDate()}</div>
                 </th>`;
             }
@@ -888,6 +954,68 @@
             });
 
             html += '</tbody></table>';
+            el.innerHTML = html;
+        }
+
+        function renderMonthCal() {
+            const el = document.getElementById('monthCal');
+            if (!el) return;
+            const today    = new Date(); today.setHours(0,0,0,0);
+            const yr       = calMonthStart.getFullYear();
+            const mo       = calMonthStart.getMonth();
+            const firstDay = new Date(yr, mo, 1).getDay(); // 0=Sun
+            const daysInMo = new Date(yr, mo + 1, 0).getDate();
+
+            // Update subtitle
+            const subtitle = document.getElementById('calSubtitle');
+            if (subtitle) subtitle.textContent = calMonthStart.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+
+            const DAYS_HDR = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+            let html = '<table><thead><tr>' + DAYS_HDR.map(d => `<th>${d}</th>`).join('') + '</tr></thead><tbody><tr>';
+
+            // Empty cells before month starts
+            for (let i = 0; i < firstDay; i++) html += '<td></td>';
+
+            let col = firstDay;
+            for (let d = 1; d <= daysInMo; d++) {
+                const cellDate = new Date(yr, mo, d);
+                const isPast   = cellDate < today;
+                const isToday  = cellDate.toDateString() === today.toDateString();
+
+                // Find reservations on this day
+                const dayStart = cellDate.toISOString().slice(0,10);
+                const dayEnd   = new Date(yr, mo, d + 1).toISOString().slice(0,10);
+                const dayRes   = (reservations || []).filter(r =>
+                    r.status !== 'cancelled' &&
+                    r.start_time < dayEnd && r.end_time > dayStart
+                );
+                const hasMine  = dayRes.some(r => r.member_id === currentMember?.id);
+                const hasOther = dayRes.length > 0 && !hasMine;
+                const hasRes   = dayRes.length > 0;
+
+                let cls = 'mc-day';
+                if (isToday)      cls += ' today';
+                else if (hasMine) cls += ' has-mine';
+                else if (hasRes)  cls += ' has-res';
+                else if (isPast)  cls += ' past';
+
+                html += `<td><div class="${cls}" title="${dayRes.length ? dayRes.map(r=>r.members?.name||'').join(', ') : ''}">${d}</div></td>`;
+
+                col++;
+                if (col % 7 === 0 && d < daysInMo) html += '</tr><tr>';
+            }
+
+            // Pad last row
+            while (col % 7 !== 0) { html += '<td></td>'; col++; }
+            html += '</tr></tbody></table>';
+
+            // Legend
+            html += `<div style="display:flex;gap:14px;margin-top:10px;font-size:0.72em;color:var(--text-muted);flex-wrap:wrap">
+                <span><span style="color:#5DD89A">■</span> Your reservation</span>
+                <span><span style="color:#ff8090">■</span> Reserved</span>
+                <span><span style="color:#D4439A">●</span> Today</span>
+            </div>`;
+
             el.innerHTML = html;
         }
 
