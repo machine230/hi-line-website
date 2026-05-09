@@ -88,7 +88,17 @@
         .ac-stats { display:flex; gap:24px; margin-top:20px; flex-wrap:wrap; }
         .ac-stat-label { font-size:0.68em; opacity:0.55; text-transform:uppercase; letter-spacing:1.5px; font-family:'Montserrat',sans-serif; }
         .ac-stat-value { font-size:1.15em; font-weight:700; margin-top:3px; font-family:'Courier New',monospace; }
-        .ac-actions { display:flex; flex-direction:column; gap:10px; align-items:flex-end; }
+        .ac-actions { display:flex; flex-direction:column; gap:10px; align-items:flex-end; position:relative; z-index:1; }
+        /* Airplane photo — fades in from right, sits behind text */
+        .ac-photo {
+            position: absolute; top:0; right:0; bottom:0; width:60%;
+            background: url('images/n2134y.jpg') center/cover no-repeat;
+            -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.85) 100%);
+            mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.5) 40%, rgba(0,0,0,0.85) 100%);
+            opacity: 0.32;
+            border-radius: 0 16px 16px 0;
+            pointer-events: none;
+        }
         .ac-btn { padding:10px 22px; border-radius:8px; border:1px solid rgba(255,255,255,0.3); background:rgba(255,255,255,0.08); color:white; font-weight:700; font-size:0.88em; cursor:pointer; text-decoration:none; text-align:center; white-space:nowrap; transition:background 0.2s; font-family:'Montserrat',sans-serif; }
         .ac-btn:hover { background:rgba(255,255,255,0.18); }
         .ac-btn.primary { background:#E8A030; border-color:#E8A030; color:white; box-shadow:0 0 12px rgba(232,160,48,0.35); }
@@ -392,7 +402,9 @@
 
         <!-- Airplane status -->
         <div id="airplaneCard" class="airplane-card available">
-            <div>
+            <!-- Airplane photo, fades in from right behind content -->
+            <div class="ac-photo" aria-hidden="true"></div>
+            <div style="position:relative;z-index:1">
                 <div class="ac-tail">N2134Y</div>
                 <div class="ac-model">1959 Cessna 150</div>
                 <span class="ac-status-badge" id="acStatusBadge">Loading…</span>
@@ -424,6 +436,7 @@
                     </div>
                 </div>
             </div>
+            </div><!-- end z-index wrapper -->
             <div class="ac-actions">
                 <a href="schedule.html" class="ac-btn primary">Book Flight</a>
                 <a href="post-flight.html" class="ac-btn">Post-Flight</a>
