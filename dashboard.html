@@ -1083,6 +1083,8 @@
             const overdue  = items.filter(i => i.status === 'overdue');
             const dueSoon  = items.filter(i => i.status === 'due-soon');
 
+            const unknown  = items.filter(i => i.status === 'unknown');
+
             if (overdue.length) {
                 banner.className = 'aw-banner not-airworthy';
                 awStatus.textContent = 'NOT AIRWORTHY';
@@ -1091,6 +1093,11 @@
                 banner.className = 'aw-banner unknown';
                 awStatus.textContent = 'AIRWORTHY — Inspections due soon';
                 awDetail.textContent = dueSoon.map(i => `${i.name} in ${i.daysLeft}d`).join(' · ');
+            } else if (unknown.length) {
+                // Can't confirm airworthy if any inspection dates are missing
+                banner.className = 'aw-banner unknown';
+                awStatus.textContent = 'AIRWORTHINESS UNKNOWN';
+                awDetail.textContent = 'No date recorded for: ' + unknown.map(i => i.name).join(', ');
             } else {
                 banner.className = 'aw-banner airworthy';
                 awStatus.textContent = 'AIRWORTHY';
