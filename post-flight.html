@@ -340,23 +340,6 @@
                     </div>
                 </div>
 
-                <!-- Landings -->
-                <div class="pf-section">
-                    <div class="pf-section-title">Landings</div>
-                    <div class="pf-row">
-                        <div class="pf-field">
-                            <label>Total Landings <span style="color:#ff8090">*</span></label>
-                            <input type="number" id="landingsTotal" min="0" max="99" value="0" placeholder="0">
-                            <small>Full-stop + touch-and-go</small>
-                        </div>
-                        <div class="pf-field">
-                            <label>Night Landings</label>
-                            <input type="number" id="landingsNight" min="0" max="99" value="0" placeholder="0">
-                            <small>Logged after official sunset</small>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Squawks -->
                 <div class="pf-section">
                     <div class="pf-section-title">Squawks / Discrepancies</div>
@@ -597,8 +580,6 @@
                 oil_added_quarts:      oilAdded,
                 oil_qty_end_quarts:    oilEnd,
                 notes:                 notes || null,
-                landings:              parseInt(document.getElementById('landingsTotal').value) || 0,
-                night_landings:        parseInt(document.getElementById('landingsNight').value) || 0,
                 ...fuelPayload
             });
 
