@@ -331,6 +331,7 @@
             <button class="admin-tab" onclick="showTab('squawks',this)">Squawks</button>
             <button class="admin-tab" onclick="showTab('reservations',this)">Reservations</button>
             <button class="admin-tab" onclick="showTab('flights',this)">Flight Log</button>
+            <button class="admin-tab" onclick="showTab('feedback',this)">💬 Feedback <span id="feedbackBadge" style="display:none;background:#E8A030;color:#fff;border-radius:20px;font-size:0.78em;padding:1px 7px;margin-left:4px;font-weight:700"></span></button>
         </div>
 
         <!-- ── Members ── -->
@@ -544,6 +545,34 @@
                 </div>
             </div>
         </div>
+
+        <!-- ── Beta Feedback ── -->
+        <div class="tab-panel" id="tab-feedback">
+            <div class="admin-card">
+                <div class="admin-card-header">
+                    <h3>Beta Feedback</h3>
+                    <div style="font-size:0.82em;color:rgba(255,255,255,0.45)" id="feedbackCount"></div>
+                </div>
+                <!-- Category filter -->
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px">
+                    <button class="filter-btn filter-btn-apply" style="border-radius:20px" onclick="filterFeedback('')" id="fbf-all">All</button>
+                    <button class="filter-btn" style="border-radius:20px;border:1px solid rgba(255,255,255,0.15)" onclick="filterFeedback('bug')"       id="fbf-bug">🐛 Bug</button>
+                    <button class="filter-btn" style="border-radius:20px;border:1px solid rgba(255,255,255,0.15)" onclick="filterFeedback('confusing')" id="fbf-confusing">😕 Confusing</button>
+                    <button class="filter-btn" style="border-radius:20px;border:1px solid rgba(255,255,255,0.15)" onclick="filterFeedback('idea')"      id="fbf-idea">💡 Idea</button>
+                    <button class="filter-btn" style="border-radius:20px;border:1px solid rgba(255,255,255,0.15)" onclick="filterFeedback('positive')"  id="fbf-positive">✅ Positive</button>
+                </div>
+                <div class="table-scroll">
+                    <table class="admin-table" id="feedbackTable">
+                        <thead>
+                            <tr><th>Date</th><th>Member</th><th>Page</th><th>⭐</th><th>Category</th><th>Message</th></tr>
+                        </thead>
+                        <tbody id="feedbackTableBody">
+                            <tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Member edit modal -->
@@ -658,7 +687,7 @@
                 if (plane.grounded_until) document.getElementById('adminGroundedUntil').value = plane.grounded_until.slice(0,16);
                 document.getElementById('maintNote').value  = plane.notes || '';
             }
-            await Promise.all([ loadMembers(), loadSquawks(), loadFlights(), loadInspections(), loadReservations() ]);
+            await Promise.all([ loadMembers(), loadSquawks(), loadFlights(), loadInspections(), loadReservations(), loadFeedback() ]);
             populatePilotFilter();
         });
 
@@ -1279,6 +1308,73 @@
 
         function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
         function toggleNav()  { document.getElementById('navLinks').classList.toggle('nav-open'); }
+
+        // ── Beta Feedback ────────────────────────────────────────────
+        let _allFeedback = [];
+
+        const FB_CAT = {
+            bug:       { label:'🐛 Bug',        color:'#ff8090',  bg:'rgba(220,53,69,0.15)'  },
+            confusing: { label:'😕 Confusing',  color:'#F5B942',  bg:'rgba(245,185,66,0.15)' },
+            idea:      { label:'💡 Idea',        color:'#4A9ECC',  bg:'rgba(74,158,204,0.15)' },
+            positive:  { label:'✅ Positive',    color:'#5DDBA6',  bg:'rgba(93,219,166,0.12)' },
+        };
+
+        async function loadFeedback() {
+            const { data, error } = await _supabase
+                .from('beta_feedback')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) { console.error('[loadFeedback]', error.message); return; }
+            _allFeedback = data || [];
+
+            // Update badge count on tab
+            const badge = document.getElementById('feedbackBadge');
+            if (badge && _allFeedback.length) {
+                badge.textContent = _allFeedback.length;
+                badge.style.display = 'inline';
+            }
+
+            const countEl = document.getElementById('feedbackCount');
+            if (countEl) countEl.textContent = _allFeedback.length + ' entr' + (_allFeedback.length === 1 ? 'y' : 'ies');
+
+            renderFeedback(_allFeedback);
+        }
+
+        function filterFeedback(cat) {
+            // Update active filter button style
+            ['all','bug','confusing','idea','positive'].forEach(k => {
+                const btn = document.getElementById('fbf-' + (k === '' ? 'all' : k));
+                if (btn) btn.className = ((!cat && k === 'all') || cat === k)
+                    ? 'filter-btn filter-btn-apply'
+                    : 'filter-btn';
+                if (btn && k !== 'all') btn.style.cssText = 'border-radius:20px;border:1px solid rgba(255,255,255,0.15)';
+            });
+            const filtered = cat ? _allFeedback.filter(f => f.category === cat) : _allFeedback;
+            renderFeedback(filtered);
+        }
+
+        function renderFeedback(rows) {
+            const tbody = document.getElementById('feedbackTableBody');
+            if (!tbody) return;
+            if (!rows.length) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:rgba(255,255,255,0.3);padding:32px">No feedback yet — share the beta link with members.</td></tr>';
+                return;
+            }
+            tbody.innerHTML = rows.map(f => {
+                const cat  = FB_CAT[f.category] || { label: f.category, color:'#fff', bg:'rgba(255,255,255,0.08)' };
+                const stars = f.rating ? '⭐'.repeat(f.rating) : '<span style="opacity:0.3">—</span>';
+                const date  = new Date(f.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true});
+                return `<tr>
+                    <td style="font-size:0.82em;white-space:nowrap;color:rgba(255,255,255,0.55)">${date}</td>
+                    <td style="font-size:0.88em">${escapeHtml(f.member_name || '—')}</td>
+                    <td style="font-size:0.82em;color:rgba(255,255,255,0.55)">${escapeHtml(f.page || '—')}</td>
+                    <td style="font-size:0.82em;white-space:nowrap">${stars}</td>
+                    <td><span style="display:inline-block;padding:3px 10px;border-radius:20px;font-size:0.76em;font-weight:700;background:${cat.bg};color:${cat.color}">${cat.label}</span></td>
+                    <td style="font-size:0.88em;max-width:300px;word-break:break-word">${escapeHtml(f.message)}</td>
+                </tr>`;
+            }).join('');
+        }
     </script>
     <footer class="portal-footer">
         <span>© 2026 Hi-Line Flying Club · KRNT</span>

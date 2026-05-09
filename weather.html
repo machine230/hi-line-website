@@ -997,6 +997,14 @@
             if (airport) lookupWeather(airport.toUpperCase());
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/club-config.js"></script>
+    <script src="js/supabase-client.js?v=3"></script>
+    <script src="js/feedback.js?v=1"></script>
+    <script>
+        // Feedback widget — no member context on public weather page
+        document.addEventListener('DOMContentLoaded', () => initFeedbackWidget(null));
+    </script>
     <nav class="bottom-app-bar" aria-label="Quick actions">
         <a href="schedule.html" class="bar-book">
             <span class="bar-icon">✈️</span>

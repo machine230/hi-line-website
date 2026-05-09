@@ -286,6 +286,7 @@
     <script src="js/supabase-client.js?v=3"></script>
     <script src="js/utils.js?v=3"></script>
     <script src="js/auth.js?v=3"></script>
+    <script src="js/feedback.js?v=1"></script>
     <script>
         let currentMember = null;
         let allSquawks    = [];
@@ -299,6 +300,7 @@
             renderNavUser(currentMember);
             if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
             updateBottomBarForRole(currentMember);
+            initFeedbackWidget(currentMember);
 
             const { data: plane } = await _supabase.from('airplanes').select('id,status,grounded_from,grounded_until').eq('tail_number', AIRPLANE_TAIL).single();
             airplaneId = plane?.id;
