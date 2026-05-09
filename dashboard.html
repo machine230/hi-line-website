@@ -391,7 +391,8 @@
                         <div class="ac-stat-label">My Hours</div>
                         <div class="ac-stat-value" id="acMyHours">—</div>
                     </div>
-                    <div>
+                    <!-- My Dry Cost hidden until billing feature is built -->
+                    <div style="display:none">
                         <div class="ac-stat-label">My Dry Cost</div>
                         <div class="ac-stat-value" id="acMyCost">—</div>
                     </div>
@@ -775,7 +776,7 @@
                            : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10
                            : 0;
                 const cost = f.flight_cost   != null ? f.flight_cost
-                           : Math.round(hrs * 65 * 100) / 100;
+                           : Math.round(hrs * 50 * 100) / 100;
                 totalHrs  += hrs;
                 totalCost += cost;
             });
@@ -798,14 +799,13 @@
                     <div style="flex:1;font-size:0.88em;color:rgba(255,255,255,0.85);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(f.notes) || '—'}</div>
                     <div style="text-align:right;flex-shrink:0">
                         <span style="font-weight:700;color:#fff">${hrs != null ? hrs.toFixed(1) + ' hr' : '—'}</span>
-                        <span style="color:#5DD89A;font-weight:700;margin-left:12px">${cost != null ? '$' + cost.toFixed(2) : '—'}</span>
                     </div>
                 </div>`;
             }).join('');
 
             const totalRow = document.getElementById('myFlightLogTotal');
             if (totalRow) {
-                totalRow.textContent = logs.length + ' flight' + (logs.length !== 1 ? 's' : '') + ' · ' + totalHrs.toFixed(1) + ' hr total · $' + totalCost.toFixed(2) + ' total dry cost';
+                totalRow.textContent = logs.length + ' flight' + (logs.length !== 1 ? 's' : '') + ' · ' + totalHrs.toFixed(1) + ' hr total';
             }
         }
 

@@ -253,18 +253,14 @@
                         </div>
                     </div>
                     <div id="flightCostBox">
-                        <div class="cost-row">
+                        <div class="cost-row" style="justify-content:center">
                             <div class="cost-item">
                                 <div class="cost-label">Flight Time</div>
                                 <div class="cost-value" id="flightHoursDisplay">—</div>
                             </div>
-                            <div class="cost-divider"></div>
-                            <div class="cost-item">
-                                <div class="cost-label">Dry Rate Est.</div>
-                                <div class="cost-value" id="flightCostDisplay">—</div>
-                            </div>
                         </div>
-                        <div class="cost-note">TODO/hr dry rate · N2134Y</div>
+                        <!-- cost display hidden until billing feature is built -->
+                        <div id="flightCostDisplay" style="display:none"></div>
                     </div>
                 </div>
 
@@ -414,7 +410,7 @@
         let selectedFuel   = null;
         let selectedGround = null;
         let squawkCount    = 0;
-        const DRY_RATE     = 65;
+        const DRY_RATE     = 50;
         const OIL_LOW_QTS  = 4;
 
         document.addEventListener('DOMContentLoaded', async () => {
