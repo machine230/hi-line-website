@@ -68,17 +68,78 @@
         .page-wrap {
             flex: 1;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
-            padding: 100px 24px 60px;
+            padding: 96px 24px 60px;
         }
+
+        .page-inner {
+            display: grid;
+            grid-template-columns: 1fr 480px;
+            gap: 40px;
+            max-width: 1020px;
+            width: 100%;
+            align-items: start;
+        }
+
+        /* ── Club info column ── */
+        .club-info { padding: 8px 0; }
+        .club-info .eyebrow {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72em; font-weight: 700;
+            letter-spacing: 3px; text-transform: uppercase;
+            color: #E8A030; margin-bottom: 10px;
+        }
+        .club-info h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 2em; line-height: 1.15;
+            color: #fff; margin-bottom: 24px;
+        }
+        .club-info h2 em { font-style: normal; color: #5BB8E8; }
+        .club-info p {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.92em; line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        .club-stat-row {
+            display: grid; grid-template-columns: 1fr 1fr;
+            gap: 12px; margin: 28px 0;
+        }
+        .club-stat {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px; padding: 16px 18px;
+        }
+        .club-stat-val {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 900; font-size: 1.5em;
+            color: #E8A030; line-height: 1;
+        }
+        .club-stat-lbl {
+            font-size: 0.76em; color: rgba(255,255,255,0.45);
+            margin-top: 5px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .info-block {
+            border-left: 3px solid rgba(232,160,48,0.4);
+            padding: 14px 18px;
+            background: rgba(232,160,48,0.04);
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 16px;
+        }
+        .info-block-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700; font-size: 0.8em;
+            color: #E8A030; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 6px;
+        }
+        .info-block p { margin-bottom: 0; font-size: 0.88em; }
 
         .join-card {
             background: rgba(255,255,255,0.04);
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 14px;
             width: 100%;
-            max-width: 560px;
             overflow: hidden;
         }
 
@@ -229,6 +290,10 @@
         footer a { color: rgba(255,255,255,0.28); text-decoration: none; }
         footer a:hover { color: rgba(255,255,255,0.6); }
 
+        @media (max-width: 860px) {
+            .page-inner { grid-template-columns: 1fr; }
+            .club-info { padding-bottom: 0; }
+        }
         @media (max-width: 600px) {
             nav { padding: 0 20px; }
             .nav-links { display: none; }
@@ -237,6 +302,7 @@
             .form-row-2 { grid-template-columns: 1fr; }
             .success-state { padding: 36px 24px; }
             footer { flex-direction: column; text-align: center; }
+            .club-stat-row { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -252,12 +318,61 @@
     </nav>
 
     <div class="page-wrap">
+      <div class="page-inner">
+
+        <!-- ── LEFT: Club Info ── -->
+        <div class="club-info">
+            <div class="eyebrow">Hi-Line Flying Club · KRNT</div>
+            <h2>Fly Together.<br><em>Own Together.</em></h2>
+            <p>Hi-Line Flying Club is a member-owned flying partnership based at Renton Municipal Airport (KRNT). We're not a rental operation — we're a true ownership group. Members share the costs, the responsibilities, and the freedom that comes with having your own airplane.</p>
+
+            <div class="club-stat-row">
+                <div class="club-stat">
+                    <div class="club-stat-val">17</div>
+                    <div class="club-stat-lbl">Active Members</div>
+                </div>
+                <div class="club-stat">
+                    <div class="club-stat-val">KRNT</div>
+                    <div class="club-stat-lbl">Renton Municipal</div>
+                </div>
+                <div class="club-stat">
+                    <div class="club-stat-val">$50/hr</div>
+                    <div class="club-stat-lbl">Dry Rate</div>
+                </div>
+                <div class="club-stat">
+                    <div class="club-stat-val">1964</div>
+                    <div class="club-stat-lbl">Cessna 172</div>
+                </div>
+            </div>
+
+            <div class="info-block">
+                <div class="info-block-title">✈️ The Aircraft</div>
+                <p>Our 1964 Cessna 172 is equipped with a constant-speed prop and a Lycoming O-360 engine overhauled in 2023. She's hangared year-round at KRNT — no tie-downs, no weather exposure, always ready to fly.</p>
+            </div>
+
+            <div class="info-block">
+                <div class="info-block-title">🤝 True Ownership</div>
+                <p>Members purchase a share in the aircraft — you're an actual owner, not a renter. When you leave the club, you sell your share. Monthly dues keep the airplane maintained; the dry rate covers fuel and your portion of variable costs.</p>
+            </div>
+
+            <div class="info-block">
+                <div class="info-block-title">🔧 Maintained In-House</div>
+                <p>We have a licensed A&P mechanic within our ownership group. Squawks get addressed quickly, maintenance stays transparent, and we don't pay shop markups. Safety is the non-negotiable foundation of everything we do.</p>
+            </div>
+
+            <div class="info-block">
+                <div class="info-block-title">👥 The Community</div>
+                <p>Hi-Line is for pilots who value safety, affordability, and genuine community. We fly together, maintain together, and make decisions together. If that sounds like your kind of flying club, we'd love to meet you.</p>
+            </div>
+        </div>
+
+        <!-- ── RIGHT: Join Form ── -->
         <div class="join-card">
 
             <div class="join-header">
-                <div class="eyebrow">Hi-Line Flying Club · KRNT</div>
+                <div class="eyebrow">Membership Interest</div>
                 <h1>Join Our<br><em>Waitlist</em></h1>
-                <p>We're a small club sharing a 1963 Cessna 172D at Renton Municipal Airport. Fill out the form below and we'll reach out when a membership spot opens up.</p>
+                <p>Fill out the form below and we'll reach out when a membership spot opens up. Spots are limited — we keep the club small by design.</p>
             </div>
 
             <div class="join-body" id="formWrap">
@@ -325,8 +440,9 @@
                 <a href="index.html">← Back to Homepage</a>
             </div>
 
-        </div>
-    </div>
+        </div><!-- end join-card -->
+      </div><!-- end page-inner -->
+    </div><!-- end page-wrap -->
 
     <footer>
         <span>© 2026 Hi-Line Flying Club · KRNT</span>
