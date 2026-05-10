@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/light.css?v=4">
     <script src="js/theme.js?v=3"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -1081,27 +1082,30 @@
     <script src="js/feedback.js?v=1"></script>
     <script>
         // Feedback widget — no member context on public weather page
-        document.addEventListener('DOMContentLoaded', () => initFeedbackWidget(null));
+        document.addEventListener('DOMContentLoaded', () => {
+            initFeedbackWidget(null);
+            lucide.createIcons();
+        });
     </script>
     <nav class="bottom-app-bar" aria-label="Quick actions">
         <a href="schedule.html" class="bar-book">
-            <span class="bar-icon">✈️</span>
+            <i data-lucide="plane" class="bar-icon"></i>
             <span class="bar-label">Book</span>
         </a>
         <a href="post-flight.html">
-            <span class="bar-icon">📋</span>
+            <i data-lucide="clipboard-list" class="bar-icon"></i>
             <span class="bar-label">Log</span>
         </a>
         <a href="weather.html" class="bar-active">
-            <span class="bar-icon">🌤</span>
+            <i data-lucide="cloud-sun" class="bar-icon"></i>
             <span class="bar-label">Weather</span>
         </a>
         <a href="squawks.html">
-            <span class="bar-icon">🔧</span>
+            <i data-lucide="wrench" class="bar-icon"></i>
             <span class="bar-label">Squawks</span>
         </a>
         <a href="dashboard.html" data-bar-last>
-            <span class="bar-icon">🏠</span>
+            <i data-lucide="layout-dashboard" class="bar-icon"></i>
             <span class="bar-label">Home</span>
         </a>
     </nav>

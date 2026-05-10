@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/light.css?v=4">
     <script src="js/theme.js?v=3"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <style>body{visibility:hidden}</style>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -405,6 +406,7 @@
             if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
             updateBottomBarForRole(currentMember);
             initFeedbackWidget(currentMember);
+            lucide.createIcons();
 
             const { data: plane } = await _supabase.from('airplanes').select('id, current_tach').eq('tail_number', AIRPLANE_TAIL).single();
             airplaneId = plane?.id;
@@ -423,7 +425,7 @@
                 const last = bar.querySelector('[data-bar-last]');
                 if (last) {
                     last.href = 'admin.html';
-                    last.querySelector('.bar-icon').textContent = '⚙️';
+                    last.querySelector('.bar-icon').setAttribute('data-lucide', 'settings'); lucide.createIcons();
                     last.querySelector('.bar-label').textContent = 'Admin';
                     last.classList.remove('bar-active');
                 }
@@ -638,23 +640,23 @@
     </footer>
     <nav class="bottom-app-bar" aria-label="Quick actions">
         <a href="schedule.html" class="bar-book">
-            <span class="bar-icon">✈️</span>
+            <i data-lucide="plane" class="bar-icon"></i>
             <span class="bar-label">Book</span>
         </a>
         <a href="post-flight.html" class="bar-active">
-            <span class="bar-icon">📋</span>
+            <i data-lucide="clipboard-list" class="bar-icon"></i>
             <span class="bar-label">Log</span>
         </a>
         <a href="weather.html">
-            <span class="bar-icon">🌤</span>
+            <i data-lucide="cloud-sun" class="bar-icon"></i>
             <span class="bar-label">Weather</span>
         </a>
         <a href="squawks.html">
-            <span class="bar-icon">🔧</span>
+            <i data-lucide="wrench" class="bar-icon"></i>
             <span class="bar-label">Squawks</span>
         </a>
         <a href="dashboard.html" data-bar-last>
-            <span class="bar-icon">🏠</span>
+            <i data-lucide="layout-dashboard" class="bar-icon"></i>
             <span class="bar-label">Home</span>
         </a>
     </nav>

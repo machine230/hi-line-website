@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/theme.css">
     <link rel="stylesheet" href="css/light.css?v=4">
     <script src="js/theme.js?v=3"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
     <style>body{visibility:hidden}</style>
     <style>
         *, *::before, *::after { box-sizing: border-box; }
@@ -117,7 +118,8 @@
             transition:all 0.2s; flex:1; min-width:180px;
         }
         .doc-tile:hover { background:linear-gradient(135deg,rgba(91,184,232,0.12),rgba(91,184,232,0.06)); border-color:rgba(91,184,232,0.55); color:#fff; transform:translateY(-1px); box-shadow:0 4px 16px rgba(91,184,232,0.12); }
-        .doc-icon { font-size:1.6em; flex-shrink:0; }
+        .doc-icon { font-size:unset; flex-shrink:0; width:32px; height:32px; display:flex; align-items:center; justify-content:center; }
+        .doc-icon svg { width:28px; height:28px; stroke:#5BB8E8; stroke-width:1.75; fill:none; }
         .doc-info { line-height:1.35; }
         .doc-label { font-size:0.68em; text-transform:uppercase; letter-spacing:1.5px; color:#5BB8E8; opacity:0.7; font-weight:700; font-family:'Montserrat',sans-serif; }
 
@@ -141,10 +143,10 @@
             background: linear-gradient(to bottom, #D4439A 0%, #5BB8E8 100%);
         }
         .dash-card-title {
-            font-size:0.68em; font-weight:700;
-            text-transform:uppercase; letter-spacing:2.5px;
+            font-size:0.72em; font-weight:700;
+            text-transform:uppercase; letter-spacing:2px;
             color: #5BB8E8;
-            opacity: 0.8;
+            opacity: 0.85;
             margin-bottom:16px; padding-left:10px;
             font-family:'Montserrat',sans-serif;
         }
@@ -469,21 +471,21 @@
         <!-- Docs row -->
         <div class="docs-row">
             <a href="/docs/N2134Y-POH.pdf" target="_blank" class="doc-tile">
-                <div class="doc-icon">📖</div>
+                <i data-lucide="book-open" class="doc-icon"></i>
                 <div class="doc-info">
                     <div class="doc-label">Reference</div>
                     <div>Pilot Operating Handbook</div>
                 </div>
             </a>
             <a href="/docs/N2134Y-Checklist.pdf" target="_blank" class="doc-tile">
-                <div class="doc-icon">✅</div>
+                <i data-lucide="list-checks" class="doc-icon"></i>
                 <div class="doc-info">
                     <div class="doc-label">N2134Y</div>
                     <div>Flight Checklist</div>
                 </div>
             </a>
             <a href="/docs/N2134Y-Emergency.pdf" target="_blank" class="doc-tile">
-                <div class="doc-icon">🚨</div>
+                <i data-lucide="alert-triangle" class="doc-icon"></i>
                 <div class="doc-info">
                     <div class="doc-label">N2134Y</div>
                     <div>Emergency Procedures</div>
@@ -695,6 +697,7 @@
             if (isAdmin(currentMember)) document.getElementById('adminLink').style.display = 'inline';
             updateBottomBarForRole(currentMember);
             initFeedbackWidget(currentMember);
+            lucide.createIcons();
 
             // Make nav username clickable to open profile modal
             const navName = document.querySelector('.nav-user-name');
@@ -1500,7 +1503,7 @@
                 const last = bar.querySelector('[data-bar-last]');
                 if (last) {
                     last.href = 'admin.html';
-                    last.querySelector('.bar-icon').textContent = '⚙️';
+                    last.querySelector('.bar-icon').setAttribute('data-lucide', 'settings'); lucide.createIcons();
                     last.querySelector('.bar-label').textContent = 'Admin';
                     last.classList.remove('bar-active');
                 }
@@ -1518,23 +1521,23 @@
     <!-- Mobile bottom app bar — hidden on desktop via CSS -->
     <nav class="bottom-app-bar" aria-label="Quick actions">
         <a href="schedule.html" class="bar-book">
-            <span class="bar-icon">✈️</span>
+            <i data-lucide="plane" class="bar-icon"></i>
             <span class="bar-label">Book</span>
         </a>
         <a href="post-flight.html">
-            <span class="bar-icon">📋</span>
+            <i data-lucide="clipboard-list" class="bar-icon"></i>
             <span class="bar-label">Log</span>
         </a>
         <a href="weather.html">
-            <span class="bar-icon">🌤</span>
+            <i data-lucide="cloud-sun" class="bar-icon"></i>
             <span class="bar-label">Weather</span>
         </a>
         <a href="squawks.html">
-            <span class="bar-icon">🔧</span>
+            <i data-lucide="wrench" class="bar-icon"></i>
             <span class="bar-label">Squawks</span>
         </a>
         <a href="#" onclick="openProfile();return false;" data-bar-last>
-            <span class="bar-icon">👤</span>
+            <i data-lucide="user" class="bar-icon"></i>
             <span class="bar-label">Profile</span>
         </a>
     </nav>

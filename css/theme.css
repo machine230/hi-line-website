@@ -65,6 +65,34 @@
   --err-bg:   rgba(192,  57,  43, 0.18);  --err-border:   rgba(192,  57,  43, 0.42);  --err-text:   #FF7060;
   --warn-bg:  rgba(232, 160,  48, 0.16);  --warn-border:  rgba(232, 160,  48, 0.38);  --warn-text:  #E8A030;
   --info-bg:  rgba( 74, 158, 204, 0.14);  --info-border:  rgba( 74, 158, 204, 0.35);  --info-text:  #4A9ECC;
+
+  /* ── Elevation / Shadows ─────────────────────────────── */
+  --shadow-sm:    0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md:    0 4px 12px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.08);
+  --shadow-lg:    0 10px 24px rgba(0,0,0,0.20), 0 4px 8px rgba(0,0,0,0.08);
+  --shadow-xl:    0 24px 48px rgba(0,0,0,0.28), 0 8px 16px rgba(0,0,0,0.08);
+  --shadow-card:  0 2px 16px rgba(0,0,0,0.28);
+  --shadow-modal: 0 24px 64px rgba(0,0,0,0.50);
+  --shadow-nav:   0 2px 16px rgba(0,0,0,0.45);
+
+  /* ── Border Radius Scale ─────────────────────────────── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-2xl:  20px;
+  --radius-full: 9999px;
+
+  /* ── Spacing Scale (4px base) ────────────────────────── */
+  --space-1:  4px;   --space-2:  8px;   --space-3: 12px;
+  --space-4: 16px;   --space-5: 20px;   --space-6: 24px;
+  --space-8: 32px;   --space-10: 40px;
+
+  /* ── Transitions ─────────────────────────────────────── */
+  --dur-fast:   0.15s;
+  --dur-normal: 0.20s;
+  --dur-slow:   0.30s;
+  --ease:       cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Global resets ─────────────────────────────────────── */
@@ -131,8 +159,18 @@ select option { background: #141824; color: rgba(255,255,255,0.9); }
 .bottom-app-bar a:active { opacity: 0.65; }
 .bottom-app-bar a.bar-active { color: #E8A030; }
 .bottom-app-bar a .bar-icon {
-  font-size: 1.45rem;
-  line-height: 1;
+  font-size: unset;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bottom-app-bar a .bar-icon svg {
+  width: 22px;
+  height: 22px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  fill: none;
 }
 /* Book button always highlighted in amber */
 .bottom-app-bar a.bar-book { color: #E8A030; }
@@ -142,9 +180,69 @@ select option { background: #141824; color: rgba(255,255,255,0.9); }
   border-radius: 10px;
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.25rem;
   margin-bottom: 1px;
 }
 @media (max-width: 680px) {
   .bottom-app-bar { display: flex; }
+}
+
+/* ── Doc tile icons (Lucide SVG in doc-icon slot) ─────────── */
+.doc-icon {
+  font-size: unset;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.doc-icon svg {
+  width: 28px; height: 28px;
+  stroke: var(--amber);
+  stroke-width: 1.75;
+  fill: none;
+}
+
+/* ── Unified Button System ─────────────────────────────────── */
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 10px 20px; border-radius: var(--radius-md);
+  font-weight: 700; font-size: 0.88em; cursor: pointer;
+  font-family: 'Montserrat', sans-serif; border: none;
+  transition: all var(--dur-normal) var(--ease);
+  text-decoration: none; line-height: 1;
+}
+.btn-primary {
+  background: var(--amber); color: #fff;
+  box-shadow: 0 0 12px rgba(232,160,48,0.25);
+}
+.btn-primary:hover {
+  background: var(--amber-lt);
+  box-shadow: 0 0 20px rgba(232,160,48,0.40);
+  transform: translateY(-1px);
+}
+.btn-secondary {
+  background: transparent; color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover {
+  background: var(--hover-bg); color: var(--text);
+  border-color: var(--border-c);
+}
+.btn-danger {
+  background: var(--err-bg); color: var(--err-text);
+  border: 1px solid var(--err-border);
+}
+.btn-danger:hover { background: rgba(220,53,69,0.28); }
+.btn-ghost {
+  background: transparent; color: var(--text-muted); border: none;
+}
+.btn-ghost:hover { color: var(--text); background: var(--hover-bg); }
+.btn-sm { padding: 6px 14px; font-size: 0.80em; }
+.btn-lg { padding: 13px 28px; font-size: 0.95em; }
+.btn:disabled, .btn[disabled] { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+
+/* ── Card hover elevation ──────────────────────────────────── */
+.dash-card {
+  transition: box-shadow var(--dur-normal) var(--ease);
+}
+.dash-card:hover {
+  box-shadow: var(--shadow-lg);
 }
