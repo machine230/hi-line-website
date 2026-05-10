@@ -538,7 +538,7 @@
 
             const { error } = await _supabase.from('reservations').insert({
                 airplane_id: airplaneId, member_id: currentMember.id,
-                start_time: start.toISOString(), end_time: end.toISOString(), status: 'scheduled'
+                start_time: start.toISOString(), end_time: end.toISOString(), status: 'confirmed'
             });
 
             btn.disabled = false; btn.textContent = 'Confirm Reservation';
