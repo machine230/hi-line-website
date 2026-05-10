@@ -17,7 +17,7 @@ const ICAO_RE = /^[A-Z0-9]{3,4}$/;
 function getCorsHeaders(event) {
     const origin = event.headers?.origin || '';
     const isAllowed = ALLOWED_ORIGINS.includes(origin) || NETLIFY_PREVIEW_RE.test(origin);
-    const allowed = isAllowed ? origin : ALLOWED_ORIGINS[0];
+    const allowed = isAllowed ? origin : '';
     return {
         'Access-Control-Allow-Origin': allowed,
         'Access-Control-Allow-Headers': 'Content-Type',

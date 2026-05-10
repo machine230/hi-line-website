@@ -9,13 +9,13 @@ const ALLOWED_ORIGINS = [
     'https://n2134y.com',
     'https://www.n2134y.com',
     'http://localhost:8888',
-    'http://localhost:3000',
-    'http://localhost:5500'
+    'http://localhost:3000'
 ];
+const NETLIFY_PREVIEW_RE = /^https:\/\/[a-z0-9-]+--[a-z0-9-]+\.netlify\.app$/;
 
 function getCorsHeaders(event) {
     const origin = event.headers?.origin || '';
-    const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : '';
+    const allowed = (ALLOWED_ORIGINS.includes(origin) || NETLIFY_PREVIEW_RE.test(origin)) ? origin : '';
     return {
         'Access-Control-Allow-Origin': allowed,
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -24,17 +24,20 @@ function getCorsHeaders(event) {
     };
 }
 
-async function verifyMember(event, supabaseUrl) {
+// Returns the caller's auth user ID, or null if JWT is missing/invalid.
+async function getCallerUserId(event, supabaseUrl) {
     const jwt = (event.headers?.authorization || '').replace('Bearer ', '').trim();
-    if (!jwt) return false;
+    if (!jwt) return null;
     const anonKey = process.env.SUPABASE_ANON_KEY;
-    if (!anonKey) return false;
+    if (!anonKey) return null;
     try {
         const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
             headers: { Authorization: `Bearer ${jwt}`, apikey: anonKey }
         });
-        return res.ok;
-    } catch { return false; }
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data?.id || null;
+    } catch { return null; }
 }
 
 function esc(str) {
@@ -61,9 +64,16 @@ export const handler = async (event) => {
         return { statusCode: 500, headers: cors, body: JSON.stringify({ error: 'Server not configured' }) };
     }
 
-    // Require a valid Supabase member session
-    const authed = await verifyMember(event, SUPABASE_URL);
-    if (!authed) return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'Unauthorized' }) };
+    // Require a valid Supabase session and admin/A&P role
+    const callerUserId = await getCallerUserId(event, SUPABASE_URL);
+    if (!callerUserId) return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'Unauthorized' }) };
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE);
+    const { data: callerMember } = await supabase
+        .from('members').select('role').eq('id', callerUserId).single();
+    if (!['admin', 'ap'].includes(callerMember?.role)) {
+        return { statusCode: 403, headers: cors, body: JSON.stringify({ error: 'Admin or A&P access required' }) };
+    }
 
     let body;
     try {
@@ -76,8 +86,6 @@ export const handler = async (event) => {
     if (!airplane_id || typeof airplane_id !== 'string' || airplane_id.length > 64) {
         return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'Invalid airplane_id' }) };
     }
-
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE);
 
     // Get airplane tail number
     const { data: airplane } = await supabase
@@ -123,7 +131,7 @@ export const handler = async (event) => {
                             <p>Hi ${safeName},</p>
                             <p>Good news — <strong>${safeTail}</strong> has been returned to airworthy status and is available to fly.</p>
                             <p>You were on the waitlist, so we wanted you to know first. Log in to schedule your flight.</p>
-                            <a href="https://n2134y.com/schedule"
+                            <a href="${process.env.SITE_URL || 'https://n2134y.com'}/schedule.html"
                                style="background:#E8A030;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:12px">
                                 Book a Flight →
                             </a>

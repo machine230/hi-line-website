@@ -58,7 +58,11 @@ export const handler = async (event) => {
     // Validate the JWT by calling the Supabase auth REST endpoint directly.
     // SDK-based approaches (auth.getUser / user-context client) have unreliable
     // behaviour server-side with a service-role client, so we call the endpoint raw.
-    const anonKey = process.env.SUPABASE_ANON_KEY || serviceRole;
+    const anonKey = process.env.SUPABASE_ANON_KEY;
+    if (!anonKey) {
+        return { statusCode: 500, headers: cors,
+            body: JSON.stringify({ error: 'SUPABASE_ANON_KEY not configured in Netlify env vars' }) };
+    }
     let userId, userData;
     try {
         const authRes = await fetch(`${supabaseUrl}/auth/v1/user`, {

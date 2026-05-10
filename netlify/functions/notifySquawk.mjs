@@ -7,10 +7,11 @@ const ALLOWED_ORIGINS = [
     'http://localhost:8888',
     'http://localhost:3000'
 ];
+const NETLIFY_PREVIEW_RE = /^https:\/\/[a-z0-9-]+--[a-z0-9-]+\.netlify\.app$/;
 
 function getCorsHeaders(event) {
     const origin = event.headers?.origin || '';
-    const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : '';
+    const allowed = (ALLOWED_ORIGINS.includes(origin) || NETLIFY_PREVIEW_RE.test(origin)) ? origin : '';
     return {
         'Access-Control-Allow-Origin': allowed,
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -101,7 +102,7 @@ export const handler = async (event) => {
                     <p><strong>Reported by:</strong> ${safeReporter}</p>
                     <p><strong>Description:</strong><br>${safeDesc}</p>
                     <hr>
-                    <a href="https://n2134y.com/squawks.html"
+                    <a href="${process.env.SITE_URL || 'https://n2134y.com'}/squawks.html"
                        style="background:#E8A030;color:white;padding:10px 20px;border-radius:8px;text-decoration:none;display:inline-block;margin-top:8px">
                         View Squawk Board
                     </a>
