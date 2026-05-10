@@ -11,298 +11,232 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/light.css?v=4">
     <script src="js/theme.js?v=3"></script>
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
             font-family: 'Open Sans', sans-serif;
-            background: #0C1620;
-            color: #fff;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        /* NAV */
+        /* ── NAV ── */
         nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 36px;
-            height: 64px;
-            background: rgba(12, 22, 32, 0.95);
-            box-shadow: 0 2px 16px rgba(0,0,0,0.4);
+            position: sticky;
+            top: 0; z-index: 100;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 36px; height: 64px;
+            background: var(--nav-bg);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.35);
         }
         .logo {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.25em;
-            color: #fff;
-            text-decoration: none;
-            letter-spacing: 1px;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.25em;
+            color: var(--text); text-decoration: none; letter-spacing: 1px;
         }
-        .logo span { color: #5BB8E8; }
+        .logo span { color: var(--sky-lt); }
         .nav-links { display: flex; align-items: center; gap: 6px; list-style: none; }
         .nav-links a {
-            color: rgba(255,255,255,0.75);
-            text-decoration: none;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 0.85em;
-            padding: 7px 14px;
-            border-radius: 6px;
+            color: var(--text-dim); text-decoration: none;
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85em;
+            padding: 7px 14px; border-radius: 6px;
             transition: color 0.2s, background 0.2s;
         }
-        .nav-links a:hover { color: #fff; background: rgba(255,255,255,0.08); }
+        .nav-links a:hover, .nav-links a.active { color: var(--text); background: var(--hover-bg); }
         .nav-links .portal {
-            background: #E8A030;
-            color: #fff !important;
+            background: var(--amber); color: #fff !important;
+            box-shadow: 0 0 12px rgba(232,160,48,0.3);
         }
-        .nav-links .portal:hover { background: #F0B84A; }
+        .nav-links .portal:hover { background: var(--amber-lt); }
 
-        /* PAGE LAYOUT */
+        /* ── PAGE LAYOUT ── */
         .page-wrap {
-            flex: 1;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 96px 24px 60px;
+            flex: 1; display: flex; align-items: flex-start; justify-content: center;
+            padding: 52px 24px 60px;
         }
-
         .page-inner {
-            display: grid;
-            grid-template-columns: 1fr 480px;
-            gap: 40px;
-            max-width: 1020px;
-            width: 100%;
-            align-items: start;
+            display: grid; grid-template-columns: 1fr 460px;
+            gap: 48px; max-width: 1020px; width: 100%; align-items: start;
         }
 
-        /* ── Club info column ── */
-        .club-info { padding: 8px 0; }
-        .club-info .eyebrow {
+        /* ── LEFT: Club Info ── */
+        .club-info { padding: 4px 0; }
+
+        .eyebrow {
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.72em; font-weight: 700;
+            font-size: 0.7em; font-weight: 700;
             letter-spacing: 3px; text-transform: uppercase;
-            color: #E8A030; margin-bottom: 10px;
+            color: var(--amber); margin-bottom: 10px;
         }
+
         .club-info h2 {
             font-family: 'Montserrat', sans-serif;
             font-weight: 900; font-size: 2em; line-height: 1.15;
-            color: #fff; margin-bottom: 24px;
+            color: var(--text); margin-bottom: 18px;
         }
-        .club-info h2 em { font-style: normal; color: #5BB8E8; }
-        .club-info p {
-            color: rgba(255,255,255,0.65);
-            font-size: 0.92em; line-height: 1.8;
-            margin-bottom: 20px;
+        .club-info h2 em { font-style: normal; color: var(--sky-lt); }
+
+        .club-info > p {
+            color: var(--text-dim);
+            font-size: 0.93em; line-height: 1.8;
         }
+
+        /* Stat boxes */
         .club-stat-row {
             display: grid; grid-template-columns: 1fr 1fr;
-            gap: 12px; margin: 28px 0;
+            gap: 10px; margin: 28px 0;
         }
         .club-stat {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 10px; padding: 16px 18px;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 16px 18px;
         }
         .club-stat-val {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900; font-size: 1.5em;
-            color: #E8A030; line-height: 1;
+            font-family: 'Montserrat', sans-serif; font-weight: 900;
+            font-size: 1.45em; color: var(--amber); line-height: 1;
         }
         .club-stat-lbl {
-            font-size: 0.76em; color: rgba(255,255,255,0.45);
+            font-size: 0.74em; color: var(--text-muted);
             margin-top: 5px; font-weight: 600;
             text-transform: uppercase; letter-spacing: 0.5px;
         }
+
+        /* Info blocks */
         .info-block {
-            border-left: 3px solid rgba(232,160,48,0.4);
-            padding: 14px 18px;
+            border-left: 3px solid var(--amber-border);
+            padding: 13px 18px;
             background: rgba(232,160,48,0.04);
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 16px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 12px;
         }
         .info-block-title {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700; font-size: 0.8em;
-            color: #E8A030; text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.78em;
+            color: var(--amber); text-transform: uppercase;
             letter-spacing: 1px; margin-bottom: 6px;
         }
-        .info-block p { margin-bottom: 0; font-size: 0.88em; }
+        .info-block p { margin-bottom: 0; font-size: 0.875em; color: var(--text-dim); line-height: 1.75; }
 
+        /* ── RIGHT: Join Card ── */
         .join-card {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 14px;
-            width: 100%;
-            overflow: hidden;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 16px; width: 100%; overflow: hidden;
+        }
+
+        /* Top amber-to-sky gradient bar */
+        .join-card::before {
+            content: ''; display: block; height: 3px;
+            background: linear-gradient(90deg, var(--amber) 0%, var(--sky-lt) 100%);
         }
 
         .join-header {
-            background: linear-gradient(135deg, #1A2A3A, #0F1923);
-            padding: 36px 40px 32px;
-            border-bottom: 3px solid #E8A030;
+            padding: 28px 36px 24px;
+            border-bottom: 1px solid var(--border-dim);
         }
-        .join-header .eyebrow {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.72em;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: #E8A030;
-            margin-bottom: 8px;
-        }
+        .join-header .eyebrow { margin-bottom: 10px; }
         .join-header h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.9em;
-            line-height: 1.15;
-            color: #fff;
+            font-family: 'Montserrat', sans-serif; font-weight: 900;
+            font-size: 1.75em; line-height: 1.15; color: var(--text);
         }
-        .join-header h1 em { font-style: normal; color: #5BB8E8; }
+        .join-header h1 em { font-style: normal; color: var(--sky-lt); }
         .join-header p {
-            margin-top: 12px;
-            font-size: 0.88em;
-            color: rgba(255,255,255,0.55);
-            line-height: 1.65;
+            margin-top: 10px; font-size: 0.875em;
+            color: var(--text-muted); line-height: 1.65;
         }
 
-        .join-body { padding: 32px 40px 36px; }
+        .join-body { padding: 28px 36px 32px; }
 
-        .form-row { margin-bottom: 20px; }
+        /* ── Form ── */
+        .form-row { margin-bottom: 18px; }
         .form-row label {
-            display: block;
-            font-size: 0.78em;
-            font-weight: 600;
-            color: rgba(255,255,255,0.5);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            margin-bottom: 7px;
+            display: block; font-size: 0.76em; font-weight: 600;
+            color: var(--text-muted); text-transform: uppercase;
+            letter-spacing: 0.8px; margin-bottom: 7px;
         }
-        .form-row label .req { color: #E8A030; margin-left: 2px; }
+        .form-row label .req { color: var(--amber); margin-left: 2px; }
 
         .form-input, .form-select, .form-textarea {
             width: 100%;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 7px;
-            padding: 11px 14px;
-            font-size: 0.92em;
-            color: #fff;
+            background: var(--input-bg); border: 1px solid var(--input-border);
+            border-radius: 8px; padding: 11px 14px;
+            font-size: 0.92em; color: var(--input-text);
             font-family: 'Open Sans', sans-serif;
-            transition: border-color 0.2s, background 0.2s;
+            transition: border-color 0.2s, box-shadow 0.2s;
             outline: none;
         }
-        .form-input::placeholder, .form-textarea::placeholder { color: rgba(255,255,255,0.25); }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--placeholder); }
         .form-input:focus, .form-select:focus, .form-textarea:focus {
-            border-color: #5BB8E8;
-            background: rgba(91,184,232,0.06);
+            border-color: var(--sky);
+            box-shadow: 0 0 0 3px rgba(74,158,204,0.12);
         }
-        .form-select option { background: #1A2A3A; color: #fff; }
-        .form-textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+        .form-select option { background: #141824; color: #fff; }
+        .form-textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
-        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-
-        /* Honeypot — hidden from humans */
+        /* Honeypot */
         .hp-field { position: absolute; left: -9999px; opacity: 0; height: 0; }
 
         .submit-btn {
-            width: 100%;
-            padding: 14px;
-            background: #E8A030;
-            color: #fff;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 0.95em;
-            border: none;
-            border-radius: 7px;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: background 0.2s, transform 0.15s;
-            letter-spacing: 0.3px;
+            width: 100%; padding: 13px;
+            background: var(--amber); color: #fff;
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.95em;
+            border: none; border-radius: 8px; cursor: pointer; margin-top: 6px;
+            transition: background 0.2s, transform 0.15s; letter-spacing: 0.3px;
         }
-        .submit-btn:hover:not(:disabled) { background: #F0B84A; transform: translateY(-1px); }
+        .submit-btn:hover:not(:disabled) { background: var(--amber-lt); transform: translateY(-1px); }
         .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
         .form-msg {
-            margin-top: 14px;
-            padding: 12px 16px;
-            border-radius: 7px;
-            font-size: 0.87em;
-            display: none;
+            margin-top: 12px; padding: 11px 16px;
+            border-radius: 8px; font-size: 0.87em; display: none;
         }
         .form-msg.success {
             display: block;
-            background: rgba(46,160,67,0.15);
-            border: 1px solid rgba(46,160,67,0.35);
-            color: #5fbe7a;
+            background: var(--ok-bg); border: 1px solid var(--ok-border); color: var(--ok-text);
         }
         .form-msg.error {
             display: block;
-            background: rgba(220,53,69,0.12);
-            border: 1px solid rgba(220,53,69,0.3);
-            color: #f07080;
+            background: var(--err-bg); border: 1px solid var(--err-border); color: var(--err-text);
         }
 
-        /* SUCCESS STATE */
-        .success-state {
-            display: none;
-            text-align: center;
-            padding: 48px 40px;
-        }
+        /* ── Success state ── */
+        .success-state { display: none; text-align: center; padding: 48px 36px; }
         .success-state .icon { font-size: 2.8em; margin-bottom: 16px; }
         .success-state h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.5em;
-            color: #fff;
-            margin-bottom: 10px;
+            font-family: 'Montserrat', sans-serif; font-weight: 900;
+            font-size: 1.5em; color: var(--text); margin-bottom: 10px;
         }
-        .success-state p { color: rgba(255,255,255,0.55); font-size: 0.9em; line-height: 1.65; }
+        .success-state p { color: var(--text-muted); font-size: 0.9em; line-height: 1.65; }
         .success-state a {
-            display: inline-block;
-            margin-top: 24px;
-            color: #5BB8E8;
-            text-decoration: none;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 700;
-            font-size: 0.88em;
+            display: inline-block; margin-top: 24px;
+            color: var(--sky-lt); text-decoration: none;
+            font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.88em;
         }
         .success-state a:hover { text-decoration: underline; }
 
-        /* FOOTER */
+        /* ── Footer ── */
         footer {
-            border-top: 1px solid rgba(255,255,255,0.06);
+            border-top: 1px solid var(--border-dim);
             padding: 20px 36px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75em;
-            color: rgba(255,255,255,0.28);
-            flex-wrap: wrap;
-            gap: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.75em; color: var(--text-faint);
+            flex-wrap: wrap; gap: 8px;
         }
-        footer a { color: rgba(255,255,255,0.28); text-decoration: none; }
-        footer a:hover { color: rgba(255,255,255,0.6); }
+        footer a { color: var(--text-faint); text-decoration: none; }
+        footer a:hover { color: var(--text-muted); }
 
+        /* ── Responsive ── */
         @media (max-width: 860px) {
-            .page-inner { grid-template-columns: 1fr; }
+            .page-inner { grid-template-columns: 1fr; gap: 32px; }
             .club-info { padding-bottom: 0; }
         }
         @media (max-width: 600px) {
             nav { padding: 0 20px; }
             .nav-links { display: none; }
-            .join-header { padding: 28px 24px 24px; }
-            .join-body { padding: 24px 24px 28px; }
+            .page-wrap { padding: 44px 16px 48px; }
+            .join-header { padding: 22px 24px 20px; }
+            .join-body { padding: 22px 24px 28px; }
             .form-row-2 { grid-template-columns: 1fr; }
             .success-state { padding: 36px 24px; }
             footer { flex-direction: column; text-align: center; }
-            .club-stat-row { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
@@ -312,7 +246,7 @@
         <a href="index.html" class="logo">Hi-Line<span> ✈</span></a>
         <ul class="nav-links">
             <li><a href="weather.html">Weather</a></li>
-            <li><a href="join.html">Join Us</a></li>
+            <li><a href="join.html" class="active">Join Us</a></li>
             <li><a href="dashboard.html" class="portal">Member Portal</a></li>
         </ul>
     </nav>
@@ -357,7 +291,7 @@
 
             <div class="info-block">
                 <div class="info-block-title">🔧 Maintained In-House</div>
-                <p>We have a licensed A&P mechanic within our ownership group. Squawks get addressed quickly, maintenance stays transparent, and we don't pay shop markups. Safety is the non-negotiable foundation of everything we do.</p>
+                <p>We have a licensed A&amp;P mechanic within our ownership group. Squawks get addressed quickly, maintenance stays transparent, and we don't pay shop markups. Safety is the non-negotiable foundation of everything we do.</p>
             </div>
 
             <div class="info-block">
@@ -399,7 +333,7 @@
                         </div>
                     </div>
 
-                    <div class="form-row" style="margin-top:20px">
+                    <div class="form-row" style="margin-top:18px">
                         <div class="form-row-2">
                             <div class="form-row" style="margin-bottom:0">
                                 <label>Pilot Certificate</label>
@@ -485,7 +419,6 @@
 
                 const data = await res.json();
                 if (res.ok && data.ok) {
-                    // Show success state
                     document.getElementById('formWrap').style.display = 'none';
                     document.getElementById('successState').style.display = 'block';
                 } else {
