@@ -589,7 +589,7 @@
                     <input type="date" class="form-input" id="profileDob">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">BFR Date <span style="font-weight:400;color:rgba(255,255,255,0.35)">(most recent)</span></label>
+                    <label class="form-label">BFR Date <span style="font-weight:400;color:var(--text-muted)">(most recent)</span></label>
                     <input type="date" class="form-input" id="profileBfrDate">
                 </div>
                 <div class="form-group">
@@ -624,7 +624,7 @@
                     <button class="upload-btn" id="profileUploadBtn" onclick="uploadProfileDoc()">Upload Document</button>
                 </div>
                 <div class="profile-doc-msg" id="profileDocMsg" style="font-size:0.83em;margin-bottom:10px"></div>
-                <div class="profile-doc-list" id="profileDocList"><div style="color:rgba(255,255,255,0.25);font-size:0.82em;padding:4px 0">Loading documents…</div></div>
+                <div class="profile-doc-list" id="profileDocList"><div style="color:var(--text-muted);font-size:0.82em;padding:4px 0">Loading documents…</div></div>
             </div>
 
             <!-- ── Change Password ── -->
@@ -1271,14 +1271,14 @@
         // ── Profile document helpers ──
         async function loadProfileDocs() {
             const listEl = document.getElementById('profileDocList');
-            listEl.innerHTML = '<div style="color:rgba(255,255,255,0.25);font-size:0.82em;padding:4px 0">Loading…</div>';
+            listEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.82em;padding:4px 0">Loading…</div>';
             const { data: docs } = await _supabase
                 .from('member_documents')
                 .select('id, doc_type, label, storage_path, created_at')
                 .eq('member_id', currentMember.id)
                 .order('created_at', { ascending: false });
             if (!docs?.length) {
-                listEl.innerHTML = '<div style="color:rgba(255,255,255,0.25);font-size:0.82em;padding:4px 0">No documents on file.</div>';
+                listEl.innerHTML = '<div style="color:var(--text-muted);font-size:0.82em;padding:4px 0">No documents on file.</div>';
                 return;
             }
             const items = await Promise.all(docs.map(async d => {
@@ -1304,7 +1304,7 @@
             if (!file)  { msgEl.style.color='#ff8090'; msgEl.textContent='Choose a file first.'; return; }
             if (!label) { msgEl.style.color='#ff8090'; msgEl.textContent='Add a label for this document.'; return; }
             btn.disabled = true;
-            msgEl.style.color='rgba(255,255,255,0.45)'; msgEl.textContent='Uploading…';
+            msgEl.style.color='var(--text-muted)'; msgEl.textContent='Uploading…';
             const path = `${currentMember.id}/${Date.now()}-${file.name}`;
             const { error: upErr } = await _supabase.storage.from('member-docs').upload(path, file);
             if (upErr) {

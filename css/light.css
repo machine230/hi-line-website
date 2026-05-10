@@ -257,7 +257,15 @@ select option { background: #FFFFFF; color: #1E293B; }
 .form-input { background: #F8FAFC !important; border-color: rgba(0,0,0,0.15) !important; color: #1E293B !important; }
 .form-input:focus { border-color: #4A9ECC !important; box-shadow: 0 0 0 3px rgba(74,158,204,0.15) !important; }
 
-/* Profile / save button already amber — no change needed */
+/* Profile modal text (optional sections, doc upload, currency tracking) */
+.optional-section-title { color: #475569 !important; }
+.optional-section-note  { color: #64748B !important; }
+.waitlist-banner        { color: #1E293B !important; background: rgba(232,160,48,0.10) !important; border-color: rgba(232,160,48,0.25) !important; }
+.doc-section            { border-top-color: rgba(0,0,0,0.08) !important; }
+.doc-section h4         { color: #64748B !important; }
+.doc-upload-row input[type="file"] { background: #F8FAFC !important; border-color: rgba(0,0,0,0.12) !important; color: #475569 !important; }
+.doc-list-item          { background: rgba(0,0,0,0.03) !important; border-color: rgba(0,0,0,0.08) !important; }
+.profile-doc-list       { color: #64748B; }
 
 /* ── 6. Schedule (Calendar) ──────────────────────────────────── */
 .cal-outer  { background: #F5F7FA !important; border-color: rgba(0,0,0,0.10) !important; }
@@ -338,6 +346,20 @@ select option { background: #FFFFFF; color: #1E293B; }
 }
 .filter-tab:hover { background: rgba(0,0,0,0.04) !important; color: #1E293B !important; }
 .filter-tab.active { background: var(--amber) !important; color: #fff !important; border-color: transparent !important; }
+/* Squawk text content */
+.status-note          { color: #64748B !important; }
+.status-tail          { color: #1E293B !important; }
+.sq-description       { color: #1E293B !important; }
+.sq-meta              { color: #94A3B8 !important; }
+.sq-maint-text        { color: #334155 !important; }
+.sq-response-text     { color: #334155 !important; }
+.sq-response-meta     { color: #94A3B8 !important; }
+.sq-status-label      { color: #94A3B8 !important; }
+.sq-badge.deferred    { background: rgba(0,0,0,0.06) !important; color: #64748B !important; border-color: rgba(0,0,0,0.12) !important; }
+.ac-status-badge      { background: rgba(0,0,0,0.06) !important; border-color: rgba(0,0,0,0.12) !important; color: #475569 !important; }
+.ac-btn               { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.14) !important; color: #1E293B !important; }
+.ac-btn:hover         { background: rgba(0,0,0,0.08) !important; }
+.filter-btn-clear     { background: rgba(0,0,0,0.05) !important; color: #475569 !important; }
 
 /* ── 9. Post-flight ──────────────────────────────────────────── */
 .pf-card, .pf-section {
@@ -350,6 +372,19 @@ select option { background: #FFFFFF; color: #1E293B; }
   color: #B8780A !important;
   border-color: rgba(232,160,48,0.28) !important;
 }
+/* Post-flight text content */
+.pf-card-header p   { color: #64748B !important; }
+.pf-section-title   { color: #94A3B8 !important; }
+.pf-field label     { color: #475569 !important; }
+.pf-field small     { color: #94A3B8 !important; }
+.cost-label         { color: #64748B !important; }
+.cost-value         { color: #1E293B !important; }
+.cost-note          { color: #94A3B8 !important; }
+.cost-divider       { background: rgba(0,0,0,0.12) !important; }
+.fuel-opt-title     { color: #1E293B !important; }
+.fuel-opt-sub       { color: #64748B !important; }
+.squawk-toggle span { color: #475569 !important; }
+.oil-op             { color: #94A3B8 !important; }
 
 /* ── 10. Admin ───────────────────────────────────────────────── */
 .admin-card {
