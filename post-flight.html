@@ -143,7 +143,7 @@
         /* ── SQUAWK TOGGLE ── */
         .squawk-toggle { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; cursor: pointer; }
         .squawk-toggle input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #E8A030; }
-        .squawk-toggle span { font-weight: 600; color: rgba(255,255,255,0.8); }
+        .squawk-toggle span { font-weight: 600; color: var(--text); }
         #squawkFields { display: none; }
         .squawk-item-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
         .squawk-item-row textarea { flex: 1; resize: vertical; min-height: 60px; }
@@ -411,7 +411,8 @@
             initFeedbackWidget(currentMember);
             lucide.createIcons();
 
-            const { data: plane } = await _supabase.from('airplanes').select('id, current_tach, hourly_rate').eq('tail_number', AIRPLANE_TAIL).single();
+            const { data: plane, error: planeErr } = await _supabase.from('airplanes').select('*').eq('tail_number', AIRPLANE_TAIL).single();
+            if (planeErr) console.warn('[post-flight] airplane load:', planeErr?.message);
             airplaneId = plane?.id;
             if (plane?.hourly_rate) DRY_RATE = plane.hourly_rate;
             if (plane?.current_tach) {

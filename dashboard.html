@@ -784,7 +784,7 @@
         }
 
         async function loadAirplane() {
-            const { data: plane } = await _supabase.from('airplanes').select('*, smoh_base, hourly_rate').eq('tail_number', AIRPLANE_TAIL).single();
+            const { data: plane } = await _supabase.from('airplanes').select('*').eq('tail_number', AIRPLANE_TAIL).single();
             if (!plane) return;
             airplaneId = plane.id;
             if (plane.hourly_rate) DRY_RATE = plane.hourly_rate;
