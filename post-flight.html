@@ -365,6 +365,9 @@
                                     <span class="ground-opt-label">No — Airplane remains flyable</span>
                                 </label>
                             </div>
+                            <div id="flyableSquawkWarning" style="display:none;background:rgba(232,160,48,0.12);border:1px solid rgba(232,160,48,0.40);border-radius:8px;padding:11px 14px;margin-top:10px;font-size:0.84em;color:var(--text);line-height:1.5">
+                                ⚠️ <strong>Heads up:</strong> A squawk will be logged and visible to all pilots on the Squawks page. Make sure the maintenance team is aware, even if you consider it flyable.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -395,7 +398,7 @@
         let selectedFuel   = null;
         let selectedGround = null;
         let squawkCount    = 0;
-        const DRY_RATE     = 50;
+        let DRY_RATE       = 50;  // updated from DB on load
         const OIL_LOW_QTS  = 4;
 
         document.addEventListener('DOMContentLoaded', async () => {
@@ -408,8 +411,9 @@
             initFeedbackWidget(currentMember);
             lucide.createIcons();
 
-            const { data: plane } = await _supabase.from('airplanes').select('id, current_tach').eq('tail_number', AIRPLANE_TAIL).single();
+            const { data: plane } = await _supabase.from('airplanes').select('id, current_tach, hourly_rate').eq('tail_number', AIRPLANE_TAIL).single();
             airplaneId = plane?.id;
+            if (plane?.hourly_rate) DRY_RATE = plane.hourly_rate;
             if (plane?.current_tach) {
                 document.getElementById('tachStart').placeholder = `Last: ${plane.current_tach.toFixed(1)}`;
             }
@@ -471,6 +475,7 @@
         function toggleSquawks() {
             document.getElementById('squawkFields').style.display =
                 document.getElementById('hasSquawks').checked ? 'block' : 'none';
+            updateFlyableWarning();
         }
 
         function addSquawk() {
@@ -490,6 +495,13 @@
             document.getElementById('groundNo').classList.remove('selected');
             el.classList.add(val ? 'selected-red' : 'selected');
             selectedGround = val;
+            updateFlyableWarning();
+        }
+
+        function updateFlyableWarning() {
+            const hasSquawks = document.getElementById('hasSquawks').checked;
+            const warn = document.getElementById('flyableSquawkWarning');
+            if (warn) warn.style.display = (hasSquawks && selectedGround === false) ? 'block' : 'none';
         }
 
         function validateForm() {

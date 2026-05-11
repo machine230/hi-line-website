@@ -187,6 +187,8 @@
         .res-time { font-weight:600; font-size:0.92em; color:var(--text); }
         .res-who  { font-size:0.8em; color:var(--text-muted); margin-top:2px; }
         .res-cancel-btn { font-size:0.75em; color:#C0392B; background:none; border:1px solid rgba(192,57,43,0.35); padding:4px 12px; border-radius:20px; cursor:pointer; }
+        .res-edit-btn   { font-size:0.75em; color:var(--text-muted); background:none; border:1px solid var(--border); padding:4px 12px; border-radius:20px; cursor:pointer; margin-right:6px; font-family:'Montserrat',sans-serif; font-weight:700; transition:all 0.15s; }
+        .res-edit-btn:hover { background:var(--hover-bg); color:var(--text); }
         .empty-state { color:var(--text-muted); font-size:0.88em; padding:12px 0; }
 
         /* ── AIRWORTHY BANNER ── */
@@ -347,8 +349,8 @@
             /* Section titles */
             .dash-card-title { font-size:0.78em; }
             .squawk-alert-title { font-size:0.78em; }
-            /* Cancel button - bigger touch target */
-            .res-cancel-btn { padding:8px 16px; font-size:0.82em; min-height:36px; }
+            /* Cancel/Edit buttons - bigger touch target */
+            .res-cancel-btn, .res-edit-btn { padding:8px 16px; font-size:0.82em; min-height:36px; }
             /* Docs */
             .docs-row { flex-direction:column; }
             .doc-tile { min-width:unset; }
@@ -660,6 +662,27 @@
         <button onclick="openProfile()" style="background:#E8A030;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-weight:700;font-size:0.84em;cursor:pointer;font-family:'Montserrat',sans-serif">Complete Profile →</button>
     </div>
 
+    <!-- Reservation Edit Modal -->
+    <div id="resEditModal" class="modal-overlay" style="display:none;align-items:center;justify-content:center">
+        <div class="modal-box" style="max-width:420px;width:100%">
+            <h3 style="margin:0 0 6px;font-size:1em;font-weight:900;font-family:'Montserrat',sans-serif">Edit Reservation</h3>
+            <p id="resEditDesc" style="font-size:0.84em;color:var(--text-muted);margin:0 0 18px"></p>
+            <div class="profile-field">
+                <label class="profile-label">New Start Time</label>
+                <input type="datetime-local" id="resEditStart" class="profile-input">
+            </div>
+            <div class="profile-field" style="margin-top:12px">
+                <label class="profile-label">New End Time</label>
+                <input type="datetime-local" id="resEditEnd" class="profile-input">
+            </div>
+            <p id="resEditError" style="color:#ff8090;font-size:0.83em;display:none;margin:10px 0 0;font-weight:600"></p>
+            <div style="display:flex;gap:8px;margin-top:20px;justify-content:flex-end">
+                <button class="modal-btn-cancel" onclick="closeResEdit()">Cancel</button>
+                <button class="save-btn" id="resEditSaveBtn" onclick="saveResEdit()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/club-config.js?v=3"></script>
     <script src="js/supabase-client.js?v=3"></script>
@@ -673,6 +696,7 @@
         let currentMember = null;
         let airplaneId    = null;
         let reservations  = [];
+        let DRY_RATE      = 50;  // updated from DB on load
         // Rolling calendar — start from yesterday so you can see the last flight
         let miniWeekStart = (() => { const t = new Date(); t.setDate(t.getDate() - 1); t.setHours(0,0,0,0); return t; })();
         let calMonthStart = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
@@ -760,9 +784,10 @@
         }
 
         async function loadAirplane() {
-            const { data: plane } = await _supabase.from('airplanes').select('*, smoh_base').eq('tail_number', AIRPLANE_TAIL).single();
+            const { data: plane } = await _supabase.from('airplanes').select('*, smoh_base, hourly_rate').eq('tail_number', AIRPLANE_TAIL).single();
             if (!plane) return;
             airplaneId = plane.id;
+            if (plane.hourly_rate) DRY_RATE = plane.hourly_rate;
 
             const statusMap = { available:{cls:'available',label:'Available'}, flying:{cls:'flying',label:'In the Air'}, maintenance:{cls:'maintenance',label:'Maintenance'}, squawk:{cls:'squawk',label:'Squawk — Grounded'} };
             const s = statusMap[plane.status] || statusMap.available;
@@ -854,7 +879,7 @@
                            : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10
                            : 0;
                 const cost = f.flight_cost   != null ? f.flight_cost
-                           : Math.round(hrs * 50 * 100) / 100;
+                           : Math.round(hrs * DRY_RATE * 100) / 100;
                 totalHrs  += hrs;
                 totalCost += cost;
             });
@@ -910,7 +935,7 @@
                         <div class="res-time">${fmtTime(start)} – ${fmtTime(end)}</div>
                         <div class="res-who">${escapeHtml(r.members?.name) || '—'}${isMe ? ' <strong>(you)</strong>' : ''}</div>
                     </div>
-                    ${isMe ? `<button class="res-cancel-btn" onclick="cancelReservation('${escapeHtml(r.id)}')">Cancel</button>` : ''}
+                    ${isMe ? `<button class="res-edit-btn" onclick="openResEdit('${escapeHtml(r.id)}')">Edit</button><button class="res-cancel-btn" onclick="cancelReservation('${escapeHtml(r.id)}')">Cancel</button>` : ''}
                 </div>`;
             }).join('');
 
@@ -1160,15 +1185,105 @@
 
         async function cancelReservation(id) {
             if (!confirm('Cancel this reservation?')) return;
-            // Client-side ownership check — RLS enforces this server-side too
             const res = reservations.find(function(r){ return r.id === id; });
             if (!res || res.member_id !== currentMember.id) {
                 alert('You can only cancel your own reservations.');
                 return;
             }
+            // Cancel in DB (RLS enforces ownership)
             const { error } = await _supabase.from('reservations').update({ status: 'cancelled' }).eq('id', id);
             if (error) { console.error('[cancelReservation]', error?.message || error); alert('Cancel failed. Please try again.'); return; }
             loadReservations();
+            // Fire-and-forget: notify admin via email
+            try {
+                const sess = await _supabase.auth.getSession();
+                const token = sess.data?.session?.access_token;
+                fetch('/.netlify/functions/cancelReservation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                    body: JSON.stringify({
+                        memberName: currentMember.name || 'A member',
+                        startTime:  res.start_time,
+                        endTime:    res.end_time,
+                        tail:       AIRPLANE_TAIL
+                    })
+                }).catch(e => console.warn('[cancelReservation notify]', e?.message));
+            } catch (e) {
+                console.warn('[cancelReservation notify setup]', e?.message);
+            }
+        }
+
+        // ── Reservation Edit ──────────────────────────────────────────────
+        let _resEditId = null;
+
+        function openResEdit(id) {
+            const r = reservations.find(x => x.id === id);
+            if (!r) return;
+            _resEditId = id;
+            const start = new Date(r.start_time);
+            const end   = new Date(r.end_time);
+            const fmt = d => {
+                // datetime-local needs YYYY-MM-DDTHH:MM in local time
+                const pad = n => String(n).padStart(2, '0');
+                return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+            };
+            document.getElementById('resEditStart').value = fmt(start);
+            document.getElementById('resEditEnd').value   = fmt(end);
+            document.getElementById('resEditDesc').textContent =
+                `Currently booked: ${fmtDate(start)} · ${fmtTime(start)} – ${fmtTime(end)}`;
+            document.getElementById('resEditError').style.display = 'none';
+            document.getElementById('resEditSaveBtn').disabled = false;
+            document.getElementById('resEditModal').style.display = 'flex';
+        }
+
+        function closeResEdit() {
+            _resEditId = null;
+            document.getElementById('resEditModal').style.display = 'none';
+        }
+
+        async function saveResEdit() {
+            const startVal = document.getElementById('resEditStart').value;
+            const endVal   = document.getElementById('resEditEnd').value;
+            const errEl    = document.getElementById('resEditError');
+            const saveBtn  = document.getElementById('resEditSaveBtn');
+            errEl.style.display = 'none';
+
+            if (!startVal || !endVal) { showResEditError('Please fill in both times.'); return; }
+            const newStart = new Date(startVal);
+            const newEnd   = new Date(endVal);
+            if (newEnd <= newStart)  { showResEditError('End time must be after start time.'); return; }
+            if (newStart < new Date()) { showResEditError('Cannot move a reservation to the past.'); return; }
+
+            saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
+
+            // Conflict check (excluding this reservation)
+            const { data: conflicts } = await _supabase.from('reservations')
+                .select('id').eq('airplane_tail', AIRPLANE_TAIL).eq('status', 'confirmed')
+                .neq('id', _resEditId)
+                .lt('start_time', newEnd.toISOString())
+                .gt('end_time', newStart.toISOString());
+            if (conflicts?.length) {
+                showResEditError('That time overlaps another reservation. Pick a different slot.');
+                saveBtn.disabled = false; saveBtn.textContent = 'Save Changes';
+                return;
+            }
+
+            const { error } = await _supabase.from('reservations')
+                .update({ start_time: newStart.toISOString(), end_time: newEnd.toISOString() })
+                .eq('id', _resEditId).eq('member_id', currentMember.id);
+            if (error) {
+                showResEditError('Save failed. Please try again.');
+                saveBtn.disabled = false; saveBtn.textContent = 'Save Changes';
+                return;
+            }
+            closeResEdit();
+            loadReservations();
+        }
+
+        function showResEditError(msg) {
+            const el = document.getElementById('resEditError');
+            el.textContent = msg;
+            el.style.display = 'block';
         }
 
         // Profile
