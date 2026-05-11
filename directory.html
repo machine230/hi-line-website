@@ -352,7 +352,7 @@
                     : `<span class="redacted">members only</span>`;
 
                 const joined = m.joined_at
-                    ? new Date(m.joined_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+                    ? new Date(m.joined_at).toLocaleDateString('en-US', { timeZone: CLUB.timezone, month: 'short', year: 'numeric' })
                     : '—';
 
                 return `<tr class="${isMe ? 'me' : ''}">

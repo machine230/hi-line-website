@@ -1013,7 +1013,7 @@
                            : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10 : null;
                 const cost = f.flight_cost  != null ? f.flight_cost
                            : (hrs != null ? Math.round(hrs * DRY_RATE * 100) / 100 : null);
-                const date = new Date(f.completed_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+                const date = new Date(f.completed_at).toLocaleDateString('en-US', { timeZone:CLUB.timezone, month:'short', day:'numeric' });
                 const tIn  = f.tach_start != null ? Number(f.tach_start).toFixed(1) : '—';
                 const tOut = f.tach_end   != null ? Number(f.tach_end).toFixed(1)   : '—';
                 return `<div class="flog-row">
@@ -1078,7 +1078,7 @@
                 // Multi-day shows "8:00 AM → May 15 · 5:00 PM" so the end date is clear
                 const timeStr = sameDay
                     ? `${fmtTime(start)} – ${fmtTime(end)}`
-                    : `${fmtTime(start)} <span style="opacity:0.6">→</span> ${end.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${fmtTime(end)}`;
+                    : `${fmtTime(start)} <span style="opacity:0.6">→</span> ${end.toLocaleDateString('en-US',{timeZone:CLUB.timezone,month:'short',day:'numeric'})} · ${fmtTime(end)}`;
 
                 // Multi-day badge shown below the day number
                 const multiDayBadge = multiDay
@@ -1087,7 +1087,7 @@
 
                 return `<div class="res-item">
                     <div class="res-date-box">
-                        <div class="res-date-mon">${start.toLocaleString('en-US',{month:'short'})}</div>
+                        <div class="res-date-mon">${start.toLocaleString('en-US',{timeZone:CLUB.timezone,month:'short'})}</div>
                         <div class="res-date-day">${start.getDate()}</div>
                         ${multiDayBadge}
                     </div>
@@ -1111,7 +1111,7 @@
 
             // Update subtitle with rolling date range
             const dayEnd = new Date(miniWeekStart); dayEnd.setDate(dayEnd.getDate() + 6);
-            const fmtShort = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+            const fmtShort = d => d.toLocaleDateString('en-US', { timeZone:CLUB.timezone, month:'short', day:'numeric' });
             const subtitle = document.getElementById('calSubtitle');
             if (subtitle) subtitle.textContent = fmtShort(miniWeekStart) + ' – ' + fmtShort(dayEnd);
 
@@ -1170,7 +1170,7 @@
 
             // Update subtitle
             const subtitle = document.getElementById('calSubtitle');
-            if (subtitle) subtitle.textContent = calMonthStart.toLocaleDateString('en-US', { month:'long', year:'numeric' });
+            if (subtitle) subtitle.textContent = calMonthStart.toLocaleDateString('en-US', { timeZone:CLUB.timezone, month:'long', year:'numeric' });
 
             const DAYS_HDR = ['Su','Mo','Tu','We','Th','Fr','Sa'];
             let html = '<table><thead><tr>' + DAYS_HDR.map(d => `<th>${d}</th>`).join('') + '</tr></thead><tbody><tr>';
@@ -1710,7 +1710,7 @@
             if (!card || !row) return;
             card.style.display = '';
 
-            const fmtD = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+            const fmtD = d => d.toLocaleDateString('en-US', { timeZone:CLUB.timezone, month:'short', day:'numeric', year:'numeric' });
             const classLabel = { 1:'1st Class', 2:'2nd Class', 3:'3rd Class', 4:'BasicMed' };
             const notTracked = 'Not tracked — tap Profile to add';
 
@@ -1801,9 +1801,9 @@
             await loadWaitlistBanner();
         }
 
-        function fmtTime(d)  { return d.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}); }
-        function fmtHour(h)  { const d = new Date(); d.setHours(h,0,0,0); return d.toLocaleString('en-US',{hour:'numeric',hour12:true}); }
-        function fmtDate(iso){ return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+        function fmtTime(d)  { return (d instanceof Date ? d : new Date(d)).toLocaleString('en-US',{timeZone:CLUB.timezone,hour:'numeric',minute:'2-digit',hour12:true}); }
+        function fmtHour(h)  { const s=h<12?'AM':'PM',hr=h===0?12:h>12?h-12:h; return `${hr} ${s}`; }
+        function fmtDate(iso){ return new Date(iso).toLocaleDateString('en-US',{timeZone:CLUB.timezone,month:'short',day:'numeric',year:'numeric'}); }
         function toggleNav() { document.getElementById('navLinks').classList.toggle('nav-open'); }
 
         function updateBottomBarForRole(m) {

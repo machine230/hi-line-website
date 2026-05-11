@@ -47,7 +47,7 @@ function fmtDateTime(isoStr) {
     if (!isoStr) return '—';
     try {
         return new Date(isoStr).toLocaleString('en-US', {
-            timeZone: 'America/Chicago',
+            timeZone: 'America/Los_Angeles',
             weekday: 'short', month: 'short', day: 'numeric',
             hour: 'numeric', minute: '2-digit', hour12: true
         });
@@ -58,7 +58,7 @@ function fmtTime(isoStr) {
     if (!isoStr) return '—';
     try {
         return new Date(isoStr).toLocaleString('en-US', {
-            timeZone: 'America/Chicago',
+            timeZone: 'America/Los_Angeles',
             hour: 'numeric', minute: '2-digit', hour12: true
         });
     } catch { return isoStr; }
@@ -172,7 +172,7 @@ export const handler = async (event) => {
             if (prefsRes.ok) {
                 const prefs = await prefsRes.json();
                 const blastDate = new Date(startTime).toLocaleDateString('en-US', {
-                    timeZone: 'America/Chicago', weekday:'short', month:'short', day:'numeric'
+                    timeZone: 'America/Los_Angeles', weekday:'short', month:'short', day:'numeric'
                 });
                 const blastStart = fmtTime(startTime);
                 const blastEnd   = fmtTime(endTime);

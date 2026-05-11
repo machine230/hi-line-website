@@ -79,7 +79,7 @@ function getUpcomingGroundingLabel(plane) {
     if (gFrom <= now) return null; // already active or past
 
     const label = gFrom.toLocaleDateString('en-US', {
-        timeZone:    'America/Chicago',
+        timeZone:    CLUB.timezone,
         weekday:     'short',
         month:       'short',
         day:         'numeric',

@@ -50,7 +50,7 @@ function fmtTime(isoStr) {
     if (!isoStr) return '—';
     try {
         return new Date(isoStr).toLocaleString('en-US', {
-            timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true
+            timeZone: 'America/Los_Angeles', hour: 'numeric', minute: '2-digit', hour12: true
         });
     } catch { return isoStr; }
 }
@@ -59,7 +59,7 @@ function fmtDateShort(isoStr) {
     if (!isoStr) return '—';
     try {
         return new Date(isoStr).toLocaleDateString('en-US', {
-            timeZone: 'America/Chicago', weekday: 'short', month: 'short', day: 'numeric'
+            timeZone: 'America/Los_Angeles', weekday: 'short', month: 'short', day: 'numeric'
         });
     } catch { return isoStr; }
 }

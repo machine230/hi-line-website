@@ -925,7 +925,7 @@
                     ${d.url
                         ? `<a href="${d.url}" target="_blank" rel="noopener">${escapeHtml(d.label)}</a>`
                         : `<span style="color:rgba(255,255,255,0.5)">${escapeHtml(d.label)}</span>`}
-                    <span style="color:var(--text-muted);font-size:0.8em;white-space:nowrap">${new Date(d.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
+                    <span style="color:var(--text-muted);font-size:0.8em;white-space:nowrap">${new Date(d.created_at).toLocaleDateString('en-US',{timeZone:CLUB.timezone,month:'short',day:'numeric',year:'numeric'})}</span>
                 </div>`).join('');
         }
 
@@ -1270,9 +1270,9 @@
                 const end   = new Date(r.end_time);
                 return `<tr style="${start < new Date() ? 'opacity:0.6' : ''}">
                     <td><strong>${escapeHtml(r.member?.name) || '—'}</strong><br><small style="color:var(--text-muted)">${escapeHtml(r.member?.email) || ''}</small></td>
-                    <td>${start.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</td>
-                    <td>${start.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</td>
-                    <td>${end.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</td>
+                    <td>${start.toLocaleDateString('en-US',{timeZone:CLUB.timezone,month:'short',day:'numeric',year:'numeric'})}</td>
+                    <td>${start.toLocaleTimeString('en-US',{timeZone:CLUB.timezone,hour:'numeric',minute:'2-digit'})}</td>
+                    <td>${end.toLocaleTimeString('en-US',{timeZone:CLUB.timezone,hour:'numeric',minute:'2-digit'})}</td>
                     <td>${escapeHtml(r.purpose) || '—'}</td>
                     <td>
                         <button class="tbl-btn tbl-btn-primary" onclick="openResEdit('${escapeHtml(r.id)}','${start.toISOString()}','${end.toISOString()}','${escapeHtml(r.purpose||'')}')">Edit</button>
@@ -1386,7 +1386,7 @@
             setTimeout(() => { closeInspEdit(); loadInspections(); }, 800);
         }
 
-        function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
+        function fmtDate(iso) { return new Date(iso).toLocaleDateString('en-US',{timeZone:CLUB.timezone,month:'short',day:'numeric',year:'numeric'}); }
         function toggleNav()  { document.getElementById('navLinks').classList.toggle('nav-open'); }
 
         // ── Beta Feedback ────────────────────────────────────────────

@@ -457,7 +457,7 @@
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekEnd.getDate() + 6);
 
-            const opts = { month:'short', day:'numeric' };
+            const opts = { timeZone:CLUB.timezone, month:'short', day:'numeric' };
             document.getElementById('weekTitle').textContent =
                 weekStart.toLocaleDateString('en-US', opts) + ' – ' +
                 weekEnd.toLocaleDateString('en-US', { ...opts, year:'numeric' });
@@ -764,9 +764,9 @@
             el.style.display = 'block';
         }
 
-        function fmtTime(d)     { return d.toLocaleString('en-US',{hour:'numeric',minute:'2-digit',hour12:true}); }
-        function fmtHour(h)     { const d = new Date(); d.setHours(h,0,0,0); return d.toLocaleString('en-US',{hour:'numeric',hour12:true}); }
-        function fmtDateTime(d) { return d.toLocaleString('en-US',{weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}); }
+        function fmtTime(d)     { return (d instanceof Date ? d : new Date(d)).toLocaleString('en-US',{timeZone:CLUB.timezone,hour:'numeric',minute:'2-digit',hour12:true}); }
+        function fmtHour(h)     { const s=h<12?'AM':'PM',hr=h===0?12:h>12?h-12:h; return `${hr} ${s}`; }
+        function fmtDateTime(d) { return (d instanceof Date ? d : new Date(d)).toLocaleString('en-US',{timeZone:CLUB.timezone,weekday:'short',month:'short',day:'numeric',hour:'numeric',minute:'2-digit',hour12:true}); }
         function toggleNav()    { document.getElementById('navLinks').classList.toggle('nav-open'); }
 
         function updateBottomBarForRole(m) {

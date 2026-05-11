@@ -14,24 +14,30 @@ function escapeHtml(str) {
 }
 
 // ── Date / time ──────────────────────────────────────────────
+// All display uses CLUB.timezone (defined in club-config.js, loaded first).
+// Server-side ISO strings are UTC; timeZone converts them to club local time.
+
 function fmtDate(iso) {
   return new Date(iso).toLocaleDateString('en-US',
-    { month: 'short', day: 'numeric', year: 'numeric' });
+    { timeZone: CLUB.timezone, month: 'short', day: 'numeric', year: 'numeric' });
 }
 
 function fmtDateTime(iso) {
   return new Date(iso).toLocaleString('en-US',
-    { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
+    { timeZone: CLUB.timezone, month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
 function fmtTime(d) {
   return (d instanceof Date ? d : new Date(d))
-    .toLocaleString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    .toLocaleString('en-US', { timeZone: CLUB.timezone, hour: 'numeric', minute: '2-digit', hour12: true });
 }
 
+// fmtHour renders a calendar grid label (0–23 → "8 AM").
+// Pure arithmetic — no Date object needed, no timezone risk.
 function fmtHour(h) {
-  const d = new Date(); d.setHours(h, 0, 0, 0);
-  return d.toLocaleString('en-US', { hour: 'numeric', hour12: true });
+  const suffix = h < 12 ? 'AM' : 'PM';
+  const hr = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${hr} ${suffix}`;
 }
 
 function fmtHobbs(val) {

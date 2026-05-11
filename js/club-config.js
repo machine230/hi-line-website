@@ -3,10 +3,11 @@
 // ─────────────────────────────────────────────────────────────
 
 const CLUB = {
-  name:    'Hi-Line Flying Club',
-  short:   'N213',              // nav logo text (before the span)
-  span:    '4Y',               // nav logo span text (accent color)
-  airport: 'KRNT',             // home airport ICAO — used for weather
+  name:     'Hi-Line Flying Club',
+  short:    'N213',              // nav logo text (before the span)
+  span:     '4Y',               // nav logo span text (accent color)
+  airport:  'KRNT',             // home airport ICAO — used for weather
+  timezone: 'America/Los_Angeles', // IANA timezone — all date display uses this
   aircraft: [
     {
       tail:           'N2134Y',
