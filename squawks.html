@@ -455,24 +455,29 @@
             const maintNotes = document.getElementById(`maint_${id}`).value.trim();
             const msgEl      = document.getElementById(`msg_${id}`);
 
-            if (maintNotes.length > 2000) {
+            if (maintNotes.length > 5000) {
                 msgEl.style.color = '#ff8090';
-                msgEl.textContent = 'Maintenance notes must be 2000 characters or less.';
+                msgEl.textContent = 'Maintenance notes must be 5000 characters or less.';
                 return;
             }
 
+            const now = new Date().toISOString();
             const update = {
                 status:             newStatus,
-                status_updated_at:  new Date().toISOString(),
+                status_updated_at:  now,
                 status_updated_by:  currentMember.id,
                 admin_response:     response || null,
-                admin_response_at:  response ? new Date().toISOString() : null,
-                admin_response_by:  currentMember.id,
                 maintenance_notes:  maintNotes || null
             };
 
+            // Only stamp response metadata when there is actual response text
+            if (response) {
+                update.admin_response_at = now;
+                update.admin_response_by = currentMember.id;
+            }
+
             if (newStatus === 'resolved') {
-                update.resolved_at = new Date().toISOString();
+                update.resolved_at = now;
                 update.resolved_by = currentMember.id;
             }
 
@@ -485,10 +490,13 @@
             }
 
             if (newStatus === 'resolved') {
+                // Only unground the plane when ALL active squawks are resolved/cleared.
+                // 'deferred' counts as still-active — plane stays grounded until
+                // an admin explicitly clears it or resolves all deferred squawks.
                 const { count } = await _supabase.from('squawks')
                     .select('*', { count:'exact', head:true })
                     .eq('airplane_id', airplaneId)
-                    .in('status', ['open','in_progress']);
+                    .in('status', ['open', 'in_progress', 'deferred']);
                 if (count === 0) await ungroundPlane();
             }
 

@@ -477,12 +477,12 @@
         <!-- ── Squawks ── -->
         <div class="tab-panel" id="tab-squawks">
             <div class="admin-card">
-                <div class="admin-card-header"><h3>Open Squawks</h3></div>
+                <div class="admin-card-header"><h3>Active Squawks</h3></div>
                 <div class="table-scroll">
                     <table class="admin-table">
-                        <thead><tr><th>Description</th><th>Reported By</th><th>Date</th><th>Action</th></tr></thead>
+                        <thead><tr><th>Description</th><th>Reported By</th><th>Status</th><th>Date</th><th>Action</th></tr></thead>
                         <tbody id="squawkTableBody">
-                            <tr><td colspan="4" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
+                            <tr><td colspan="5" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -1076,23 +1076,35 @@
 
         // ── Squawks ──
         async function loadSquawks() {
-            const { data: open } = await _supabase.from('squawks').select('*, reported:members!squawks_reported_by_fkey(name)')
-                .eq('airplane_id', airplaneId).eq('status', 'open').order('reported_at', { ascending: false });
+            const { data: active } = await _supabase.from('squawks')
+                .select('*, reported:members!squawks_reported_by_fkey(name)')
+                .eq('airplane_id', airplaneId)
+                .in('status', ['open', 'in_progress', 'deferred'])
+                .order('reported_at', { ascending: false });
 
             const { data: resolved } = await _supabase.from('squawks')
                 .select('*, reported:members!squawks_reported_by_fkey(name), resolver:members!squawks_resolved_by_fkey(name)')
                 .eq('airplane_id', airplaneId).eq('status', 'resolved')
                 .order('resolved_at', { ascending: false }).limit(20);
 
+            const STATUS_LABEL = {
+                open:        { text: 'Open',        color: '#ff8090' },
+                in_progress: { text: 'In Progress', color: '#F5B942' },
+                deferred:    { text: 'Deferred',    color: '#94a3b8' }
+            };
+
             const ob = document.getElementById('squawkTableBody');
-            ob.innerHTML = open?.length ? open.map(s => `
-                <tr class="squawk-row">
+            ob.innerHTML = active?.length ? active.map(s => {
+                const st = STATUS_LABEL[s.status] || STATUS_LABEL.open;
+                return `<tr class="squawk-row">
                     <td>${escapeHtml(s.description)}</td>
                     <td>${escapeHtml(s.reported?.name) || '—'}</td>
+                    <td><span style="color:${st.color};font-weight:700;font-size:0.82em">${st.text}</span></td>
                     <td>${fmtDate(s.reported_at)}</td>
                     <td><button class="tbl-btn tbl-btn-success" onclick="resolveSquawk('${escapeHtml(s.id)}')">Resolve</button></td>
-                </tr>`).join('')
-                : '<tr class="empty-row"><td colspan="4">No open squawks.</td></tr>';
+                </tr>`;
+            }).join('')
+                : '<tr class="empty-row"><td colspan="5">No active squawks.</td></tr>';
 
             const rb = document.getElementById('resolvedTableBody');
             rb.innerHTML = resolved?.length ? resolved.map(s => `
@@ -1107,12 +1119,18 @@
 
         async function resolveSquawk(id) {
             await _supabase.from('squawks').update({
-                status: 'resolved',
-                resolved_by: currentMember.id,
-                resolved_at: new Date().toISOString()
+                status:            'resolved',
+                resolved_by:       currentMember.id,
+                resolved_at:       new Date().toISOString(),
+                status_updated_at: new Date().toISOString(),
+                status_updated_by: currentMember.id
             }).eq('id', id);
+            // Only unground the plane when ALL active squawks are cleared —
+            // check open, in_progress, AND deferred, not just open.
             const { count } = await _supabase.from('squawks')
-                .select('*', { count:'exact', head:true }).eq('airplane_id', airplaneId).eq('status', 'open');
+                .select('*', { count:'exact', head:true })
+                .eq('airplane_id', airplaneId)
+                .in('status', ['open', 'in_progress', 'deferred']);
             if (count === 0 && currentAircraftStatus === 'squawk') {
                 await setAircraftStatus('available');
             }
