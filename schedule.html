@@ -514,18 +514,54 @@
                     cell.className = cls;
                     cell.dataset.col = c; cell.dataset.hour = h;
 
-                    // Regular reservation block
+                    // Reservation block — multi-day aware.
+                    // A separate block is rendered at the top of each day column
+                    // the reservation spans, with height scoped to that day only.
                     if (res && !isGrounded) {
                         const rs = new Date(res.start_time);
-                        if (rs.getHours() === h && rs.toDateString() === day.toDateString()) {
-                            const re = new Date(res.end_time);
+                        const re = new Date(res.end_time);
+                        const isStartDay = rs.toDateString() === day.toDateString();
+                        const isEndDay   = re.toDateString() === day.toDateString();
+
+                        // Trigger: start-hour of the start day, OR h=0 on every following day
+                        const blockStartH = isStartDay ? rs.getHours() : 0;
+
+                        if (h === blockStartH) {
                             const isMe = res.member_id === currentMember?.id;
                             const block = document.createElement('div');
                             block.className = 'res-block ' + (isMe ? 'mine' : 'other');
                             block.style.top = '2px';
-                            block.style.height = ((re - rs) / 3600000 * 48 - 4) + 'px';
+
+                            // Hours this block occupies within THIS day column only
+                            let hoursThisDay;
+                            if (isStartDay && isEndDay) {
+                                hoursThisDay = (re - rs) / 3600000;                 // normal single-day
+                            } else if (isStartDay) {
+                                const dayEnd = new Date(day); dayEnd.setHours(24,0,0,0);
+                                hoursThisDay = (dayEnd - rs) / 3600000;             // start → midnight
+                            } else if (isEndDay) {
+                                const dayStart = new Date(day); dayStart.setHours(0,0,0,0);
+                                hoursThisDay = (re - dayStart) / 3600000;           // midnight → end
+                            } else {
+                                hoursThisDay = 24;                                  // full middle day
+                            }
+                            // Never exceed remaining hours in this day
+                            hoursThisDay = Math.min(hoursThisDay, 24 - blockStartH);
+                            block.style.height = (hoursThisDay * 48 - 4) + 'px';
+
                             const name = isMe ? 'You' : (res.members?.name?.split(' ')[0] || 'Member');
-                            block.innerHTML = `<div>${escapeHtml(name)}</div><div style="font-weight:400;opacity:0.8">${fmtTime(rs)}–${fmtTime(re)}</div>`;
+                            if (isStartDay) {
+                                // Show start time; if multi-day show end date+time, else just end time
+                                const endLabel = isEndDay
+                                    ? fmtTime(re)
+                                    : `${re.toLocaleDateString('en-US',{timeZone:CLUB.timezone,month:'short',day:'numeric'})} ${fmtTime(re)}`;
+                                block.innerHTML = `<div>${escapeHtml(name)}</div><div style="font-weight:400;opacity:0.8">${fmtTime(rs)} – ${endLabel}</div>`;
+                            } else {
+                                // Continuation day — show pilot name and context label
+                                const contLabel = isEndDay ? `ends ${fmtTime(re)}` : 'cont\'d';
+                                block.innerHTML = `<div>${escapeHtml(name)}</div><div style="font-weight:400;opacity:0.8">${contLabel}</div>`;
+                            }
+
                             if (!isMe && res.members) {
                                 block.style.cursor = 'pointer';
                                 block.title = 'Tap to contact';
