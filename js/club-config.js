@@ -8,7 +8,15 @@ const CLUB = {
   span:    '4Y',               // nav logo span text (accent color)
   airport: 'KRNT',             // home airport ICAO — used for weather
   aircraft: [
-    { tail: 'N2134Y', type: 'Cessna 172D', year: 1963, rate: null } // TODO: set hourly rate
+    {
+      tail:           'N2134Y',
+      type:           'Cessna 172D',
+      year:           1963,
+      rate:           null,        // TODO: set hourly rate
+      fuel_cap_gal:   26,          // 2 × 13-gal tanks
+      oil_cap_qt:      8,          // Lycoming O-320 sump capacity
+      max_flight_hrs:  6.0         // sanity ceiling for single-flight tach delta
+    }
   ]
 };
 

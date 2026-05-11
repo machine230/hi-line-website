@@ -362,9 +362,8 @@ select option { background: #FFFFFF; color: #1E293B; }
 .filter-btn-clear     { background: rgba(0,0,0,0.05) !important; color: #475569 !important; }
 
 /* ── 9. Post-flight ──────────────────────────────────────────── */
-.pf-card, .pf-section {
-  background: #F5F7FA !important;
-  border-color: rgba(0,0,0,0.08) !important;
+/* Text colors now use var() in source — only structural overrides needed */
+.pf-card {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
 .tach-conflict-note {
@@ -372,19 +371,12 @@ select option { background: #FFFFFF; color: #1E293B; }
   color: #B8780A !important;
   border-color: rgba(232,160,48,0.28) !important;
 }
-/* Post-flight text content */
-.pf-card-header p   { color: #64748B !important; }
-.pf-section-title   { color: #94A3B8 !important; }
-.pf-field label     { color: #475569 !important; }
-.pf-field small     { color: #94A3B8 !important; }
-.cost-label         { color: #64748B !important; }
-.cost-value         { color: #1E293B !important; }
-.cost-note          { color: #94A3B8 !important; }
-.cost-divider       { background: rgba(0,0,0,0.12) !important; }
-.fuel-opt-title     { color: #1E293B !important; }
-.fuel-opt-sub       { color: #64748B !important; }
-.squawk-toggle span { color: #475569 !important; }
-.oil-op             { color: #94A3B8 !important; }
+.pf-field input, .pf-field select, .pf-field textarea {
+  background: rgba(0,0,0,0.03) !important;
+  border-color: rgba(0,0,0,0.12) !important;
+  color: #0F172A !important;
+}
+.pf-field input::placeholder, .pf-field textarea::placeholder { color: #CBD5E1 !important; }
 
 /* ── 10. Admin ───────────────────────────────────────────────── */
 .admin-card {
