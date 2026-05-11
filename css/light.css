@@ -362,7 +362,6 @@ select option { background: #FFFFFF; color: #1E293B; }
 .filter-btn-clear     { background: rgba(0,0,0,0.05) !important; color: #475569 !important; }
 
 /* ── 9. Post-flight ──────────────────────────────────────────── */
-/* Text colors now use var() in source — only structural overrides needed */
 .pf-card {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
@@ -377,6 +376,32 @@ select option { background: #FFFFFF; color: #1E293B; }
   color: #0F172A !important;
 }
 .pf-field input::placeholder, .pf-field textarea::placeholder { color: #CBD5E1 !important; }
+
+/* Error / success banners — high contrast in light mode */
+.pf-msg.error   {
+  background: rgba(220, 53, 69, 0.08) !important;
+  color: #991B1B !important;
+  border-color: rgba(220, 53, 69, 0.35) !important;
+}
+.pf-msg.success {
+  background: rgba(22, 163, 74, 0.08) !important;
+  color: #14532D !important;
+  border-color: rgba(22, 163, 74, 0.30) !important;
+}
+
+/* Oil calc box — visible on light background */
+.oil-calc-box {
+  background: rgba(0,0,0,0.03) !important;
+  border-color: rgba(0,0,0,0.10) !important;
+}
+.oil-calc-label { color: #475569 !important; }
+.oil-calc-value { color: #0F172A !important; }
+#oilEndDisplay  { color: #0369A1 !important; }  /* readable blue instead of sky */
+#oilWarning     { color: #991B1B !important; }
+
+/* Tach / flyable warnings — readable amber in light mode */
+#tachWarning { color: #92400E !important; background: rgba(232,160,48,0.10) !important; border-color: rgba(232,160,48,0.30) !important; }
+#flyableSquawkWarning { color: #92400E !important; }
 
 /* ── 10. Admin ───────────────────────────────────────────────── */
 .admin-card {

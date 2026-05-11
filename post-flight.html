@@ -338,7 +338,7 @@
                         <div class="oil-op">=</div>
                         <div class="oil-calc-item">
                             <div class="oil-calc-label">Oil at End</div>
-                            <div class="oil-calc-value" id="oilEndDisplay" style="color:#5BB8E8">—</div>
+                            <div class="oil-calc-value" id="oilEndDisplay">—</div>
                         </div>
                         <div id="oilWarning" style="font-size:0.8em;color:#ff8090;font-weight:700;display:none">⚠ Low oil</div>
                     </div>
@@ -390,7 +390,7 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/club-config.js?v=3"></script>
+    <script src="js/club-config.js?v=4"></script>
     <script src="js/supabase-client.js?v=3"></script>
     <script src="js/utils.js?v=3"></script>
     <script src="js/auth.js?v=3"></script>
@@ -633,6 +633,10 @@
 
         async function submitReport() {
             if (!validateForm()) return;
+            if (!airplaneId) {
+                showError('Aircraft data could not be loaded. Please refresh the page and try again.');
+                return;
+            }
 
             const btn = document.getElementById('submitBtn');
             btn.disabled = true; btn.textContent = 'Submitting…';
