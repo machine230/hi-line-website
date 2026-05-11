@@ -213,7 +213,7 @@
         .section-lbl {
             font-family: 'Montserrat', sans-serif; font-size: 0.7em; font-weight: 700;
             text-transform: uppercase; letter-spacing: 1.5px;
-            color: rgba(255,255,255,0.3); margin-bottom: 10px;
+            color: var(--text-muted); margin-bottom: 10px;
         }
 
         /* ── MODALS ── */
@@ -456,15 +456,6 @@
                                 <div>
                                     <div style="font-size:0.88em;font-weight:700;color:var(--text)">Receive cancellation emails</div>
                                     <div style="font-size:0.78em;color:var(--text-muted);margin-top:2px">Send me an email when a member cancels a reservation</div>
-                                </div>
-                            </label>
-                            <label class="pref-row" style="display:flex;align-items:flex-start;gap:14px;cursor:pointer">
-                                <div style="flex-shrink:0;padding-top:2px">
-                                    <input type="checkbox" id="settingAdminLateReturn" class="pref-checkbox" onchange="saveClubSettings()">
-                                </div>
-                                <div>
-                                    <div style="font-size:0.88em;font-weight:700;color:var(--text)">Receive late return alerts</div>
-                                    <div style="font-size:0.78em;color:var(--text-muted);margin-top:2px">Email me when a reservation runs past its end time with no post-flight submitted</div>
                                 </div>
                             </label>
                             <div style="margin-top:4px;padding:12px 14px;background:var(--surface-mid);border-radius:8px;border:1px solid var(--border-dim)">
@@ -1030,15 +1021,15 @@
         let _clubSettingsId = null;
 
         async function loadClubSettings() {
-            const { data } = await _supabase
+            const { data, error } = await _supabase
                 .from('club_settings')
-                .select('*')
+                .select('id, admin_cancellation_notify, blast_window_hours')
                 .eq('airplane_id', airplaneId)
-                .single();
+                .maybeSingle();
+            if (error) { console.warn('[loadClubSettings]', error.message); return; }
             if (!data) return;
             _clubSettingsId = data.id;
             document.getElementById('settingAdminCancelNotify').checked = data.admin_cancellation_notify || false;
-            document.getElementById('settingAdminLateReturn').checked   = data.admin_late_return_notify  || false;
             const blastEl = document.getElementById('settingBlastWindow');
             if (blastEl) blastEl.value = data.blast_window_hours ?? 48;
         }
@@ -1047,7 +1038,6 @@
             const msg = document.getElementById('settingsMsg');
             const payload = {
                 admin_cancellation_notify: document.getElementById('settingAdminCancelNotify').checked,
-                admin_late_return_notify:  document.getElementById('settingAdminLateReturn').checked,
                 blast_window_hours:        parseInt(document.getElementById('settingBlastWindow').value) || 48,
                 updated_at:                new Date().toISOString(),
                 updated_by:                currentMember?.id || null
@@ -1055,7 +1045,7 @@
             const { error } = _clubSettingsId
                 ? await _supabase.from('club_settings').update(payload).eq('id', _clubSettingsId)
                 : await _supabase.from('club_settings').insert({ airplane_id: airplaneId, ...payload });
-            if (error) { msg.style.color = 'var(--err-text)'; msg.textContent = 'Save failed.'; return; }
+            if (error) { msg.style.color = 'var(--err-text)'; msg.textContent = 'Save failed: ' + (error.message || error.code); return; }
             msg.style.color = '#22c55e'; msg.textContent = 'Settings saved.';
             setTimeout(() => msg.textContent = '', 2000);
         }
