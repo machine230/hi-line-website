@@ -331,14 +331,37 @@
 
         function goToday() { weekStart = getWeekStart(TODAY); clearSelection(); renderWeek(); }
 
+        // Member contact map: id → { name, email, phone }
+        // Populated once and reused for contact popovers.
+        // Uses member_directory view (safe columns only, bypasses
+        // the own-row RLS restriction on the members table).
+        let _memberMap = {};
+
+        async function loadMemberDirectory() {
+            const { data } = await _supabase
+                .from('member_directory')
+                .select('id, name, email, phone');
+            if (data) {
+                _memberMap = {};
+                data.forEach(m => { _memberMap[m.id] = m; });
+            }
+        }
+
         async function loadReservations() {
             const from = new Date(weekStart); from.setDate(from.getDate() - 7);
-            const { data } = await _supabase.from('reservations')
-                .select('*, members(name, email, phone)')
-                .gte('end_time', from.toISOString())
-                .lte('start_time', new Date(MAX_DATE).toISOString())
-                .neq('status', 'cancelled');
-            reservations = data || [];
+            const [resResult] = await Promise.all([
+                _supabase.from('reservations')
+                    .select('*')
+                    .gte('end_time', from.toISOString())
+                    .lte('start_time', new Date(MAX_DATE).toISOString())
+                    .neq('status', 'cancelled'),
+                Object.keys(_memberMap).length === 0 ? loadMemberDirectory() : Promise.resolve()
+            ]);
+            // Attach member contact info from the local map
+            reservations = (resResult.data || []).map(r => ({
+                ...r,
+                members: _memberMap[r.member_id] || null
+            }));
         }
 
         // Returns true if this slot falls within the maintenance window

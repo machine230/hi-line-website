@@ -310,9 +310,8 @@
 
         async function loadMembers() {
             const { data, error } = await _supabase
-                .from('members')
-                .select('id, name, email, phone, role, joined_at, membership_active')
-                .eq('membership_active', true)
+                .from('member_directory')
+                .select('*')
                 .order('joined_at', { ascending: true });
 
             if (error) {
