@@ -402,7 +402,13 @@
             const minWeek = getWeekStart(TODAY);
             const maxWeek = getWeekStart(MAX_DATE);
             if (n < minWeek || n > maxWeek) return;
-            weekStart = n; clearSelection(); renderWeek();
+            weekStart = n;
+            // Only clear a completed selection when navigating; preserve start-only
+            // so users can click start on one week, navigate forward, and click end.
+            if (selecting.start && selecting.end) clearSelection(false);
+            renderWeek();
+            // If mid-selection (start picked, no end yet), refresh the panel hint
+            if (selecting.start && !selecting.end) updateBookPanel();
         }
 
         function goToday() { weekStart = getWeekStart(TODAY); clearSelection(); renderWeek(); }
@@ -647,9 +653,16 @@
             if (!selecting.start) { panel.style.display = 'none'; return; }
 
             if (!selecting.end) {
+                // Check if start is on a different week than what's currently displayed
+                const startWeek = getWeekStart(selecting.start);
+                const crossWeek = startWeek.getTime() !== weekStart.getTime();
                 document.getElementById('bookSummary').innerHTML =
                     `<strong>Start:</strong> ${fmtDateTime(selecting.start)}<br>
-                     <span style="color:var(--text-muted);font-size:0.9em">Now click the end time (minimum ${MIN_SLOTS} hrs)</span>`;
+                     <span style="color:var(--text-muted);font-size:0.9em">
+                       ${crossWeek
+                         ? `Navigate to your end week and click the end time (min ${MIN_SLOTS} hr)`
+                         : `Now click the end time (minimum ${MIN_SLOTS} hrs)`}
+                     </span>`;
                 panel.style.display = 'block';
                 document.getElementById('bookBtn').style.display = 'none';
                 return;
