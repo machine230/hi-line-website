@@ -164,6 +164,48 @@
         .book-msg.error   { color: var(--err-text); }
         .book-msg.success { color: var(--ok-text); }
 
+        /* ── ENTRY MODE TOGGLE ── */
+        .entry-mode-bar { display: flex; gap: 6px; margin-bottom: 14px; align-items: center; flex-wrap: wrap; }
+        .entry-mode-bar .bar-label { font-size: 0.78em; font-weight: 700; color: var(--text-muted); font-family: 'Montserrat', sans-serif; margin-right: 4px; }
+        .mode-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 7px 16px; border-radius: 20px;
+            border: 1px solid var(--border-c);
+            background: var(--surface); color: var(--text-muted);
+            font-size: 0.8em; font-weight: 700;
+            font-family: 'Montserrat', sans-serif;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .mode-btn.active { background: rgba(232,160,48,0.14); border-color: rgba(232,160,48,0.42); color: #E8A030; }
+        .mode-btn:hover:not(.active) { background: var(--hover-bg); color: var(--text); }
+
+        /* ── MANUAL ENTRY PANEL ── */
+        .me-panel {
+            background: var(--surface); border: 1px solid var(--border-c);
+            border-radius: 14px; padding: 20px 24px; margin-bottom: 16px;
+        }
+        .me-grid { display: grid; grid-template-columns: 44px 1fr; gap: 10px 14px; align-items: center; margin-bottom: 14px; }
+        .me-label { font-size: 0.76em; font-weight: 700; color: var(--text-muted); font-family: 'Montserrat', sans-serif; text-transform: uppercase; letter-spacing: 0.8px; }
+        .me-inputs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .me-input {
+            background: var(--surface-mid); border: 1px solid var(--border-c);
+            border-radius: 8px; padding: 8px 12px;
+            color: var(--text); font-size: 0.88em; font-family: 'Open Sans', sans-serif;
+            transition: border-color 0.15s; color-scheme: dark;
+        }
+        .me-input:focus { outline: none; border-color: #E8A030; box-shadow: 0 0 0 2px rgba(232,160,48,0.15); }
+        .me-footer { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+        .me-duration { font-size: 0.85em; font-weight: 700; font-family: 'Montserrat', sans-serif; color: var(--text-muted); min-width: 120px; }
+        .me-duration.ok  { color: var(--ok-text); }
+        .me-duration.err { color: var(--err-text); }
+        .me-check-btn {
+            padding: 9px 20px; background: #E8A030; color: #fff;
+            border: none; border-radius: 8px; font-size: 0.85em; font-weight: 700;
+            font-family: 'Montserrat', sans-serif; cursor: pointer; transition: background 0.15s;
+        }
+        .me-check-btn:hover { background: #F0B84A; }
+        .me-error { margin-top: 10px; font-size: 0.83em; color: var(--err-text); font-weight: 600; display: none; }
+
         /* ── MOBILE ── */
         @media(max-width: 680px) {
             .hamburger-btn { display: flex !important; flex-direction: column; justify-content: center; align-items: center; min-width: 44px; min-height: 44px; }
@@ -223,6 +265,40 @@
             <button class="nav-btn today-btn" onclick="goToday()">Today</button>
         </div>
 
+        <!-- ── Entry mode toggle ── -->
+        <div class="entry-mode-bar">
+            <span class="bar-label">Book by:</span>
+            <button class="mode-btn active" id="modeCalBtn" onclick="setEntryMode('cal')">
+                <i data-lucide="calendar" style="width:13px;height:13px;stroke-width:2.5"></i> Calendar
+            </button>
+            <button class="mode-btn" id="modeFormBtn" onclick="setEntryMode('form')">
+                <i data-lucide="keyboard" style="width:13px;height:13px;stroke-width:2.5"></i> Enter dates
+            </button>
+        </div>
+
+        <!-- ── Manual date/time entry panel ── -->
+        <div id="manualEntryPanel" style="display:none">
+            <div class="me-panel">
+                <div class="me-grid">
+                    <span class="me-label">From</span>
+                    <div class="me-inputs">
+                        <input type="date" id="meStartDate" class="me-input" oninput="calcManualDuration()">
+                        <input type="time" id="meStartTime" class="me-input" step="3600" value="08:00" oninput="calcManualDuration()">
+                    </div>
+                    <span class="me-label">To</span>
+                    <div class="me-inputs">
+                        <input type="date" id="meEndDate" class="me-input" oninput="calcManualDuration()">
+                        <input type="time" id="meEndTime" class="me-input" step="3600" value="17:00" oninput="calcManualDuration()">
+                    </div>
+                </div>
+                <div class="me-footer">
+                    <div class="me-duration" id="meDuration">Select dates above</div>
+                    <button class="me-check-btn" onclick="applyManualEntry()">Check availability →</button>
+                </div>
+                <div class="me-error" id="meError"></div>
+            </div>
+        </div>
+
         <div class="cal-outer">
             <div class="cal-grid" id="calGrid"></div>
         </div>
@@ -248,7 +324,7 @@
     <script>
         const SLOT_HRS  = Array.from({length:24},(_,i)=>i);
         const MIN_SLOTS = 2;
-        const MAX_SLOTS = 48;
+        // No maximum booking duration in the UI — DB enforces 7-day hard cap.
         const DAYS      = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
         let weekStart    = getWeekStart(new Date());
@@ -512,19 +588,20 @@
                 selecting = { start: slotStart, end: null };
             } else {
                 const end = new Date(slotStart); end.setHours(end.getHours() + 1);
-                if (end <= selecting.start) { selecting = { start: slotStart, end: null }; }
-                else {
-                    const hrs = (end - selecting.start) / 3600000;
-                    if (hrs > MAX_SLOTS) {
-                        document.getElementById('bookMsg').className = 'book-msg error';
-                        document.getElementById('bookMsg').textContent = `Maximum booking is ${MAX_SLOTS} hours.`;
-                        document.getElementById('bookPanel').style.display = 'block';
-                        return;
-                    }
+                if (end <= selecting.start) {
+                    selecting = { start: slotStart, end: null };
+                } else {
                     selecting.end = end;
                 }
             }
             renderWeek(); updateBookPanel();
+        }
+
+        function fmtDuration(hrs) {
+            if (hrs < 24) return `${hrs} hr${hrs !== 1 ? 's' : ''}`;
+            const days = Math.floor(hrs / 24);
+            const rem  = Math.round((hrs % 24) * 10) / 10;
+            return rem > 0 ? `${days}d ${rem}h` : `${days} day${days !== 1 ? 's' : ''}`;
         }
 
         function updateBookPanel() {
@@ -536,7 +613,7 @@
             if (!selecting.end) {
                 document.getElementById('bookSummary').innerHTML =
                     `<strong>Start:</strong> ${fmtDateTime(selecting.start)}<br>
-                     <span style="color:var(--text-muted);font-size:0.9em">Now click the end time (min 2 hrs, max 48 hrs)</span>`;
+                     <span style="color:var(--text-muted);font-size:0.9em">Now click the end time (minimum ${MIN_SLOTS} hrs)</span>`;
                 panel.style.display = 'block';
                 document.getElementById('bookBtn').style.display = 'none';
                 return;
@@ -551,11 +628,15 @@
                 return;
             }
 
+            const sameDay = selecting.start.toDateString() === selecting.end.toDateString();
+            const timeRange = sameDay
+                ? `${fmtDateTime(selecting.start)} – ${fmtTime(selecting.end)}`
+                : `${fmtDateTime(selecting.start)} →<br>&nbsp;&nbsp;&nbsp;${fmtDateTime(selecting.end)}`;
+
             document.getElementById('bookBtn').style.display = '';
             document.getElementById('bookSummary').innerHTML =
-                `<strong>N2134Y</strong><br>
-                 ${fmtDateTime(selecting.start)} – ${fmtDateTime(selecting.end)}<br>
-                 <strong style="color:var(--sky-text)">${hrs} hour${hrs !== 1 ? 's' : ''}</strong>`;
+                `<strong>N2134Y</strong><br>${timeRange}<br>
+                 <strong style="color:var(--sky-text)">${fmtDuration(hrs)}</strong>`;
             panel.style.display = 'block';
         }
 
@@ -601,6 +682,75 @@
             } else {
                 clearSelection(false); await loadReservations(); renderWeek();
             }
+        }
+
+        // ── Entry mode (calendar vs. manual form) ───────────────
+        let entryMode = 'cal';
+
+        function setEntryMode(mode) {
+            entryMode = mode;
+            document.getElementById('modeCalBtn').classList.toggle('active', mode === 'cal');
+            document.getElementById('modeFormBtn').classList.toggle('active', mode === 'form');
+            document.getElementById('manualEntryPanel').style.display = mode === 'form' ? 'block' : 'none';
+            document.getElementById('meError').style.display = 'none';
+            if (mode === 'form') {
+                // Pre-fill with today/tomorrow if blank
+                const sd = document.getElementById('meStartDate');
+                const ed = document.getElementById('meEndDate');
+                if (!sd.value) {
+                    const fmt = d => d.toISOString().slice(0, 10);
+                    const today    = new Date();
+                    const tomorrow = new Date(today); tomorrow.setDate(today.getDate() + 1);
+                    sd.value = fmt(today);
+                    ed.value = fmt(tomorrow);
+                }
+                calcManualDuration();
+                lucide.createIcons();
+            }
+        }
+
+        function calcManualDuration() {
+            const sd = document.getElementById('meStartDate').value;
+            const st = document.getElementById('meStartTime').value;
+            const ed = document.getElementById('meEndDate').value;
+            const et = document.getElementById('meEndTime').value;
+            const el = document.getElementById('meDuration');
+            if (!sd || !st || !ed || !et) { el.textContent = 'Select dates above'; el.className = 'me-duration'; return; }
+            const start = new Date(`${sd}T${st}`);
+            const end   = new Date(`${ed}T${et}`);
+            const hrs   = (end - start) / 3600000;
+            if (hrs <= 0) { el.textContent = '⚠ End must be after start'; el.className = 'me-duration err'; return; }
+            if (hrs < MIN_SLOTS) { el.textContent = `⚠ Minimum ${MIN_SLOTS} hrs`; el.className = 'me-duration err'; return; }
+            el.textContent = `✓ ${fmtDuration(hrs)}`;
+            el.className = 'me-duration ok';
+        }
+
+        function applyManualEntry() {
+            const sd = document.getElementById('meStartDate').value;
+            const st = document.getElementById('meStartTime').value;
+            const ed = document.getElementById('meEndDate').value;
+            const et = document.getElementById('meEndTime').value;
+            const errEl = document.getElementById('meError');
+            const showErr = msg => { errEl.textContent = msg; errEl.style.display = 'block'; };
+            errEl.style.display = 'none';
+
+            if (!sd || !st || !ed || !et) { showErr('Please fill in all four fields.'); return; }
+            const start = new Date(`${sd}T${st}`);
+            const end   = new Date(`${ed}T${et}`);
+            if (isNaN(start.getTime()) || isNaN(end.getTime())) { showErr('Invalid date or time.'); return; }
+            if (start < new Date()) { showErr('Start time cannot be in the past.'); return; }
+            if (end <= start)       { showErr('End time must be after start time.'); return; }
+            const hrs = (end - start) / 3600000;
+            if (hrs < MIN_SLOTS)    { showErr(`Minimum booking is ${MIN_SLOTS} hours.`); return; }
+            if (start > MAX_DATE)   { showErr('Cannot book more than 3 months in advance.'); return; }
+
+            // Apply selection and navigate the calendar to the booking week
+            selecting = { start, end };
+            weekStart = getWeekStart(start);
+            renderWeek();
+            updateBookPanel();
+            // Scroll confirm panel into view
+            setTimeout(() => document.getElementById('bookPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
         }
 
         function showBanner(msg, type) {

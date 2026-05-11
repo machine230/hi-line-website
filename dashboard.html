@@ -1069,15 +1069,30 @@
             if (!reservations.length) { el.innerHTML = '<div class="empty-state">No upcoming reservations.</div>'; renderMiniCal(); return; }
 
             el.innerHTML = reservations.map(r => {
-                const start = new Date(r.start_time), end = new Date(r.end_time);
-                const isMe  = r.member_id === currentMember?.id;
+                const start    = new Date(r.start_time), end = new Date(r.end_time);
+                const isMe     = r.member_id === currentMember?.id;
+                const sameDay  = start.toDateString() === end.toDateString();
+                const multiDay = !sameDay;
+
+                // Time range: single-day shows "8:00 AM – 5:00 PM"
+                // Multi-day shows "8:00 AM → May 15 · 5:00 PM" so the end date is clear
+                const timeStr = sameDay
+                    ? `${fmtTime(start)} – ${fmtTime(end)}`
+                    : `${fmtTime(start)} <span style="opacity:0.6">→</span> ${end.toLocaleDateString('en-US',{month:'short',day:'numeric'})} · ${fmtTime(end)}`;
+
+                // Multi-day badge shown below the day number
+                const multiDayBadge = multiDay
+                    ? `<div style="font-size:0.6em;font-weight:700;letter-spacing:0.5px;color:var(--sky-text);margin-top:2px;font-family:'Montserrat',sans-serif">MULTI</div>`
+                    : '';
+
                 return `<div class="res-item">
                     <div class="res-date-box">
                         <div class="res-date-mon">${start.toLocaleString('en-US',{month:'short'})}</div>
                         <div class="res-date-day">${start.getDate()}</div>
+                        ${multiDayBadge}
                     </div>
                     <div class="res-info">
-                        <div class="res-time">${fmtTime(start)} – ${fmtTime(end)}</div>
+                        <div class="res-time">${timeStr}</div>
                         <div class="res-who">${escapeHtml(r.members?.name) || '—'}${isMe ? ' <strong>(you)</strong>' : ''}</div>
                     </div>
                     ${isMe ? `<button class="res-edit-btn" onclick="openResEdit('${escapeHtml(r.id)}')">Edit</button><button class="res-cancel-btn" onclick="cancelReservation('${escapeHtml(r.id)}')">Cancel</button>` : ''}

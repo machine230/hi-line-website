@@ -668,3 +668,11 @@ select option { background: #FFFFFF; color: #1E293B; }
   background: rgba(232,160,48,0.12) !important;
   border-color: rgba(232,160,48,0.30) !important;
 }
+
+
+/* ── 20. Manual entry date/time inputs — light theme ── */
+.me-input { color-scheme: light !important; background: #FFFFFF !important; border-color: rgba(0,0,0,0.16) !important; color: #1E293B !important; }
+.me-input:focus { border-color: #B8780A !important; box-shadow: 0 0 0 2px rgba(184,120,10,0.14) !important; }
+.me-panel { background: #F5F7FA !important; border-color: rgba(0,0,0,0.10) !important; }
+.mode-btn { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.12) !important; color: #64748B !important; }
+.mode-btn.active { background: rgba(184,120,10,0.10) !important; border-color: rgba(184,120,10,0.35) !important; color: #B8780A !important; }
