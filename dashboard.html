@@ -294,12 +294,20 @@
         .currency-edit-link:hover { background:rgba(74,158,204,0.12); }
 
         /* ── FLIGHT LOG ROWS ── */
-        .flog-row  { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-dim); gap:12px; flex-wrap:wrap; }
+        .flog-row { display:grid; grid-template-columns:82px 1fr 62px 52px; align-items:center; padding:10px 0; border-bottom:1px solid var(--border-dim); gap:8px; }
         .flog-row:last-child { border-bottom:none; }
-        .flog-date { font-size:0.85em; color:var(--text-muted); min-width:80px; }
-        .flog-notes { flex:1; font-size:0.88em; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-        .flog-hrs  { font-weight:700; color:var(--text); text-align:right; flex-shrink:0; font-family:'Courier New',monospace; }
+        .flog-date  { font-size:0.82em; color:var(--text-muted); }
+        .flog-tach  { font-size:0.80em; color:var(--text-dim); font-family:'Courier New',monospace; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .flog-hrs   { font-weight:700; color:var(--text); text-align:right; font-family:'Courier New',monospace; font-size:0.86em; }
+        .flog-cost  { font-size:0.80em; color:var(--text-muted); text-align:right; font-family:'Courier New',monospace; }
         .flog-total { font-size:0.82em; color:var(--text-muted); font-weight:600; margin-top:10px; }
+        /* Period toggle header row */
+        .flog-period-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:8px; }
+        /* Period totals footer */
+        .flog-period-total { margin-top:12px; padding-top:10px; border-top:1px solid var(--border-dim); }
+        .flog-total-line { display:flex; justify-content:space-between; font-size:0.82em; padding:2px 0; }
+        .flog-total-label { color:var(--text-muted); }
+        .flog-total-val   { font-weight:700; color:var(--text); font-family:'Courier New',monospace; }
 
         /* ── CALENDAR VIEW TOGGLE ── */
         .cal-view-toggle { display:flex; gap:4px; }
@@ -506,13 +514,18 @@
 
         <!-- My Flight Log -->
         <div class="dash-card" style="margin-bottom:24px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px">
+            <div class="flog-period-row">
                 <div class="dash-card-title" style="margin-bottom:0">My Flight Log</div>
+                <div class="cal-view-toggle">
+                    <button class="cal-view-btn" id="flogPeriodWeek"  onclick="setFlightLogPeriod('week')">Week</button>
+                    <button class="cal-view-btn" id="flogPeriodMonth" onclick="setFlightLogPeriod('month')">Month</button>
+                    <button class="cal-view-btn" id="flogPeriodAll"   onclick="setFlightLogPeriod('all')">All</button>
+                </div>
             </div>
             <div id="myFlightLog">
                 <div class="flog-date" style="text-align:center;padding:20px 0">No flights logged yet.</div>
             </div>
-            <div id="myFlightLogTotal" class="flog-total"></div>
+            <div id="myFlightLogTotal" class="flog-period-total"></div>
         </div>
 
         <div class="dash-grid">
@@ -693,10 +706,12 @@
         const SLOT_HRS = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20];
         const DAYS_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
 
-        let currentMember = null;
-        let airplaneId    = null;
-        let reservations  = [];
-        let DRY_RATE      = 50;  // updated from DB on load
+        let currentMember   = null;
+        let airplaneId      = null;
+        let reservations    = [];
+        let DRY_RATE        = 50;  // updated from DB on load
+        let _allFlightLogs  = [];  // cached for period re-renders
+        let flightLogPeriod = localStorage.getItem('flogPeriod') || 'month';
         // Rolling calendar — start from yesterday so you can see the last flight
         let miniWeekStart = (() => { const t = new Date(); t.setDate(t.getDate() - 1); t.setHours(0,0,0,0); return t; })();
         let calMonthStart = (() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); })();
@@ -867,45 +882,98 @@
                 .or('is_deleted.is.null,is_deleted.eq.false')
                 .order('completed_at', { ascending: false });
 
-            if (!logs?.length) {
-                document.getElementById('acMyHours').textContent = '0.0 hr';
-                document.getElementById('acMyCost').textContent  = '$0.00';
-                return;
-            }
-
+            // Update airplane card totals (all-time)
             let totalHrs = 0, totalCost = 0;
-            logs.forEach(function(f) {
-                const hrs  = f.flight_hours  != null ? f.flight_hours
-                           : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10
-                           : 0;
-                const cost = f.flight_cost   != null ? f.flight_cost
-                           : Math.round(hrs * DRY_RATE * 100) / 100;
+            (logs || []).forEach(function(f) {
+                const hrs  = f.flight_hours != null ? f.flight_hours
+                           : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10 : 0;
+                const cost = f.flight_cost  != null ? f.flight_cost : Math.round(hrs * DRY_RATE * 100) / 100;
                 totalHrs  += hrs;
                 totalCost += cost;
             });
-
             document.getElementById('acMyHours').textContent = totalHrs.toFixed(1) + ' hr';
             document.getElementById('acMyCost').textContent  = '$' + totalCost.toFixed(2);
 
-            // Render personal flight log card
-            const logEl = document.getElementById('myFlightLog');
+            // Cache and render the flight log card
+            _allFlightLogs = logs || [];
+            setFlightLogPeriod(flightLogPeriod);
+        }
+
+        function setFlightLogPeriod(p) {
+            flightLogPeriod = p;
+            localStorage.setItem('flogPeriod', p);
+            ['week', 'month', 'all'].forEach(function(id) {
+                const el = document.getElementById('flogPeriod' + id.charAt(0).toUpperCase() + id.slice(1));
+                if (el) el.classList.toggle('active', id === p);
+            });
+            renderFlightLog();
+        }
+
+        function renderFlightLog() {
+            const logEl   = document.getElementById('myFlightLog');
+            const totalEl = document.getElementById('myFlightLogTotal');
             if (!logEl) return;
-            logEl.innerHTML = logs.slice(0, 10).map(function(f) {
+
+            const now          = new Date();
+            const startOfWeek  = new Date(now); startOfWeek.setDate(now.getDate() - now.getDay()); startOfWeek.setHours(0,0,0,0);
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const cutoff       = flightLogPeriod === 'week'  ? startOfWeek
+                               : flightLogPeriod === 'month' ? startOfMonth : null;
+
+            const filtered = cutoff
+                ? _allFlightLogs.filter(function(f) { return new Date(f.completed_at) >= cutoff; })
+                : _allFlightLogs;
+
+            if (!filtered.length) {
+                const label = flightLogPeriod === 'week' ? ' this week' : flightLogPeriod === 'month' ? ' this month' : '';
+                logEl.innerHTML = `<div class="flog-date" style="text-align:center;padding:20px 0">No flights logged${label} yet.</div>`;
+                totalEl.innerHTML = '';
+                return;
+            }
+
+            logEl.innerHTML = filtered.map(function(f) {
                 const hrs  = f.flight_hours != null ? f.flight_hours
-                           : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10
-                           : null;
-                const date = new Date(f.completed_at).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+                           : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10 : null;
+                const cost = f.flight_cost  != null ? f.flight_cost
+                           : (hrs != null ? Math.round(hrs * DRY_RATE * 100) / 100 : null);
+                const date = new Date(f.completed_at).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+                const tIn  = f.tach_start != null ? Number(f.tach_start).toFixed(1) : '—';
+                const tOut = f.tach_end   != null ? Number(f.tach_end).toFixed(1)   : '—';
                 return `<div class="flog-row">
                     <div class="flog-date">${date}</div>
-                    <div class="flog-notes">${escapeHtml(f.notes) || '—'}</div>
-                    <div class="flog-hrs">${hrs != null ? hrs.toFixed(1) + ' hr' : '—'}</div>
+                    <div class="flog-tach">${tIn} → ${tOut}</div>
+                    <div class="flog-hrs">${hrs  != null ? hrs.toFixed(1) + ' hr' : '—'}</div>
+                    <div class="flog-cost">${cost != null ? '$' + cost.toFixed(0) : '—'}</div>
                 </div>`;
             }).join('');
 
-            const totalRow = document.getElementById('myFlightLogTotal');
-            if (totalRow) {
-                totalRow.textContent = logs.length + ' flight' + (logs.length !== 1 ? 's' : '') + ' · ' + totalHrs.toFixed(1) + ' hr total';
+            // Compute period totals
+            function sumLogs(arr) {
+                return arr.reduce(function(s, f) {
+                    const h = f.flight_hours != null ? f.flight_hours
+                            : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10 : 0;
+                    const c = f.flight_cost  != null ? f.flight_cost : Math.round((h || 0) * DRY_RATE * 100) / 100;
+                    return { hrs: s.hrs + (h || 0), cost: s.cost + (c || 0) };
+                }, { hrs: 0, cost: 0 });
             }
+
+            const pTotals     = sumLogs(filtered);
+            const periodLabel = flightLogPeriod === 'week' ? 'This week' : flightLogPeriod === 'month' ? 'This month' : 'All time';
+            const flightWord  = filtered.length + ' flight' + (filtered.length !== 1 ? 's' : '');
+
+            let allTimeRow = '';
+            if (flightLogPeriod !== 'all' && _allFlightLogs.length > filtered.length) {
+                const aTotals = sumLogs(_allFlightLogs);
+                allTimeRow = `<div class="flog-total-line" style="margin-top:4px">
+                    <span class="flog-total-label">All time (${_allFlightLogs.length} flights)</span>
+                    <span class="flog-total-val">${aTotals.hrs.toFixed(1)} hr · $${aTotals.cost.toFixed(0)}</span>
+                </div>`;
+            }
+
+            totalEl.innerHTML = `<div class="flog-total-line">
+                    <span class="flog-total-label">${periodLabel} (${flightWord})</span>
+                    <span class="flog-total-val">${pTotals.hrs.toFixed(1)} hr · $${pTotals.cost.toFixed(0)}</span>
+                </div>${allTimeRow}`;
         }
 
         async function loadReservations() {
