@@ -467,10 +467,14 @@
                                     <div style="font-size:0.78em;color:var(--text-muted);margin-top:2px">Email me when a reservation runs past its end time with no post-flight submitted</div>
                                 </div>
                             </label>
-                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-                                <div style="font-size:0.82em;color:var(--text-muted)">Cancellation blast window:</div>
-                                <input type="number" id="settingBlastWindow" min="1" max="720" style="width:64px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface-mid);color:var(--text);font-size:0.85em" onchange="saveClubSettings()">
-                                <div style="font-size:0.82em;color:var(--text-muted)">hours — only blast members when the freed slot is within this window</div>
+                            <div style="margin-top:4px;padding:12px 14px;background:var(--surface-mid);border-radius:8px;border:1px solid var(--border-dim)">
+                                <div style="font-size:0.85em;font-weight:700;color:var(--text);margin-bottom:4px">Slot alert — how soon is soon enough?</div>
+                                <div style="font-size:0.78em;color:var(--text-muted);margin-bottom:10px;line-height:1.5">When a member cancels, only send "slot available" emails if that slot starts within this many hours. Cancellations far in the future won't trigger alerts.</div>
+                                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                    <span style="font-size:0.82em;color:var(--text-muted)">Alert if slot starts within</span>
+                                    <input type="number" id="settingBlastWindow" min="1" max="720" style="width:60px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:0.85em;text-align:center" onchange="saveClubSettings()">
+                                    <span style="font-size:0.82em;color:var(--text-muted)">hours <span style="color:var(--text-faint)">(default: 48 hrs = next 2 days)</span></span>
+                                </div>
                             </div>
                         </div>
                         <div id="settingsMsg" style="margin-top:8px;font-size:0.82em;color:var(--text-muted)"></div>
