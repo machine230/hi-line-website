@@ -356,9 +356,7 @@ select option { background: #FFFFFF; color: #1E293B; }
 .sq-response-meta     { color: #94A3B8 !important; }
 .sq-status-label      { color: #94A3B8 !important; }
 .sq-badge.deferred    { background: rgba(0,0,0,0.06) !important; color: #64748B !important; border-color: rgba(0,0,0,0.12) !important; }
-.ac-status-badge      { background: rgba(0,0,0,0.06) !important; border-color: rgba(0,0,0,0.12) !important; color: #475569 !important; }
-.ac-btn               { background: rgba(0,0,0,0.04) !important; border-color: rgba(0,0,0,0.14) !important; color: #1E293B !important; }
-.ac-btn:hover         { background: rgba(0,0,0,0.08) !important; }
+/* .ac-btn and .ac-status-badge intentionally excluded — airplane card is always dark */
 .filter-btn-clear     { background: rgba(0,0,0,0.05) !important; color: #475569 !important; }
 
 /* ── 9. Post-flight ──────────────────────────────────────────── */
