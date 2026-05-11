@@ -391,6 +391,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/club-config.js?v=4"></script>
+    <script src="js/aircraft-utils.js?v=1"></script>
     <script src="js/supabase-client.js?v=3"></script>
     <script src="js/utils.js?v=3"></script>
     <script src="js/auth.js?v=3"></script>
@@ -732,6 +733,21 @@
             const el = document.getElementById('pfMsg');
             el.className = 'pf-msg success';
             el.textContent = 'Post-flight report submitted. Thank you!';
+
+            // Fire-and-forget: notify next pilot if they opted in to early arrival alerts
+            _supabase.auth.getSession().then(({ data: { session } }) => {
+                fetch('/.netlify/functions/notifyEarlyArrival', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${session?.access_token || ''}` },
+                    body: JSON.stringify({
+                        airplaneId:    airplaneId,
+                        pilotName:     currentMember?.name || '',
+                        completedAt:   new Date().toISOString(),
+                        reservationId: res?.id || null
+                    })
+                }).catch(e => console.warn('[earlyArrival notify]', e?.message));
+            });
+
             setTimeout(() => window.location.href = '/dashboard.html', 2000);
         }
     </script>

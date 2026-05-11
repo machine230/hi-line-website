@@ -122,8 +122,26 @@
         .res-block {
             position: absolute; left: 2px; right: 2px; border-radius: 5px;
             padding: 3px 6px; font-size: 0.7em; font-weight: 700;
-            overflow: hidden; z-index: 2; pointer-events: none; line-height: 1.3;
+            overflow: hidden; z-index: 2; line-height: 1.3;
+            pointer-events: none;
         }
+        .res-block.other { pointer-events: auto; }
+
+        /* ── CONTACT POPOVER ── */
+        #contactPopover {
+            position: fixed; z-index: 2000; background: var(--surface);
+            border: 1px solid var(--border-c); border-radius: 12px;
+            padding: 14px 16px; min-width: 200px; max-width: 260px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+            font-size: 0.88em;
+        }
+        #contactPopover .cp-name { font-weight: 900; font-family:'Montserrat',sans-serif; color: var(--text); margin-bottom: 10px; font-size:0.95em; }
+        #contactPopover .cp-row  { display:flex; align-items:center; gap:8px; padding:5px 0; border-bottom:1px solid var(--border-dim); color:var(--text-dim); }
+        #contactPopover .cp-row:last-of-type { border-bottom:none; }
+        #contactPopover .cp-row a { color:var(--sky-text); text-decoration:none; word-break:break-all; }
+        #contactPopover .cp-row a:hover { text-decoration:underline; }
+        #contactPopover .cp-none { color:var(--text-faint); font-style:italic; font-size:0.85em; }
+        #contactPopover .cp-close { display:block; margin-top:10px; font-size:0.78em; color:var(--text-muted); text-align:right; cursor:pointer; font-weight:700; font-family:'Montserrat',sans-serif; }
         .res-block.other { background: rgba(91,184,232,0.22); color: var(--sky-text); border: 1px solid var(--sky-border); }
         .res-block.mine  { background: rgba(212,67,154,0.22); color: #e06bb0; border: 1px solid rgba(212,67,154,0.38); }
         .res-block.grounded-label {
@@ -222,6 +240,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/club-config.js?v=3"></script>
+    <script src="js/aircraft-utils.js?v=1"></script>
     <script src="js/supabase-client.js?v=3"></script>
     <script src="js/utils.js?v=3"></script>
     <script src="js/auth.js?v=3"></script>
@@ -315,7 +334,7 @@
         async function loadReservations() {
             const from = new Date(weekStart); from.setDate(from.getDate() - 7);
             const { data } = await _supabase.from('reservations')
-                .select('*, members(name)')
+                .select('*, members(name, email, phone)')
                 .gte('end_time', from.toISOString())
                 .lte('start_time', new Date(MAX_DATE).toISOString())
                 .neq('status', 'cancelled');
@@ -408,6 +427,14 @@
                             block.style.height = ((re - rs) / 3600000 * 48 - 4) + 'px';
                             const name = isMe ? 'You' : (res.members?.name?.split(' ')[0] || 'Member');
                             block.innerHTML = `<div>${escapeHtml(name)}</div><div style="font-weight:400;opacity:0.8">${fmtTime(rs)}–${fmtTime(re)}</div>`;
+                            if (!isMe && res.members) {
+                                block.style.cursor = 'pointer';
+                                block.title = 'Tap to contact';
+                                block.addEventListener('click', function(e) {
+                                    e.stopPropagation();
+                                    showContactPopover(res.members, block);
+                                });
+                            }
                             cell.appendChild(block);
                         }
                     }
@@ -585,7 +612,50 @@
                 if (sq) sq.classList.add('bar-book');
             }
         }
+        // ── Contact Popover ──────────────────────────────────────
+        function showContactPopover(member, anchorEl) {
+            closeContactPopover();
+            const pop = document.createElement('div');
+            pop.id = 'contactPopover';
+
+            const phone = member.phone ? `<div class="cp-row">📞 <a href="tel:${encodeURIComponent(member.phone)}">${escapeHtml(member.phone)}</a></div>` : '';
+            const email = member.email ? `<div class="cp-row">✉️ <a href="mailto:${encodeURIComponent(member.email)}">${escapeHtml(member.email)}</a></div>` : '';
+            const noInfo = (!phone && !email) ? `<div class="cp-none">No contact info on file</div>` : '';
+
+            pop.innerHTML = `
+                <div class="cp-name">${escapeHtml(member.name || 'Club Member')}</div>
+                ${phone}${email}${noInfo}
+                <span class="cp-close" onclick="closeContactPopover()">Close ✕</span>`;
+
+            document.body.appendChild(pop);
+
+            // Position relative to anchor block
+            const rect = anchorEl.getBoundingClientRect();
+            const popW = 260, margin = 8;
+            let left = rect.right + margin;
+            let top  = rect.top;
+            if (left + popW > window.innerWidth - margin) left = rect.left - popW - margin;
+            if (top + 140 > window.innerHeight) top = window.innerHeight - 150;
+            pop.style.left = Math.max(margin, left) + 'px';
+            pop.style.top  = Math.max(margin, top)  + 'px';
+
+            // Close on outside click
+            setTimeout(() => document.addEventListener('click', _popoverOutsideClick), 10);
+        }
+
+        function _popoverOutsideClick(e) {
+            const pop = document.getElementById('contactPopover');
+            if (pop && !pop.contains(e.target)) closeContactPopover();
+        }
+
+        function closeContactPopover() {
+            const pop = document.getElementById('contactPopover');
+            if (pop) pop.remove();
+            document.removeEventListener('click', _popoverOutsideClick);
+        }
     </script>
+
+    <!-- Contact popover lives in body so it escapes overflow:hidden containers -->
     <footer class="portal-footer">
         <span>© 2026 Hi-Line Flying Club · KRNT</span>
         <a href="https://flightboard.app/" target="_blank" rel="noopener" class="portal-footer-fb">Powered by FlightBoard →</a>

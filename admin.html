@@ -444,6 +444,37 @@
                         </div>
                         <div id="groundingMsg" style="margin-top:8px;font-size:0.85em"></div>
                     </div>
+
+                    <!-- Notification Settings -->
+                    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border-dim)">
+                        <div class="section-lbl">Notification Settings</div>
+                        <div style="display:flex;flex-direction:column;gap:14px;margin-top:12px">
+                            <label class="pref-row" style="display:flex;align-items:flex-start;gap:14px;cursor:pointer">
+                                <div style="flex-shrink:0;padding-top:2px">
+                                    <input type="checkbox" id="settingAdminCancelNotify" class="pref-checkbox" onchange="saveClubSettings()">
+                                </div>
+                                <div>
+                                    <div style="font-size:0.88em;font-weight:700;color:var(--text)">Receive cancellation emails</div>
+                                    <div style="font-size:0.78em;color:var(--text-muted);margin-top:2px">Send me an email when a member cancels a reservation</div>
+                                </div>
+                            </label>
+                            <label class="pref-row" style="display:flex;align-items:flex-start;gap:14px;cursor:pointer">
+                                <div style="flex-shrink:0;padding-top:2px">
+                                    <input type="checkbox" id="settingAdminLateReturn" class="pref-checkbox" onchange="saveClubSettings()">
+                                </div>
+                                <div>
+                                    <div style="font-size:0.88em;font-weight:700;color:var(--text)">Receive late return alerts</div>
+                                    <div style="font-size:0.78em;color:var(--text-muted);margin-top:2px">Email me when a reservation runs past its end time with no post-flight submitted</div>
+                                </div>
+                            </label>
+                            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                                <div style="font-size:0.82em;color:var(--text-muted)">Cancellation blast window:</div>
+                                <input type="number" id="settingBlastWindow" min="1" max="720" style="width:64px;padding:4px 8px;border-radius:6px;border:1px solid var(--border);background:var(--surface-mid);color:var(--text);font-size:0.85em" onchange="saveClubSettings()">
+                                <div style="font-size:0.82em;color:var(--text-muted)">hours — only blast members when the freed slot is within this window</div>
+                            </div>
+                        </div>
+                        <div id="settingsMsg" style="margin-top:8px;font-size:0.82em;color:var(--text-muted)"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -665,6 +696,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/club-config.js?v=3"></script>
+    <script src="js/aircraft-utils.js?v=1"></script>
     <script src="js/supabase-client.js?v=3"></script>
     <script src="js/utils.js?v=3"></script>
     <script src="js/auth.js?v=3"></script>
@@ -689,7 +721,7 @@
                 if (plane.grounded_until) document.getElementById('adminGroundedUntil').value = plane.grounded_until.slice(0,16);
                 document.getElementById('maintNote').value  = plane.notes || '';
             }
-            await Promise.all([ loadMembers(), loadSquawks(), loadFlights(), loadInspections(), loadReservations(), loadFeedback() ]);
+            await Promise.all([ loadMembers(), loadSquawks(), loadFlights(), loadInspections(), loadReservations(), loadFeedback(), loadClubSettings() ]);
             populatePilotFilter();
         });
 
@@ -988,6 +1020,40 @@
             if (error) { msg.className='msg-err'; msg.textContent='Save failed. Try again.'; return; }
             msg.className='msg-ok'; msg.textContent='Maintenance window saved. Calendar is now blocked.';
             setTimeout(() => msg.textContent = '', 3000);
+        }
+
+        // ── Club Settings ────────────────────────────────────
+        let _clubSettingsId = null;
+
+        async function loadClubSettings() {
+            const { data } = await _supabase
+                .from('club_settings')
+                .select('*')
+                .eq('airplane_id', airplaneId)
+                .single();
+            if (!data) return;
+            _clubSettingsId = data.id;
+            document.getElementById('settingAdminCancelNotify').checked = data.admin_cancellation_notify || false;
+            document.getElementById('settingAdminLateReturn').checked   = data.admin_late_return_notify  || false;
+            const blastEl = document.getElementById('settingBlastWindow');
+            if (blastEl) blastEl.value = data.blast_window_hours ?? 48;
+        }
+
+        async function saveClubSettings() {
+            const msg = document.getElementById('settingsMsg');
+            const payload = {
+                admin_cancellation_notify: document.getElementById('settingAdminCancelNotify').checked,
+                admin_late_return_notify:  document.getElementById('settingAdminLateReturn').checked,
+                blast_window_hours:        parseInt(document.getElementById('settingBlastWindow').value) || 48,
+                updated_at:                new Date().toISOString(),
+                updated_by:                currentMember?.id || null
+            };
+            const { error } = _clubSettingsId
+                ? await _supabase.from('club_settings').update(payload).eq('id', _clubSettingsId)
+                : await _supabase.from('club_settings').insert({ airplane_id: airplaneId, ...payload });
+            if (error) { msg.style.color = 'var(--err-text)'; msg.textContent = 'Save failed.'; return; }
+            msg.style.color = '#22c55e'; msg.textContent = 'Settings saved.';
+            setTimeout(() => msg.textContent = '', 2000);
         }
 
         async function clearGroundingPeriod() {
