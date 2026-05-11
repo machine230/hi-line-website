@@ -257,9 +257,9 @@
         .pref-row-desc  { font-size:0.77em; color:var(--text-muted); margin-top:3px; line-height:1.4; }
         .pref-row-sub   { padding-left:24px; }
         /* iOS-style toggle */
-        .pref-toggle { position:relative; appearance:none; width:38px; height:22px; border-radius:11px; background:var(--border); cursor:pointer; flex-shrink:0; margin-top:1px; transition:background 0.18s; }
+        .pref-toggle { position:relative; appearance:none; width:40px; height:24px; border-radius:12px; background:#94a3b8; cursor:pointer; flex-shrink:0; margin-top:1px; transition:background 0.18s; border:none; outline:none; }
         .pref-toggle:checked { background:var(--amber); }
-        .pref-toggle::after { content:''; position:absolute; top:3px; left:3px; width:16px; height:16px; border-radius:50%; background:#fff; transition:transform 0.18s; box-shadow:0 1px 3px rgba(0,0,0,0.3); }
+        .pref-toggle::after { content:''; position:absolute; top:3px; left:3px; width:18px; height:18px; border-radius:50%; background:#fff; transition:transform 0.20s cubic-bezier(0.4,0,0.2,1); box-shadow:0 1px 4px rgba(0,0,0,0.35); }
         .pref-toggle:checked::after { transform:translateX(16px); }
         .form-group { margin-bottom:14px; }
         .form-label { font-size:0.72em; font-weight:700; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; display:block; margin-bottom:6px; font-family:'Montserrat',sans-serif; }
