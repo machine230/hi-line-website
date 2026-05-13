@@ -444,6 +444,25 @@ select option { background: #FFFFFF; color: #1E293B; }
 .admin-table tbody tr:hover { background: rgba(0,0,0,0.025) !important; }
 .admin-table td { color: #1E293B !important; }
 
+/* Aircraft status buttons — fix invisible white-on-white in light theme */
+.status-opt {
+  background: #F1F5F9 !important;
+  border-color: rgba(0,0,0,0.15) !important;
+  color: #475569 !important;
+}
+.status-opt:hover {
+  background: #E2E8F0 !important;
+  border-color: rgba(0,0,0,0.25) !important;
+  color: #1E293B !important;
+}
+.status-opt.active-available   { background: rgba(42,122,82,0.12)  !important; border-color: rgba(42,122,82,0.40)  !important; color: #166534 !important; }
+.status-opt.active-flying      { background: rgba(91,184,232,0.12) !important; border-color: rgba(91,184,232,0.40) !important; color: #075985 !important; }
+.status-opt.active-maintenance { background: rgba(212,131,26,0.12) !important; border-color: rgba(212,131,26,0.40) !important; color: #92400E !important; }
+.status-opt.active-squawk      { background: rgba(220,53,69,0.10)  !important; border-color: rgba(220,53,69,0.35)  !important; color: #991B1B !important; }
+
+/* Admin section labels */
+.section-lbl { color: #64748B !important; }
+
 /* ── 11. Login / Auth ────────────────────────────────────────── */
 .login-card, .auth-card {
   background: #F5F7FA !important;
