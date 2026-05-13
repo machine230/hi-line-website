@@ -3,9 +3,13 @@
 // ─────────────────────────────────────────────────────────────
 
 // ── Role checks ──────────────────────────────────────────────
-function isAdmin(m)    { return m?.role === 'admin'; }
-function isAP(m)       { return m?.role === 'ap'; }
-function isAdminOrAP(m){ return m?.role === 'admin' || m?.role === 'ap'; }
+// Role hierarchy: member < ap < admin < super_admin
+const ADMIN_ROLES = ['admin', 'super_admin'];
+
+function isSuperAdmin(m) { return m?.role === 'super_admin'; }
+function isAdmin(m)      { return ADMIN_ROLES.includes(m?.role); }  // true for both admin + super_admin
+function isAP(m)         { return m?.role === 'ap'; }
+function isAdminOrAP(m)  { return ADMIN_ROLES.includes(m?.role) || m?.role === 'ap'; }
 
 // ── Auth guards ──────────────────────────────────────────────
 
@@ -42,12 +46,13 @@ async function requireAuth() {
 }
 
 // requireAdmin — admin pages only; redirects others to dashboard
+// Accepts both 'admin' and 'super_admin' roles
 async function requireAdmin() {
   const session = await requireAuth();
   if (!session) return null;
   const { data: m } = await _supabase
     .from('members').select('role').eq('id', session.user.id).single();
-  if (m?.role !== 'admin') { window.location.href = '/dashboard.html'; return null; }
+  if (!ADMIN_ROLES.includes(m?.role)) { window.location.href = '/dashboard.html'; return null; }
   return session;
 }
 
@@ -57,7 +62,7 @@ async function requireAdminOrAP() {
   if (!session) return null;
   const { data: m } = await _supabase
     .from('members').select('role').eq('id', session.user.id).single();
-  if (!['admin', 'ap'].includes(m?.role)) {
+  if (!['admin', 'super_admin', 'ap'].includes(m?.role)) {
     window.location.href = '/dashboard.html'; return null;
   }
   return session;
@@ -85,11 +90,12 @@ function renderNavUser(member) {
   if (!el || !member) return;
 
   const roleStyle = {
-    admin:  'background:linear-gradient(135deg,#667eea,#764ba2)',
-    ap:     'background:linear-gradient(135deg,#e67e22,#d35400)',
-    member: 'background:rgba(255,255,255,0.12)'
+    super_admin: 'background:linear-gradient(135deg,#E8A030,#c47d10)',
+    admin:       'background:linear-gradient(135deg,#667eea,#764ba2)',
+    ap:          'background:linear-gradient(135deg,#e67e22,#d35400)',
+    member:      'background:rgba(255,255,255,0.12)'
   };
-  const roleLabel = { admin: 'Admin', ap: 'A&P', member: 'Member' };
+  const roleLabel = { super_admin: 'Super Admin', admin: 'Admin', ap: 'A&P', member: 'Member' };
 
   el.innerHTML = '';
   const wrap = document.createElement('div');

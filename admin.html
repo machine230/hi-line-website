@@ -1166,9 +1166,9 @@
             loadFlights();
         }
 
-        // Super admin = full access including flight log delete.
-        // Regular admin = manage members, aircraft, squawks — no delete.
-        function isSuperAdmin(m) { return m?.role === 'super_admin'; }
+        // isSuperAdmin() is defined in js/auth.js
+        // super_admin = all admin access + flight log delete
+        // admin = manage members, aircraft, squawks — no delete
 
         // Cached flight data for CSV export
         let _flightLogData = [];
