@@ -104,7 +104,7 @@ export const handler = async (event) => {
 
     console.log('[inviteMember] callerMember:', JSON.stringify(callerMember));
 
-    if (callerMember?.role !== 'admin') {
+    if (!['admin', 'super_admin'].includes(callerMember?.role)) {
         return { statusCode: 403, headers: cors,
             body: JSON.stringify({ error: 'Admin access required' }) };
     }

@@ -1419,8 +1419,9 @@
             saveBtn.disabled = true; saveBtn.textContent = 'Saving…';
 
             // Conflict check (excluding this reservation)
+            // Use airplane_id (UUID FK) not airplane_tail (string) — more reliable and indexed
             const { data: conflicts } = await _supabase.from('reservations')
-                .select('id').eq('airplane_tail', AIRPLANE_TAIL).eq('status', 'confirmed')
+                .select('id').eq('airplane_id', airplaneId).eq('status', 'confirmed')
                 .neq('id', _resEditId)
                 .lt('start_time', newEnd.toISOString())
                 .gt('end_time', newStart.toISOString());

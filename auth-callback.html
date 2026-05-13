@@ -186,20 +186,35 @@
                 : 'The link is invalid or has expired.';
             // Use setTimeout so DOM + showError fn are ready
             window.addEventListener('DOMContentLoaded', () => {
-                showError(
-                    friendly + '<br><br>' +
-                    'Ask your club admin to send a new invite, or ' +
-                    '<a href="login.html" style="color:#5BB8E8">return to login</a>.'
-                );
+                showError(friendly);
             });
         }
 
         // ── UI helpers ──────────────────────────────────────────────────────────
-        function showError(html) {
+        // showError renders user-supplied text safely via textContent (never innerHTML).
+        // Static suffix with a login link is constructed via DOM methods to prevent XSS.
+        function showError(userText) {
             document.getElementById('cbSpinner').style.display = 'none';
             document.getElementById('cbMsg').textContent = '';
             const el = document.getElementById('cbError');
-            el.innerHTML = html;
+            // Clear previous content
+            el.textContent = '';
+
+            // User-controlled text rendered as plain text (XSS-safe)
+            const msgNode = document.createTextNode(userText);
+            el.appendChild(msgNode);
+
+            // Static suffix: two line breaks + safe instructional text + login link
+            el.appendChild(document.createElement('br'));
+            el.appendChild(document.createElement('br'));
+            el.appendChild(document.createTextNode('Ask your club admin to send a new invite, or '));
+            const link = document.createElement('a');
+            link.href = 'login.html';
+            link.style.color = '#5BB8E8';
+            link.textContent = 'return to login';
+            el.appendChild(link);
+            el.appendChild(document.createTextNode('.'));
+
             el.classList.add('visible');
         }
 

@@ -71,7 +71,7 @@ export const handler = async (event) => {
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE);
     const { data: callerMember } = await supabase
         .from('members').select('role').eq('id', callerUserId).single();
-    if (!['admin', 'ap'].includes(callerMember?.role)) {
+    if (!['admin', 'super_admin', 'ap'].includes(callerMember?.role)) {
         return { statusCode: 403, headers: cors, body: JSON.stringify({ error: 'Admin or A&P access required' }) };
     }
 

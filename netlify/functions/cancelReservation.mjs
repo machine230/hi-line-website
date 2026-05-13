@@ -22,18 +22,22 @@ function getCorsHeaders(event) {
     };
 }
 
+// Returns the verified user ID from the JWT, or null if invalid/missing.
+// Never trust the client-supplied member ID — always verify via Supabase.
 async function verifyMember(event) {
     const jwt        = (event.headers?.authorization || '').replace('Bearer ', '').trim();
-    if (!jwt) return false;
+    if (!jwt) return null;
     const supabaseUrl = process.env.SUPABASE_URL;
     const anonKey    = process.env.SUPABASE_ANON_KEY;
-    if (!supabaseUrl || !anonKey) return false;
+    if (!supabaseUrl || !anonKey) return null;
     try {
         const res = await fetch(`${supabaseUrl}/auth/v1/user`, {
             headers: { Authorization: `Bearer ${jwt}`, apikey: anonKey }
         });
-        return res.ok;
-    } catch { return false; }
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data?.id || null;
+    } catch { return null; }
 }
 
 function esc(str) {
@@ -82,8 +86,9 @@ export const handler = async (event) => {
     if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: cors, body: '' };
     if (event.httpMethod !== 'POST')    return { statusCode: 405, headers: cors, body: 'Method not allowed' };
 
-    const authed = await verifyMember(event);
-    if (!authed) return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'Unauthorized' }) };
+    // Verify JWT and extract the caller's user ID server-side — never trust client-supplied IDs.
+    const callerUserId = await verifyMember(event);
+    if (!callerUserId) return { statusCode: 401, headers: cors, body: JSON.stringify({ error: 'Unauthorized' }) };
 
     const RESEND_API_KEY = process.env.RESEND_API_KEY;
     const ADMIN_EMAIL    = process.env.ADMIN_EMAIL;
@@ -97,7 +102,8 @@ export const handler = async (event) => {
     try { body = JSON.parse(event.body || '{}'); }
     catch { return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'Invalid JSON' }) }; }
 
-    const { memberName, startTime, endTime, tail, airplaneId, cancellingMemberId } = body;
+    // cancellingMemberId from body is IGNORED — we use the JWT-verified callerUserId instead.
+    const { memberName, startTime, endTime, tail, airplaneId } = body;
 
     if (!memberName || typeof memberName !== 'string' || memberName.length > 200)
         return { statusCode: 400, headers: cors, body: JSON.stringify({ error: 'memberName invalid' }) };
@@ -178,8 +184,8 @@ export const handler = async (event) => {
                 const blastEnd   = fmtTime(endTime);
 
                 for (const pref of (prefs || [])) {
-                    // Skip the member who just cancelled
-                    if (pref.member_id === cancellingMemberId) continue;
+                    // Skip the member who just cancelled (using JWT-verified server-side ID)
+                    if (pref.member_id === callerUserId) continue;
                     const memberEmail = pref.members?.email;
                     const memberName  = esc(pref.members?.name || 'Pilot');
                     if (!memberEmail) continue;
