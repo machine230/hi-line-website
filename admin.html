@@ -700,6 +700,7 @@
         let airplaneId    = null;
         let currentAircraftStatus = 'available';
         let _adminMemberMap = {};  // id → { name, email } — populated by loadMembers()
+        let DRY_RATE = 50;         // updated from airplanes.hourly_rate on load
 
         document.addEventListener('DOMContentLoaded', async () => {
             const session = await requireAdmin();
@@ -711,6 +712,7 @@
             airplaneId = plane?.id;
             if (plane) {
                 currentAircraftStatus = plane.status;
+                if (plane.hourly_rate) DRY_RATE = plane.hourly_rate;
                 highlightStatus(plane.status);
                 document.getElementById('tachUpdate').value = plane.current_tach || '';
                 if (plane.grounded_from)  document.getElementById('adminGroundedFrom').value  = plane.grounded_from.slice(0,16);
@@ -1194,7 +1196,7 @@
                 const hrs  = f.flight_hours  != null ? f.flight_hours
                            : (f.tach_start != null && f.tach_end != null) ? Math.round((f.tach_end - f.tach_start) * 10) / 10 : null;
                 const cost = f.flight_cost   != null ? f.flight_cost
-                           : hrs != null ? Math.round(hrs * 65 * 100) / 100 : null;
+                           : hrs != null ? Math.round(hrs * DRY_RATE * 100) / 100 : null;
                 if (hrs  != null) totalHrs  += hrs;
                 if (cost != null) totalCost += cost;
 
@@ -1233,7 +1235,7 @@
                     </td>
                     <td style="padding:12px 18px;font-weight:700;color:#fff">${totalHrs.toFixed(1)} hr</td>
                     <td style="padding:12px 18px;font-weight:700;color:#5DD89A">$${totalCost.toFixed(2)}</td>
-                    <td colspan="4" style="padding:12px 18px;font-size:0.8em;color:rgba(255,255,255,0.3)">$65/hr dry rate</td>
+                    <td colspan="4"></td>
                 </tr>`;
         }
 
