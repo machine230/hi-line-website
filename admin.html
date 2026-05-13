@@ -699,6 +699,7 @@
         let currentMember = null;
         let airplaneId    = null;
         let currentAircraftStatus = 'available';
+        let _adminMemberMap = {};  // id → { name, email } — populated by loadMembers()
 
         document.addEventListener('DOMContentLoaded', async () => {
             const session = await requireAdmin();
@@ -706,7 +707,7 @@
             currentMember = await getCurrentMember();
             renderNavUser(currentMember);
             lucide.createIcons();
-            const { data: plane } = await _supabase.from('airplanes').select('*,grounded_from,grounded_until').eq('tail_number', AIRPLANE_TAIL).single();
+            const { data: plane } = await _supabase.from('airplanes').select('*').eq('tail_number', AIRPLANE_TAIL).single();
             airplaneId = plane?.id;
             if (plane) {
                 currentAircraftStatus = plane.status;
@@ -732,6 +733,8 @@
             const { data } = await _supabase.from('members').select('*').order('name');
             const tbody = document.getElementById('memberTableBody');
             const total = document.getElementById('memberTotal');
+            // Build member map for flight log name lookups
+            if (data) data.forEach(m => { _adminMemberMap[m.id] = { name: m.name, email: m.email }; });
             if (!data?.length) { tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No members yet.</td></tr>'; return; }
 
             const active = data.filter(m => m.membership_active).length;
@@ -1164,8 +1167,13 @@
             const tbody = document.getElementById('flightTableBody');
             tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Loading…</td></tr>';
 
+            if (!airplaneId) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:rgba(255,255,255,0.3);padding:28px">Aircraft not loaded — refresh the page.</td></tr>';
+                return;
+            }
             let q = _supabase.from('flight_logs')
-                .select('*, members(name)').eq('airplane_id', airplaneId)
+                .select('*')
+                .eq('airplane_id', airplaneId)
                 .or('is_deleted.is.null,is_deleted.eq.false')
                 .order('completed_at', { ascending: false }).limit(100);
 
@@ -1203,8 +1211,9 @@
                 }
                 const oilStr = f.oil_added_quarts ? f.oil_added_quarts + ' qt' : '—';
 
+                const pilotName = _adminMemberMap[f.member_id]?.name || '—';
                 return `<tr>
-                    <td><strong>${escapeHtml(f.members?.name) || '—'}</strong></td>
+                    <td><strong>${escapeHtml(pilotName)}</strong></td>
                     <td>${fmtDate(f.completed_at)}</td>
                     <td>${f.tach_start ?? '—'}</td>
                     <td>${f.tach_end ?? '—'}</td>

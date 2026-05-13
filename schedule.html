@@ -358,7 +358,7 @@
             //   ALTER TABLE airplanes ADD COLUMN IF NOT EXISTS grounded_from timestamptz;
             //   ALTER TABLE airplanes ADD COLUMN IF NOT EXISTS grounded_until timestamptz;
             const { data: plane } = await _supabase.from('airplanes')
-                .select('id, status, grounded_from, grounded_until')
+                .select('*')
                 .eq('tail_number', AIRPLANE_TAIL).single();
             airplaneId    = plane?.id;
             planeGrounded = plane?.status === 'squawk' || plane?.status === 'maintenance';

@@ -74,4 +74,14 @@ ALTER TABLE public.flight_logs
     ADD COLUMN IF NOT EXISTS oil_added_quarts          float DEFAULT 0,
     ADD COLUMN IF NOT EXISTS oil_qty_end_quarts        float;
 
-SELECT 'Migration 013 complete — member RLS fixed, directory view recreated' AS status;
+-- ── 5. Airplanes: add missing grounded_from / grounded_until ─
+-- These exist in db/schema.sql but were never added via a migration.
+-- Without them the admin airplane query fails → airplaneId = null
+-- → flight log returns nothing.
+ALTER TABLE public.airplanes
+    ADD COLUMN IF NOT EXISTS grounded_from  timestamptz,
+    ADD COLUMN IF NOT EXISTS grounded_until timestamptz,
+    ADD COLUMN IF NOT EXISTS hourly_rate    numeric(6,2),
+    ADD COLUMN IF NOT EXISTS notes         text;
+
+SELECT 'Migration 013 complete — member RLS fixed, directory view recreated, grounded columns added' AS status;
