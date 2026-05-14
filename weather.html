@@ -685,6 +685,21 @@
                 `<div class="wx-card"><div class="wx-card-title">TAF</div>
                  <p style="color:rgba(255,255,255,0.35);margin-top:8px;font-size:0.9em">No TAF available for ${icao}.</p></div>`;
 
+            // NOTAMs — link out to official FAA source
+            const notamUrl = `https://notams.aim.faa.gov/notamSearch/nsapp.html#/`;
+            html += `<div class="wx-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+                <div>
+                    <div class="wx-card-title" style="margin-bottom:4px">NOTAMs</div>
+                    <div style="font-size:0.82em;color:rgba(255,255,255,0.4)">Check active notices for ${icao} before flight</div>
+                </div>
+                <a href="${notamUrl}" target="_blank" rel="noopener noreferrer"
+                   style="display:inline-flex;align-items:center;gap:6px;background:rgba(91,184,232,0.12);border:1px solid rgba(91,184,232,0.30);color:#5BB8E8;padding:9px 18px;border-radius:20px;text-decoration:none;font-size:0.82em;font-weight:700;font-family:'Montserrat',sans-serif;white-space:nowrap;transition:background 0.15s"
+                   onmouseover="this.style.background='rgba(91,184,232,0.22)'"
+                   onmouseout="this.style.background='rgba(91,184,232,0.12)'">
+                    View NOTAMs — ${icao} →
+                </a>
+            </div>`;
+
             el.innerHTML = html;
 
             // Draw canvases AFTER DOM is updated
