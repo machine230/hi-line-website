@@ -583,7 +583,10 @@
             <div class="admin-card">
                 <div class="admin-card-header">
                     <h3>Beta Feedback</h3>
-                    <div style="font-size:0.82em;color:var(--text-muted)" id="feedbackCount"></div>
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <div style="font-size:0.82em;color:var(--text-muted)" id="feedbackCount"></div>
+                        <button onclick="exportFeedbackCSV()" style="font-size:0.76em;padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.18);background:transparent;color:rgba(255,255,255,0.6);cursor:pointer;font-family:'Montserrat',sans-serif;font-weight:700;white-space:nowrap">⬇ Export CSV</button>
+                    </div>
                 </div>
                 <!-- Status + Category filters -->
                 <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
@@ -1581,6 +1584,30 @@
                 .eq('id', id);
             if (error) { console.error('[resolveFeedback]', error.message); return; }
             await loadFeedback();
+        }
+
+        function exportFeedbackCSV() {
+            if (!_allFeedback.length) { alert('No feedback to export.'); return; }
+            const cols = ['Date','Member','Page','Rating','Category','Status','Resolved At','Message'];
+            const esc  = v => '"' + String(v ?? '').replace(/"/g, '""') + '"';
+            const rows = _allFeedback.map(f => [
+                new Date(f.created_at).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }),
+                f.member_name || '',
+                f.page        || '',
+                f.rating      ?? '',
+                f.category    || '',
+                f.resolved ? 'Resolved' : 'Open',
+                f.resolved_at ? new Date(f.resolved_at).toLocaleString('en-US', { timeZone: 'America/Los_Angeles' }) : '',
+                f.message     || ''
+            ].map(esc).join(','));
+            const csv  = [cols.map(esc).join(','), ...rows].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url  = URL.createObjectURL(blob);
+            const a    = document.createElement('a');
+            a.href     = url;
+            a.download = `hiline-feedback-${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
     </script>
     <footer class="portal-footer">
