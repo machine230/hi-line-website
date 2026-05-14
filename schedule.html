@@ -727,7 +727,12 @@
             if (error) {
                 console.error('[confirmBooking]', error?.message || error);
                 msg.className = 'book-msg error';
-                msg.textContent = 'Booking failed. Please try again or refresh.';
+                // Code 23P01 = exclusion_violation — another booking just beat us to it
+                const isRace = error?.code === '23P01' || error?.message?.includes('no_overlapping_reservations');
+                msg.textContent = isRace
+                    ? 'Someone just booked that slot — please pick another time.'
+                    : 'Booking failed. Please try again or refresh.';
+                await loadReservations(); renderWeek();
             } else {
                 clearSelection(false); await loadReservations(); renderWeek();
             }
