@@ -17,14 +17,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/theme.css">
     <script src="js/theme.js?v=3"></script>
-    <script>
-        // Supabase redirects auth errors (expired links, invalid tokens) to the
-        // Site URL (this page) rather than the redirectTo URL. Forward them to
-        // auth-callback.html which knows how to display the error correctly.
-        if (window.location.hash.includes('error=')) {
-            window.location.replace('/auth-callback.html' + window.location.hash);
-        }
-    </script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
