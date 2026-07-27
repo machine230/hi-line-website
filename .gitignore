@@ -6,3 +6,7 @@ node_modules/
 .env
 .env.local
 .env*.local
+
+# Local editor/tooling config and Supabase CLI scaffold — keep out of the repo
+.claude/
+supabase/

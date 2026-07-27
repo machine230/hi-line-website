@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In — Hi-Line Flying Club</title>
+    <title>Member Sign In — Hi-Line Flying Club</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,6 +65,7 @@
             padding: 36px 40px;
             width: 100%; max-width: 380px;
             backdrop-filter: blur(16px);
+            text-align: center;
         }
 
         .login-card h2 {
@@ -71,46 +73,36 @@
             font-weight: 700; font-size: 0.72em;
             color: rgba(255,255,255,0.4);
             text-transform: uppercase; letter-spacing: 3px;
-            margin-bottom: 22px;
+            margin-bottom: 16px;
         }
 
-        input {
-            display: block; width: 100%; margin-bottom: 12px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 8px; padding: 12px 14px;
-            color: #fff; font-size: 0.95em;
-            font-family: inherit;
-            transition: border-color 0.2s;
+        .login-card p {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9em;
+            line-height: 1.6;
+            margin-bottom: 26px;
         }
-        input:focus {
-            outline: none;
-            border-color: #5BB8E8;
-            box-shadow: 0 0 0 3px rgba(91,184,232,0.1);
-        }
-        input::placeholder { color: rgba(255,255,255,0.28); }
 
         .login-btn {
-            width: 100%; padding: 13px;
+            display: block;
+            width: 100%; padding: 14px;
             background: #E8A030; color: #fff;
             border: none; border-radius: 8px;
             font-size: 0.95em; font-weight: 700;
-            cursor: pointer;
+            cursor: pointer; text-decoration: none;
             font-family: 'Montserrat', sans-serif;
-            margin-top: 4px;
             transition: background 0.2s;
         }
         .login-btn:hover { background: #F0B84A; }
-        .login-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .err {
-            margin-top: 14px; padding: 11px;
-            border-radius: 8px;
-            background: rgba(220,53,69,0.12);
-            border: 1px solid rgba(220,53,69,0.3);
-            color: #ff8090; font-size: 0.88em;
-            display: none;
+        .powered {
+            margin-top: 18px;
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.32);
+            letter-spacing: 0.3px;
         }
+        .powered a { color: #5BB8E8; text-decoration: none; }
+        .powered a:hover { text-decoration: underline; }
 
         .back-link {
             margin-top: 20px;
@@ -126,42 +118,18 @@
     <img class="bg-img" src="images/n2134y.jpg" alt="" onerror="this.style.display='none'">
     <div class="bg-overlay"></div>
 
-
     <div class="login-wrap">
         <a href="index.html" class="site-logo">Hi-Line</a>
         <div class="site-tagline">Hi-Line Flying Club · KRNT</div>
 
         <div class="login-card">
             <h2>Member Sign In</h2>
-            <input type="email" id="email" placeholder="Email" onkeydown="if(event.key==='Enter')signIn()">
-            <input type="password" id="pass" placeholder="Password" onkeydown="if(event.key==='Enter')signIn()">
-            <button class="login-btn" id="btn" onclick="signIn()">Sign In</button>
-            <div class="err" id="err"></div>
+            <p>Scheduling, squawks, flight logs, and billing live in the FlightBoard member portal. Sign in there to access your account.</p>
+            <a class="login-btn" href="https://www.flightboard.app/login">Sign in to Member Portal →</a>
+            <div class="powered">Secured by <a href="https://flightboard.app">FlightBoard</a></div>
         </div>
 
         <a href="index.html" class="back-link">← Back to home</a>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/club-config.js?v=3"></script>
-    <script src="js/supabase-client.js?v=3"></script>
-    <script>
-        async function signIn() {
-            const email = document.getElementById('email').value.trim();
-            const pass  = document.getElementById('pass').value;
-            const err   = document.getElementById('err');
-            const btn   = document.getElementById('btn');
-            err.style.display = 'none';
-            btn.disabled = true; btn.textContent = 'Signing in…';
-            const { error } = await _supabase.auth.signInWithPassword({ email, password: pass });
-            btn.disabled = false; btn.textContent = 'Sign In';
-            if (error) {
-                err.textContent = 'Invalid email or password.';
-                err.style.display = 'block';
-            } else {
-                window.location.href = '/dashboard.html';
-            }
-        }
-    </script>
 </body>
 </html>

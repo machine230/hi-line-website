@@ -468,7 +468,7 @@
             <li><a href="index.html">Home</a></li>
             <li><a href="weather.html" class="active">Weather</a></li>
             
-            <li><a href="dashboard.html" class="portal">Member Portal</a></li>
+            <li><a href="login.html" class="portal">Member Portal</a></li>
         </ul>
     </nav>
 
@@ -1091,37 +1091,30 @@
             if (airport) lookupWeather(airport.toUpperCase());
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/club-config.js"></script>
-    <script src="js/supabase-client.js?v=3"></script>
-    <script src="js/feedback.js?v=1"></script>
     <script>
-        // Feedback widget — no member context on public weather page
-        document.addEventListener('DOMContentLoaded', () => {
-            initFeedbackWidget(null);
-            lucide.createIcons();
-        });
+        // Public tool page — render icons.
+        document.addEventListener('DOMContentLoaded', () => { lucide.createIcons(); });
     </script>
     <nav class="bottom-app-bar" aria-label="Quick actions">
-        <a href="schedule.html" class="bar-book">
-            <i data-lucide="plane" class="bar-icon"></i>
-            <span class="bar-label">Book</span>
-        </a>
-        <a href="post-flight.html">
-            <i data-lucide="clipboard-list" class="bar-icon"></i>
-            <span class="bar-label">Log</span>
+        <a href="index.html">
+            <i data-lucide="home" class="bar-icon"></i>
+            <span class="bar-label">Home</span>
         </a>
         <a href="weather.html" class="bar-active">
             <i data-lucide="cloud-sun" class="bar-icon"></i>
             <span class="bar-label">Weather</span>
         </a>
-        <a href="squawks.html">
-            <i data-lucide="wrench" class="bar-icon"></i>
-            <span class="bar-label">Squawks</span>
+        <a href="wb.html">
+            <i data-lucide="scale" class="bar-icon"></i>
+            <span class="bar-label">W&amp;B</span>
         </a>
-        <a href="dashboard.html" data-bar-last>
-            <i data-lucide="layout-dashboard" class="bar-icon"></i>
-            <span class="bar-label">Home</span>
+        <a href="join.html">
+            <i data-lucide="user-plus" class="bar-icon"></i>
+            <span class="bar-label">Join</span>
+        </a>
+        <a href="login.html" class="bar-book" data-bar-last>
+            <i data-lucide="log-in" class="bar-icon"></i>
+            <span class="bar-label">Portal</span>
         </a>
     </nav>
 </body>
