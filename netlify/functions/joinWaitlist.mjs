@@ -113,7 +113,7 @@ export const handler = async (event) => {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-            from:     'Hi-Line Flying Club <onboarding@resend.dev>',
+            from:     'Hi-Line Flying Club <noreply@n2134y.com>',
             to:       [ADMIN_EMAIL],
             reply_to: email,
             subject:  `✈️ New Waitlist Application — ${esc(name)}`,
